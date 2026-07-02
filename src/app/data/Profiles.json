@@ -1,0 +1,398 @@
+[
+  {
+    "id": "one_1",
+    "title": "Santiago Alarcón",
+    "subtitle": "Actor",
+    "imageUrl": "images/Cepeda_1.jpeg",
+    "description": "Reconocido actor de televisión fuertemente implicado en el activismo político y la defensa de los derechos culturales.",
+    "tags": [
+      "Televisión",
+      "Cultura"
+    ]
+  },
+  {
+    "id": "one_2",
+    "title": "Adriana Lucía",
+    "subtitle": "Cantante",
+    "imageUrl": "images/Cepeda_2.jpeg",
+    "description": "Artista cordobesa que lidera banderas sociales y utiliza sus plataformas musicales para respaldar liderazgos alternativos.",
+    "tags": [
+      "Música",
+      "Social"
+    ]
+  },
+  {
+    "id": "one_3",
+    "title": "Julián Román",
+    "subtitle": "Actor",
+    "imageUrl": "images/Cepeda_3.jpeg",
+    "description": "Uno de los rostros artísticos con mayor constancia en las movilizaciones y el debate de ideas de centro-izquierda.",
+    "tags": [
+      "Televisión",
+      "Sindicatos"
+    ]
+  },
+  {
+    "id": "one_4",
+    "title": "Edson Velandia",
+    "subtitle": "Músico",
+    "imageUrl": "images/Cepeda_4.jpeg",
+    "description": "Cantautor independiente cuyas letras de crítica social conectan con los movimientos agrarios y el Pacto Histórico.",
+    "tags": [
+      "Música",
+      "Crítica"
+    ]
+  },
+  {
+    "id": "one_5",
+    "title": "Beto Coral",
+    "subtitle": "Influencer Político",
+    "imageUrl": "images/Cepeda_5.jpeg",
+    "description": "Creador de contenido digital enfocado en la veeduría ciudadana y la denuncia de esquemas tradicionales desde el exterior.",
+    "tags": [
+      "Redes",
+      "Debate"
+    ]
+  },
+  {
+    "id": "one_6",
+    "title": "Carolina Ramírez",
+    "subtitle": "Actriz",
+    "imageUrl": "images/Cepeda_6.jpeg",
+    "description": "Intérprete con gran alcance digital que visibiliza la agenda ambiental y de derechos humanos en el país.",
+    "tags": [
+      "Cine",
+      "Activismo"
+    ]
+  },
+  {
+    "id": "one_7",
+    "title": "Mario Muñoz (Subcantante)",
+    "subtitle": "Músico",
+    "imageUrl": "images/Cepeda_7.jpeg",
+    "description": "Vocalista de Doctor Krápula y defensor permanente de la construcción de paz a través del arte y la educación comunitaria.",
+    "tags": [
+      "Rock",
+      "Paz"
+    ]
+  },
+  {
+    "id": "one_8",
+    "title": "Lalis Smile",
+    "subtitle": "Influencer",
+    "imageUrl": "images/Cepeda_8.jpeg",
+    "description": "Generadora de contenido juvenil enfocada en desmontar desinformación y defender reformas estructurales.",
+    "tags": [
+      "YouTube",
+      "Juventud"
+    ]
+  },
+  {
+    "id": "one_9",
+    "title": "Fabio Rubiano",
+    "subtitle": "Director de Teatro",
+    "imageUrl": "images/Cepeda_9.jpeg",
+    "description": "Dramaturgo clave en el decálogo de cultura nacional entregado formalmente para nutrir las propuestas de gobierno.",
+    "tags": [
+      "Teatro",
+      "Políticas Públicas"
+    ]
+  },
+  {
+    "id": "one_10",
+    "title": "Cony Camelo",
+    "subtitle": "Actriz y Presentadora",
+    "imageUrl": "images/Cepeda_10.jpeg",
+    "description": "Figura pública en X con un perfil de opinión constante sobre la redistribución económica y la justicia transicional.",
+    "tags": [
+      "Opinión",
+      "Medios"
+    ]
+  },
+  {
+    "id": "one_11",
+    "title": "Levy Rincón",
+    "subtitle": "Creador de Contenido",
+    "imageUrl": "images/Cepeda_11.jpeg",
+    "description": "Conductor del espacio NotiParaco, caracterizado por su estilo directo, satírico y de confrontación a las élites.",
+    "tags": [
+      "Streaming",
+      "Sátira"
+    ]
+  },
+  {
+    "id": "one_12",
+    "title": "César López",
+    "subtitle": "Músico y Activista",
+    "imageUrl": "images/Cepeda_12.jpeg",
+    "description": "Creador de la \"escopetarra\" y firme promotor de proyectos artísticos destinados a la reparación de víctimas del conflicto.",
+    "tags": [
+      "Arte",
+      "Derechos Humanos"
+    ]
+  },
+  {
+    "id": "one_13",
+    "title": "Aida Bossa",
+    "subtitle": "Actriz y Cantante",
+    "imageUrl": "images/Cepeda_13.jpeg",
+    "description": "Impulsora de las expresiones culturales de las periferias que apoya la institucionalidad comunitaria.",
+    "tags": [
+      "Caribe",
+      "Televisión"
+    ]
+  },
+  {
+    "id": "one_14",
+    "title": "Alejandro Riaño",
+    "subtitle": "Comediante",
+    "imageUrl": "images/Cepeda_14.jpeg",
+    "description": "Humorista que, de forma independiente, fomenta el pensamiento crítico y la reforma a las estructuras tradicionales de poder.",
+    "tags": [
+      "Humor",
+      "Crítica Social"
+    ]
+  },
+  {
+    "id": "one_15",
+    "title": "Andrés Parra",
+    "subtitle": "Actor",
+    "imageUrl": "images/Cepeda_15.jpeg",
+    "description": "Rostro influyente del cine que utiliza su notoriedad digital para cuestionar la corrupción institucional del sector público.",
+    "tags": [
+      "Cine",
+      "Sociedad"
+    ]
+  },
+  {
+    "id": "one_16",
+    "title": "Nórida Rodríguez",
+    "subtitle": "Actriz y Gestora",
+    "imageUrl": "images/Cepeda_16.jpeg",
+    "description": "Defensora de las industrias creativas locales y aliada en foros ambientales del sector progresista.",
+    "tags": [
+      "Cultura",
+      "Ambiente"
+    ]
+  },
+  {
+    "id": "one_17",
+    "title": "Wally Opina",
+    "subtitle": "Satírico Digital",
+    "imageUrl": "images/Cepeda_17.jpeg",
+    "description": "Analista de redes centrado en videoblogs humorísticos que exponen las incoherencias de los movimientos derechistas.",
+    "tags": [
+      "YouTube",
+      "Análisis"
+    ]
+  },
+  {
+    "id": "one_18",
+    "title": "Diana Ángel",
+    "subtitle": "Actriz y Cantante",
+    "imageUrl": "images/Cepeda_18.jpeg",
+    "description": "Promotora de las asambleas del sector cultural que dieron soporte al programa alternativo de gobierno.",
+    "tags": [
+      "Teatro",
+      "Unión"
+    ]
+  },
+  {
+    "id": "one_19",
+    "title": "Daniel Samper Ospina",
+    "subtitle": "Periodista e Influencer",
+    "imageUrl": "images/Cepeda_19.jpeg",
+    "description": "Si bien mantiene posturas críticas generales, canaliza votantes jóvenes hacia el control político ciudadano de centro.",
+    "tags": [
+      "Sátira",
+      "Periodismo"
+    ]
+  },
+  {
+    "id": "one_20",
+    "title": "Diego Trujillo",
+    "subtitle": "Actor",
+    "imageUrl": "images/Cepeda_20.jpeg",
+    "description": "Opinador activo en entornos de microblogging, alineado con las posturas anticorrupción y renovación de legisladores.",
+    "tags": [
+      "Opinión",
+      "Arte"
+    ]
+  },
+  {
+    "id": "two_1",
+    "title": "Westcol",
+    "subtitle": "Streamer / Influencer",
+    "imageUrl": "images/Abelardo_1.jpeg",
+    "description": "Eje clave de la campaña digital masiva en plataformas de transmisión en vivo enfocada en el sector juvenil masculino.",
+    "tags": [
+      "Twitch",
+      "Juventud"
+    ]
+  },
+  {
+    "id": "two_2",
+    "title": "Marbelle",
+    "subtitle": "Cantante",
+    "imageUrl": "images/Abelardo_2.jpeg",
+    "description": "Ferviente defensora del ala conservadora que utiliza su masivo alcance para movilizar votos en contra de la izquierda.",
+    "tags": [
+      "Música",
+      "Nacionalismo"
+    ]
+  },
+  {
+    "id": "two_3",
+    "title": "Cristina Hurtado",
+    "subtitle": "Presentadora e Influencer",
+    "imageUrl": "images/Abelardo_3.jpeg",
+    "description": "Reconocida figura de la televisión nacional alineada con las propuestas tradicionales del partido Defensores de la Patria.",
+    "tags": [
+      "Televisión",
+      "Familiar"
+    ]
+  },
+  {
+    "id": "two_4",
+    "title": "Sebastián Caicedo",
+    "subtitle": "Actor",
+    "imageUrl": "images/Abelardo_4.jpeg",
+    "description": "Personalidad pública defensora del libre mercado, los valores tradicionales y el fortalecimiento de la seguridad privada.",
+    "tags": [
+      "Moda",
+      "Emprendimiento"
+    ]
+  },
+  {
+    "id": "two_5",
+    "title": "Epa Colombia",
+    "subtitle": "Influencer / Empresaria",
+    "imageUrl": "images/Abelardo_5.jpeg",
+    "description": "Creadora de contenido comercial que respalda discursos asociados a la reducción de impuestos empresariales.",
+    "tags": [
+      "Negocios",
+      "Instagram"
+    ]
+  },
+  {
+    "id": "two_6",
+    "title": "Jorge Cárdenas",
+    "subtitle": "Actor y Músico",
+    "imageUrl": "images/Abelardo_6.jpeg",
+    "description": "Destacada figura de opinión digital que defiende firmemente el modelo económico capitalista y las fuerzas armadas.",
+    "tags": [
+      "Opinión",
+      "Derechas"
+    ]
+  },
+  {
+    "id": "two_7",
+    "title": "Miguel Polo Polo",
+    "subtitle": "Influencer / Político",
+    "imageUrl": "images/Abelardo_7.jpeg",
+    "description": "Creador de estrategias digitales agresivas orientadas a la confrontación frontal del ideario progresista.",
+    "tags": [
+      "TikTok",
+      "Confrontación"
+    ]
+  },
+  {
+    "id": "two_8",
+    "title": "Lucas Arnau",
+    "subtitle": "Cantautor",
+    "imageUrl": "images/Abelardo_8.jpeg",
+    "description": "Músico de pop latino que comparte públicamente visiones sobre la necesidad de reactivación económica del empresariado.",
+    "tags": [
+      "Música",
+      "Economía"
+    ]
+  },
+  {
+    "id": "two_9",
+    "title": "Natalia París",
+    "subtitle": "DJ / Modelo",
+    "imageUrl": "images/Abelardo_9.jpeg",
+    "description": "Referente cultural que promueve la defensa de las libertades individuales comerciales contra las regulaciones estatales.",
+    "tags": [
+      "Eventos",
+      "Libre Mercado"
+    ]
+  },
+  {
+    "id": "two_10",
+    "title": "Mr. Stiven",
+    "subtitle": "Gamer / Streamer",
+    "imageUrl": "images/Abelardo_10.jpeg",
+    "description": "Creador en el entorno de los videojuegos enfocado en canalizar el voto joven hacia coaliciones de derecha.",
+    "tags": [
+      "Gaming",
+      "Redes"
+    ]
+  },
+  {
+    "id": "two_11",
+    "title": "Silvestre Dangond",
+    "subtitle": "Músico Vallenato",
+    "imageUrl": "images/Abelardo_11.jpeg",
+    "description": "Referente del vallenato tradicional que suele respaldar liderazgos con fuertes conexiones en los departamentos del norte.",
+    "tags": [
+      "Vallenato",
+      "Tradición"
+    ]
+  },
+  {
+    "id": "two_12",
+    "title": "Aura Cristina Geithner",
+    "subtitle": "Actriz / Creadora",
+    "imageUrl": "images/Abelardo_12.jpeg",
+    "description": "Personalidad pública con amplio alcance multiplataforma orientada hacia discursos de orden social tradicional.",
+    "tags": [
+      "Entretenimiento",
+      "Digital"
+    ]
+  },
+  {
+    "id": "two_13",
+    "title": "Juan José Lafaurie",
+    "subtitle": "Influencer de Opinión",
+    "imageUrl": "images/Abelardo_13.jpeg",
+    "description": "Líder juvenil conservador que fundamenta su contenido en la defensa de la propiedad privada y la tradición familiar.",
+    "tags": [
+      "Debate",
+      "Conservador"
+    ]
+  },
+  {
+    "id": "two_14",
+    "title": "Yeferson Cossio",
+    "subtitle": "Creador de Contenido",
+    "imageUrl": "images/Abelardo_14.jpeg",
+    "description": "Focalizado en la fuerte crítica a los impuestos nacionales y partidario de propuestas orientadas a incentivos de capital.",
+    "tags": [
+      "Redes",
+      "Finanzas"
+    ]
+  },
+  {
+    "id": "two_15",
+    "title": "Poncho Zuleta",
+    "subtitle": "Cantante Vallenato",
+    "imageUrl": "images/Abelardo_15.jpeg",
+    "description": "Emblemático artista del folclor que representa la visión terrateniente e institucional clásica de la costa atlántica.",
+    "tags": [
+      "Folclor",
+      "Gremios"
+    ]
+  },
+  {
+    "id": "two_16",
+    "title": "Carlos Antonio Vélez",
+    "subtitle": "Comentarista Deportivo",
+    "imageUrl": "images/Abelardo_16.jpeg",
+    "description": "Líder de opinión con alta difusión mediática firmemente opositor a cualquier modelo de economía intervenida.",
+    "tags": [
+      "Deportes",
+      "Radio"
+    ]
+  }
+]

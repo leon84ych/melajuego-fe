@@ -19,10 +19,12 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "outputPath": "dist/fuchile",
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
+                
               }
             ],
             "styles": [

@@ -1,0 +1,35 @@
+.top-menu {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 0;
+  background: linear-gradient(90deg, #a74997, #7d2c6d);
+  border-bottom: 1px solid rgba(167, 73, 151, 0.35);
+}
+
+.menu-button {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: rgba(167, 73, 151, 0.18);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.menu-button:hover {
+  background: rgba(167, 73, 151, 0.28);
+}
+
+.menu-button.active {
+  background: #fff;
+  color: #7d2c6d;
+  border-color: rgba(167, 73, 151, 0.45);
+}
+
+.app-view {
+  padding: 24px;
+  max-width: 1040px;
+  margin: 0 auto;
+}

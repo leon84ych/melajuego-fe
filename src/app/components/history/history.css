@@ -1,0 +1,94 @@
+.history-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+  color: #111827;
+}
+
+.history-card h2 {
+  margin: 0;
+  font-size: 1.95rem;
+  color: #111827;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.history-description {
+  margin: 8px 0 0;
+  color: #475569;
+}
+
+.btn-clear {
+  padding: 10px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: transparent;
+  color: #111827;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-clear:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.batch-card {
+  padding: 18px;
+  margin-bottom: 16px;
+  background: transparent;
+  border-radius: 18px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  color: #1f2937;
+}
+
+.batch-card:last-child {
+  margin-bottom: 0;
+}
+
+.batch-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.batch-header strong {
+  font-size: 1rem;
+  color: #111827;
+}
+
+.batch-header span {
+  color: #4b5563;
+}
+
+.batch-details h4 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.batch-details ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #334155;
+}
+
+.batch-details li {
+  margin-bottom: 8px;
+}
+
+.batch-details li:last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,77 @@
+.configure-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+}
+
+.configure-card h2 {
+  margin: 0 0 18px;
+  font-size: 1.95rem;
+}
+
+.form-group {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #111827;
+}
+
+.form-group input::placeholder {
+  color: rgba(17, 24, 39, 0.45);
+}
+
+.actions-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+
+.btn-action.save {
+  background: #a74997;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-action.save:hover {
+  background: #8a3f83;
+  transform: translateY(-1px);
+}
+
+.status-text,
+.connection-text {
+  margin: 16px 0 0;
+  color: #0f172a;
+}
+
+.status-text.error {
+  color: #b91c1c;
+}
+
+.status-text.success {
+  color: #166534;
+}
+
+.status-text.connecting {
+  color: #92400e;
+}

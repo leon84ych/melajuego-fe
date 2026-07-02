@@ -1,0 +1,15 @@
+<div class="card-container" cdkDrag (cdkDragEnded)="onDragEnded($event)">
+  <div class="card-image" [style.background-image]="data.imageUrl ? 'url(' + data.imageUrl + ')' : 'none'">
+    <div class="card-overlay">
+      <div class="card-content">
+        <h2 class="card-title">
+          {{ data.title }} <span class="card-subtitle" *ngIf="data.subtitle">({{ data.subtitle }})</span>
+        </h2>
+        <p class="card-description" *ngIf="data.description">{{ data.description }}</p>
+        <div class="card-tags" *ngIf="data.tags">
+          <span class="tag" *ngFor="let tag of data.tags">{{ tag }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

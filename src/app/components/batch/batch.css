@@ -1,0 +1,209 @@
+.main-layout {
+  display: flex;
+  justify-content: center;
+  min-height: auto;
+  background-color: #f9fafb;
+  font-family: sans-serif;
+  padding: 20px 0;
+}
+
+.game-layout {
+  display: flex;
+  width: min(100%, 1280px);
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.game-content {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.room-sidebar {
+  width: min(320px, 100%);
+  flex: 0 0 320px;
+}
+
+/* Responsive: en móvil mostramos el sidebar debajo del batch */
+@media (max-width: 900px) {
+  .game-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .room-sidebar {
+    order: 2;
+    width: 100%;
+    flex: none;
+    margin-top: 24px;
+  }
+}
+
+/* Contenedor principal del swipe */
+.swipe-container {
+  width: min(100%, 420px);
+  min-height: 520px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.card-wrapper.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-wrapper.active {
+  z-index: 2;
+}
+
+/* Fila de botones flotantes debajo de la tarjeta */
+.action-buttons {
+  display: flex;
+  gap: 30px;
+  margin-top: 25px;
+  z-index: 20;
+}
+
+/* Estilo base circular */
+.btn-action {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-action:active {
+  transform: scale(0.9);
+}
+
+/* Efectos de color al pasar el cursor */
+.btn-action.dislike:hover {
+  background-color: #fee2e2;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.btn-action.like:hover {
+  background-color: #dcfce7;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+/* Animación opcional para suavizar el retorno del CDK drag */
+.cdk-drag-animating {
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.no-more-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 480px);
+  padding: 30px 20px;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+
+.batch-status {
+  width: min(100%, 420px);
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.status-block {
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  transition: background-color 0.2s ease;
+}
+
+.status-block.success {
+  background: #16a34a;
+}
+
+.status-block.error {
+  background: #dc2626;
+}
+
+.batch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn-action.restart {
+  margin-top: 22px;
+  width: auto;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  font-size: 1rem;
+  min-width: 180px;
+}
+
+.result-summary h1 {
+  margin: 0 0 16px;
+  font-size: 1.8rem;
+  letter-spacing: 0.02em;
+}
+
+.percentage {
+  font-size: 5rem;
+  font-weight: 800;
+  margin: 0 0 18px;
+  line-height: 1;
+}
+
+.percentage.red {
+  color: #dc2626;
+}
+
+.percentage.yellow {
+  color: #ca8a04;
+}
+
+.percentage.green {
+  color: #16a34a;
+}
+
+.result-text {
+  margin: 4px 0;
+  color: #475569;
+  font-size: 1rem;
+}
+
+.btn-action.restart {
+  margin-top: 22px;
+  width: auto;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  font-size: 1rem;
+  min-width: 180px;
+}

@@ -1,0 +1,17 @@
+<section class="room-card">
+  <div class="room-header">
+    <div>
+      <p class="room-label">Sala</p>
+      <h3>{{ roomName() || 'No conectado' }}</h3>
+    </div>
+  </div>
+
+  <div class="room-users">
+    <p class="room-label">Conectados ({{ totalUsers() }})</p>
+    <ul>
+      <li *ngFor="let nick of connectedUsers()">{{ nick }}</li>
+      <li *ngIf="connectedUsers().length === 0">Nadie conectado aún</li>
+    </ul>
+  </div>
+  <p class="room-message" *ngIf="roomMessage()">{{ roomMessage() }}</p>
+</section>

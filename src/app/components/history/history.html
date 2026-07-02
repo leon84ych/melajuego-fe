@@ -1,0 +1,27 @@
+<section class="history-card">
+  <div class="history-header">
+    <div>
+      <h2>Tu Historial de Partidas</h2>
+      <p class="history-description">Revisa tus resultados y borra el historial cuando quieras.</p>
+    </div>
+    <button class="btn-clear" type="button" (click)="clearAllHistory()">
+      Eliminar historial
+    </button>
+  </div>
+
+  <div class="batch-card" *ngFor="let session of batchHistory">
+    <div class="batch-header">
+      <strong>Sesión: {{ session.date }}</strong>
+      <span>🟢 {{ session.correctCount }} | 🔴 {{ session.incorrectCount }}</span>
+    </div>
+
+    <div class="batch-details">
+      <h4>Te equivocaste en:</h4>
+      <ul>
+        <li *ngFor="let item of session.incorrectSwipes">
+          {{ item.title }} - Eligió: {{ item.actionTaken }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
