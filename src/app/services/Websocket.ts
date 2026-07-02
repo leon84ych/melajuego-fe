@@ -33,11 +33,8 @@ export class WebsocketService {
         message: 'Pendiente de conexión...',
     });
 
-    public connectionStatusChanges$ = new BehaviorSubject<ConnectionStatus>({
-        status: 'idle',
-        message: 'Pendiente de conexión...'
-    });
-    
+    public connectionStatusChanges$ = this.connectionStatus$.asObservable();
+
     constructor(zone: NgZone) {
         this.zone = zone;
         // En local usas localhost, en producción la URL de tu servidor en la nube
@@ -158,9 +155,9 @@ export class WebsocketService {
     disconnect() {
         if (this.socket) {
             this.socket.disconnect();
-            this.connectionStatusChanges$.next({
+            this.connectionStatus$.next({
                 status: 'idle',
-                message: 'Pendiente de conexión...'
+                message: 'Pendiente de conexión...',
             });
         }
     }

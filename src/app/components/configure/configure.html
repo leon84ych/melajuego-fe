@@ -25,9 +25,16 @@
         {{ statusMessage }}
     </p>
 </section>
-<section class="configure-card" *ngIf="connected">
-    <h2>¡Estás dentro de la sala {{ room }}!</h2>
-    <p>Jugando como: <strong>{{ nickname }}</strong></p>
-    <button class="btn-danger" (click)="leaveRoom()">Salir de la Sala</button>
-    <p class="status-alert">{{ statusMessage }}</p>
+<section class="configure-card connected-panel" *ngIf="connected">
+    <div class="connected-header">
+        <h2>Conexión establecida</h2>
+        <span class="badge">Sala: {{ room }}</span>
+    </div>
+    <p class="connected-info">Jugando como <strong>{{ nickname }}</strong></p>
+    <div class="actions-row">
+        <button class="btn-action exit" (click)="leaveRoom()">Salir de la Sala</button>
+    </div>
+    <p class="status-text status-connected">
+        Disfruta tu juego
+    </p>
 </section>
