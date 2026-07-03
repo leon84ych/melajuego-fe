@@ -45,6 +45,41 @@
   color: #0f172a;
 }
 
+.room-users li.current-user {
+  background: #fde68a;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  font-weight: 700;
+}
+
+.btn-action.start {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 16px;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-action.start:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.room-batch-message {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  color: #1d4ed8;
+  font-size: 0.95rem;
+}
+
 .room-message {
   margin: 0;
   padding: 14px 16px;

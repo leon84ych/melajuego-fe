@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -16,11 +16,13 @@ interface GameSession {
   templateUrl: './configure.html',
   styleUrls: ['./configure.css'],
 })
-export class Configure implements OnDestroy {
+export class Configure implements OnInit, OnDestroy {
+  private errorSub!: Subscription;
+  availableRooms = signal<{ roomCode: string; playerCount: number; host?: string }[]>([]);
   nickname = '';
   room = '';
   statusMessage = '';
-  connected = false;
+  connected = signal(false);
   connectionStatus: ConnectionStatus = {
     status: 'idle',
     message: 'Pendiente de conexión...',
@@ -35,11 +37,69 @@ export class Configure implements OnDestroy {
         console.log('[Configure] socket status update', status);
         this.connectionStatus = status;
         this.statusMessage = status.message;
-        this.connected = status.status === 'connected' || status.status === 'connecting';
+      })
+    );
+
+    this.subscription.add(
+      this.websocket.availableRooms$.subscribe((list) => {
+        console.log('[Configure] available rooms update', list);
+        this.availableRooms.set(Array.isArray(list) ? list : []);
+      })
+    );
+
+    // Only mark as `connected` when the server reports the room state containing our nickname
+    this.subscription.add(
+      this.websocket.roomState$.subscribe((state) => {
+        try {
+          const currentRoom = (this.room || '').trim().toUpperCase();
+          const currentNick = (this.nickname || '').trim();
+          const serverRoom = (state.roomName || '').trim().toUpperCase();
+          const users = state.connectedUsers || [];
+
+          // Normalize nicknames to avoid case/whitespace mismatches (creator vs joiners)
+          const normalizedUsers = users.map((u: any) => (String(u || '').trim().toLowerCase()));
+          const normalizedNick = String(currentNick).trim().toLowerCase();
+
+          const joined = !!(serverRoom && currentRoom && serverRoom === currentRoom && normalizedUsers.includes(normalizedNick));
+          if (joined) {
+            this.connected.set(true);
+            // ensure connectionStatus reflects server acceptance
+            this.connectionStatus = { status: 'connected', message: `Conexión confirmada en ${state.roomName}` };
+            this.statusMessage = this.connectionStatus.message;
+            // Refresh available rooms when server confirms we've joined (new room will appear)
+            this.requestRooms();
+          } else if (state.roomName && serverRoom !== currentRoom) {
+            // Room state changed to another room: ensure we are not showing connected
+            this.connected.set(false);
+          }
+        } catch (e) {
+          // swallow parsing issues
+          this.connected.set(false);
+        }
       })
     );
   }
 
+  ngOnInit() {
+    // 📢 Catch the error immediately when the server shoots it back
+    this.errorSub = this.websocket.getErrorStatus().subscribe(error => {
+      console.warn('[Configure] Resetting UI due to server rejection:', error.message);
+      this.statusMessage = error.message;
+      // Reflect the server validation error in the connection state
+      this.connectionStatus = {
+        status: 'error',
+        message: error.message,
+      };
+      this.connected.set(false);
+    });
+
+    // Fetch rooms immediately when the form loads
+    this.requestRooms();
+  }
+
+  socketStatusUpdate(state: { status: string, message: string }) {
+    console.log('[Configure] socket status update', state);
+  }
 
   onRoomChange(value: string) {
     this.room = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -52,12 +112,21 @@ export class Configure implements OnDestroy {
 
   onNicknameChange(value: string) {
     // Reemplaza todo lo que NO sea letras, números o @
-    this.nickname = value.replace(/[^a-zA-Z0-9@]/g, '');
+    this.nickname = value.replace(/[^a-zA-Z0-9@ ]/g, '');
   }
 
   private isNicknameValid(name: string): boolean {
-    const nicknameRegex = /^[a-zA-Z0-9@]{1,15}$/;
+    const nicknameRegex = /^[a-zA-Z0-9@ ]{1,15}$/;
     return nicknameRegex.test(name);
+  }
+
+  requestRooms() {
+    this.websocket.requestAvailableRooms();
+  }
+
+  selectRoom(roomCode: string) {
+    this.room = (roomCode || '').trim().toUpperCase();
+    this.statusMessage = `Sala seleccionada: ${this.room}`;
   }
 
   private loadSession() {
@@ -72,12 +141,11 @@ export class Configure implements OnDestroy {
       const cleanRoom = (session.room ?? '').trim().toUpperCase();
       if (this.isRoomCodeValid(cleanRoom)) {
         this.room = cleanRoom;
-        this.joinRoom();
       } else {
         console.warn('[Configure] Sesión guardada corrupta o inválida eliminada por seguridad.');
         this.clearSession();
       }
-      this.joinRoom();
+      // only join if we set a valid room above
     } catch {
       // ignore malformed session
     }
@@ -139,11 +207,13 @@ export class Configure implements OnDestroy {
     }
 
     this.websocket.joinRoom(this.room.trim(), this.nickname.trim());
+    // Request the available rooms immediately (server will include the new room shortly)
+    this.requestRooms();
   }
 
   leaveRoom() {
     console.log('[Configure] leaveRoom requested');
-    
+
     // 1. Tell the service to kill the socket pipeline
     this.websocket.disconnect();
 
@@ -155,7 +225,9 @@ export class Configure implements OnDestroy {
       status: 'idle',
       message: 'Te has desconectado de la sala.',
     };
-    this.connected = false;
+    this.connected.set(false);
+    // Refresh available rooms after disconnect so UI reflects server state
+    this.requestRooms();
   }
 
   private clearSession() {
@@ -167,5 +239,8 @@ export class Configure implements OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    if (this.errorSub) {
+      this.errorSub.unsubscribe();
+    }
   }
 }

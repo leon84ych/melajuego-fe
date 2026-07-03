@@ -1,40 +1,60 @@
-<section class="configure-card" *ngIf="!connected">
-    <h2>Conectarme a una Sala</h2>
+<div class="configure-grid">
+    <section class="configure-card form-column">
+        <ng-container *ngIf="!connected()">
+            <h2>Conectarme a una Sala</h2>
 
-    <div class="form-group">
-        <label for="nickname">Nick</label>
-        <input id="nickname" name="nickname" type="text" [(ngModel)]="nickname"
-            (ngModelChange)="onNicknameChange($event)" placeholder="Ej: leon84ych" />
-    </div>
+            <div class="form-group">
+                    <label for="nickname">Nick</label>
+                    <input id="nickname" name="nickname" type="text" [(ngModel)]="nickname"
+                            (ngModelChange)="onNicknameChange($event)" placeholder="Ej: leon84ych" />
+            </div>
 
-    <div class="form-group">
-        <label for="room">Sala</label>
-        <input id="room" name="room" type="text" [(ngModel)]="room" (ngModelChange)="onRoomChange($event)"
-            placeholder="Ej: MATCH10" />
-    </div>
+            <div class="form-group">
+                    <label for="room">Sala</label>
+                    <input id="room" name="room" type="text" [(ngModel)]="room" (ngModelChange)="onRoomChange($event)"
+                            placeholder="Ej: MATCH10" />
+            </div>
 
-    <div class="actions-row">
-        <button type="button" class="btn-action save" (click)="saveSession()">
-            Guardar y conectar
-        </button>
-    </div>
+            <div class="actions-row">
+                    <button type="button" class="btn-action save" (click)="saveSession()">
+                            Guardar y conectar
+                    </button>
+            </div>
 
-    <p class="status-text" [class.error]="connectionStatus.status === 'error'"
-        [class.success]="connectionStatus.status === 'connected'"
-        [class.connecting]="connectionStatus.status === 'connecting'">
-        {{ statusMessage }}
-    </p>
-</section>
-<section class="configure-card connected-panel" *ngIf="connected">
-    <div class="connected-header">
-        <h2>Conexión establecida</h2>
-        <span class="badge">Sala: {{ room }}</span>
-    </div>
-    <p class="connected-info">Jugando como <strong>{{ nickname }}</strong></p>
-    <div class="actions-row">
-        <button class="btn-action exit" (click)="leaveRoom()">Salir de la Sala</button>
-    </div>
-    <p class="status-text status-connected">
-        Disfruta tu juego
-    </p>
-</section>
+            <p class="status-text" [class.error]="connectionStatus.status === 'error'"
+                    [class.success]="connectionStatus.status === 'connected'"
+                    [class.connecting]="connectionStatus.status === 'connecting'">
+                    {{ statusMessage }}
+            </p>
+        </ng-container>
+
+        <ng-container *ngIf="connected()">
+            <div class="connected-header">
+                    <h2>Conexión establecida</h2>
+            </div>
+            <p class="connected-info">Jugando como <strong>{{ nickname }}</strong> en la Sala: <strong>{{ room }}</strong></p>
+            <div class="actions-row">
+                    <button class="btn-action exit" (click)="leaveRoom()">Salir de la Sala</button>
+            </div>
+            <p class="status-text status-connected">
+                    Disfruta tu juego
+            </p>
+        </ng-container>
+    </section>
+
+    <aside class="configure-card available-rooms">
+        <div class="rooms-header">
+            <h3>Salas abiertas</h3>
+            <button class="btn-refresh" (click)="requestRooms()">Actualizar</button>
+        </div>
+        <ul class="rooms-list">
+            <li *ngFor="let r of availableRooms()">
+                <button type="button" class="room-select" (click)="selectRoom(r.roomCode)">
+                    <span class="room-name">{{ r.roomCode }}</span>
+                </button>
+                <span class="room-count">({{ r.playerCount }})</span>
+            </li>
+            <li *ngIf="availableRooms().length === 0">No hay salas abiertas</li>
+        </ul>
+    </aside>
+</div>

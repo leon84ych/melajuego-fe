@@ -1,9 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnDestroy, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { BatchSession, CardData, SwipeRecord } from '../../data/DataInterfaces';
 import profiles from '../../data/Profiles.json';
 import { Card } from '../card/card';
 import { Room } from '../room/room';
 import { CommonModule } from '@angular/common';
+import { WebsocketService, BatchStartedPayload } from '../../services/Websocket';
 
 
 @Component({
@@ -23,15 +25,26 @@ export class Batch {
   private currentBatchIncorrect: SwipeRecord[] = [];
 
   public batchHistory: BatchSession[] = [];
+  batchStartedMessage = signal('');
 
   batchStart = 0;
   batchPosition = 0;
   batchScore = 0;
   batchErrors = 0;
   batchResults: Array<'success' | 'error' | 'pending'> = Array(this.batchSize).fill('pending');
+  private websocketSubscription = new Subscription();
 
-    constructor() {
+  constructor(private websocket: WebsocketService) {
     this.loadHistoryFromStorage();
+    this.websocketSubscription.add(
+      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload) => {
+        if (!payload?.itemIds || !Array.isArray(payload.itemIds)) {
+          return;
+        }
+        this.batchStartedMessage.set(`Mazo recibido de ${payload.host}. Jugando con ${payload.itemIds.length} cartas.`);
+        this.loadBatchFromItemIds(payload.itemIds);
+      })
+    );
   }
 
   private shuffle<T>(array: T[]): T[] {
@@ -41,6 +54,28 @@ export class Batch {
       [copy[i], copy[j]] = [copy[j], copy[i]];
     }
     return copy;
+  }
+
+  private loadBatchFromItemIds(itemIds: string[]) {
+    const itemsById = new Map<string, CardData>(
+      (profiles as CardData[]).map((profile) => [String(profile.id), profile])
+    );
+
+    const selected: CardData[] = itemIds
+      .map((id) => itemsById.get(id))
+      .filter((card): card is CardData => Boolean(card));
+
+    if (selected.length !== itemIds.length) {
+      console.warn('[Batch] Algunos IDs del mazo no fueron encontrados en el catálogo local.');
+    }
+
+    if (selected.length === 0) {
+      return;
+    }
+
+    this.itemsStack = selected;
+    this.batchStart = 0;
+    this.resetBatch();
   }
 
   // 1. Array genérico con tus elementos a deslizar
@@ -179,10 +214,8 @@ private loadHistoryFromStorage() {
   }
 }
 
-// Optional helper to let users wipe their historical stats
-clearAllHistory() {
-  localStorage.removeItem('match_history');
-  this.batchHistory = [];
-}
+  ngOnDestroy() {
+    this.websocketSubscription.unsubscribe();
+  }
 
 }

@@ -44,6 +44,10 @@
           🫰
         </button>
       </div>
+
+      <div class="batch-notification" *ngIf="batchStartedMessage()">
+        {{ batchStartedMessage() }}
+      </div>
     </div>
 
     <aside class="room-sidebar">

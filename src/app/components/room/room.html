@@ -9,9 +9,17 @@
   <div class="room-users">
     <p class="room-label">Conectados ({{ totalUsers() }})</p>
     <ul>
-      <li *ngFor="let nick of connectedUsers()">{{ nick }}</li>
+      <li *ngFor="let nick of connectedUsers()" [class.current-user]="nick === currentNickname()">
+        {{ nick }}
+      </li>
       <li *ngIf="connectedUsers().length === 0">Nadie conectado aún</li>
     </ul>
   </div>
+
+  <button class="btn-action start" *ngIf="roomName() && !batchInProgress" (click)="requestBatchStart()">
+    Iniciar partida
+  </button>
+
+  <p class="room-batch-message" *ngIf="batchMessage()">{{ batchMessage() }}</p>
   <p class="room-message" *ngIf="roomMessage()">{{ roomMessage() }}</p>
 </section>

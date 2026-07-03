@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 export interface RoomState {
     roomName: string;
@@ -15,6 +15,17 @@ export interface ConnectionStatus {
     message: string;
 }
 
+export interface BatchStartedPayload {
+    host: string;
+    itemIds: string[];
+}
+
+export interface AvailableRoom {
+    roomCode: string;
+    playerCount: number;
+    host?: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -24,16 +35,25 @@ export class WebsocketService {
 
     // Usamos un Subject de RxJS para que los componentes se suscriban a las acciones del rival
     public opponentSwipe$ = new Subject<any>();
+
     public roomState$ = new BehaviorSubject<RoomState>({
         roomName: '',
         connectedUsers: [],
     });
+
     private connectionStatus$ = new BehaviorSubject<ConnectionStatus>({
         status: 'idle',
         message: 'Pendiente de conexión...',
     });
 
     public connectionStatusChanges$ = this.connectionStatus$.asObservable();
+
+    public batchStarted$ = new Subject<BatchStartedPayload>();
+
+    // Available rooms list pushed from server on demand
+    public availableRooms$ = new Subject<AvailableRoom[]>();
+
+    private errorStatus$ = new Subject<{ message: string }>();
 
     constructor(zone: NgZone) {
         this.zone = zone;
@@ -43,6 +63,13 @@ export class WebsocketService {
             auth: {
                 token: "BBjwBRieBjINCAIQABiABBjwBRieBjINCAMQABiABBjwBRieBjINCAQQABiABBjwBRieBjIN"
             }
+        });
+
+        this.socket.on('error_response', (data: { message: string }) => {
+            console.error('[WebsocketService] Server error received:', data);
+            this.zone.run(() => {
+                this.errorStatus$.next(data);
+            });
         });
 
         this.socket.on('connect', () => {
@@ -72,6 +99,18 @@ export class WebsocketService {
                     status: 'error',
                     message: `Error de conexión: ${error?.message || error}`,
                 });
+            });
+        });
+
+        // Mensajes de error específicos enviados por el servidor (validaciones, seguridad, etc.)
+        this.socket.on('error_message', (msg: string) => {
+            console.warn('[WebsocketService] error_message from server', msg);
+            this.zone.run(() => {
+                this.connectionStatus$.next({
+                    status: 'error',
+                    message: typeof msg === 'string' ? msg : 'Error del servidor',
+                });
+                this.errorStatus$.next({ message: typeof msg === 'string' ? msg : 'Error del servidor' });
             });
         });
 
@@ -123,11 +162,44 @@ export class WebsocketService {
                     connectedUsers: data.connectedUsers,
                     totalUsers: data.totalUsers,
                 });
+                // Refresh available rooms list for this client so UI shows latest counts
+                try {
+                    this.socket.emit('get_available_rooms');
+                } catch (e) {
+                    console.warn('[WebsocketService] failed to request updated available rooms', e);
+                }
+            });
+        });
+
+        this.socket.on('batch_started', (data: BatchStartedPayload) => {
+            console.log('[WebsocketService] batch_started', data);
+            this.zone.run(() => {
+                if (data && data.itemIds && Array.isArray(data.itemIds)) {
+                    this.batchStarted$.next({
+                        host: data.host,
+                        itemIds: data.itemIds,
+                    });
+                }
+            });
+        });
+
+        // Lista de salas solicitada por el cliente
+        this.socket.on('available_rooms_list', (data: AvailableRoom[]) => {
+            console.log('[WebsocketService] available_rooms_list', data);
+            this.zone.run(() => {
+                if (Array.isArray(data)) {
+                    this.availableRooms$.next(data);
+                }
             });
         });
     }
 
-    joinRoom(roomCode: string, nickname?: string) {
+    // Expose errors as an observable for your components
+    getErrorStatus(): Observable<{ message: string }> {
+        return this.errorStatus$.asObservable();
+    }
+
+    joinRoom(roomCode: string, nickname: string) {
         console.log('[WebsocketService] joinRoom requested', { roomCode, nickname });
 
         this.connectionStatus$.next({
@@ -138,14 +210,49 @@ export class WebsocketService {
         if (!this.socket.connected) {
             console.log('[WebsocketService] socket not connected, calling connect()');
             this.socket.connect();
+
+            // ⚡ SOLUCIÓN: Esperar a que se conecte antes de emitir el evento
+            this.socket.once('connect', () => {
+                this.emitJoinRoom(roomCode, nickname);
+            });
+        } else {
+            // Si ya estaba conectado, emitimos de inmediato
+            this.emitJoinRoom(roomCode, nickname);
         }
 
-        // Enviamos los datos al backend
-        this.socket.emit('join_room', {
-            roomCode,
-            nickname: nickname || 'anonymous',
-        });
+        // Nota: la emisión se realiza en `emitJoinRoom` o tras la conexión.
+    }
+
+    private emitJoinRoom(roomCode: string, nickname: string) {
         console.log('[WebsocketService] emit join_room', { roomCode, nickname });
+        this.socket.emit('join_room', { roomCode, nickname });
+    }
+
+    startBatch(roomCode: string, itemIds: string[]) {
+        console.log('[WebsocketService] startBatch requested', { roomCode, itemIds });
+        this.socket.emit('start_batch', { roomCode, itemIds });
+    }
+
+    requestAvailableRooms() {
+        console.log('[WebsocketService] requestAvailableRooms');
+        if (this.socket.connected) {
+            this.socket.emit('get_available_rooms');
+            return;
+        }
+
+        // If not connected yet, connect and emit once connected
+        try {
+            this.socket.connect();
+            this.socket.once('connect', () => {
+                try {
+                    this.socket.emit('get_available_rooms');
+                } catch (e) {
+                    console.warn('[WebsocketService] failed to emit get_available_rooms after connect', e);
+                }
+            });
+        } catch (e) {
+            console.warn('[WebsocketService] failed to request available rooms (connect failed)', e);
+        }
     }
 
     emitSwipe(roomCode: string, cardId: string | number, action: 'like' | 'dislike') {

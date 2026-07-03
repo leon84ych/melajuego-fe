@@ -7,6 +7,14 @@
   >
     Jugar
   </button>
+    <button
+    type="button"
+    class="menu-button"
+    [class.active]="view === 'configure'"
+    (click)="setView('configure')"
+  >
+    Unirme
+  </button>
   <button
     type="button"
     class="menu-button"
@@ -14,14 +22,6 @@
     (click)="setView('history')"
   >
     Historial
-  </button>
-  <button
-    type="button"
-    class="menu-button"
-    [class.active]="view === 'configure'"
-    (click)="setView('configure')"
-  >
-    Unirme a una sala
   </button>
   <button
     type="button"
