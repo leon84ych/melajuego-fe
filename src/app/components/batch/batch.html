@@ -1,57 +1,58 @@
 <div class="main-layout">
-  <div class="game-layout">
-    <div class="game-content">
-      <!-- Contenedor de Tarjetas del batch -->
-      <div class="swipe-container" *ngIf="!batchComplete">
-        <div class="card-wrapper"
-             *ngFor="let card of currentBatch; let idx = index"
-             [class.active]="idx === batchPosition"
-             [class.hidden]="idx < batchPosition">
-          <app-card
-            [data]="card"
-            (onSwipe)="handleDecision($event)">
-          </app-card>
+    <div class="game-layout">
+        <div class="game-content">
+            <!-- Contenedor de Tarjetas del batch -->
+            <div class="swipe-container" *ngIf="!batchComplete">
+                <div class="card-wrapper" *ngFor="let card of currentBatch; let idx = index"
+                    [class.active]="idx === batchPosition" [class.hidden]="idx < batchPosition">
+                    <app-card [data]="card" (onSwipe)="handleDecision($event)">
+                    </app-card>
+                </div>
+            </div>
+
+            <!-- Barra de estado del batch -->
+            <div class="batch-status" *ngIf="!batchComplete" >
+                <div class="status-block" *ngFor="let result of batchResults" [class.success]="result === 'success'"
+                    [class.error]="result === 'error'"></div>
+            </div>
+
+            <!-- Pantalla de fin de batch -->
+
+            <div class="no-more-cards" *ngIf="batchComplete">
+                <div class="result-summary">
+                    <h1>Ronda completada</h1>
+                    <div class="percentage" [class.red]="scoreColor === 'red'" [class.yellow]="scoreColor === 'yellow'"
+                        [class.green]="scoreColor === 'green'">
+                        {{ percentScore }}%
+                    </div>
+                    <p class="result-text">Aciertos: {{ batchScore }} / {{ currentBatch.length }}</p>
+                    <p class="result-text">Errores: {{ batchErrors }}</p>
+                    <div class="batch-actions">
+                        <button class="btn-action restart" (click)="nextBatch()">Jugar otra ronda</button>
+                        <button class="btn-action restart" (click)="restart()">Reiniciar todo</button>
+                    </div>
+                </div>
+            </div>
+            <app-scores *ngIf="batchComplete"></app-scores>
+
+
+            <!-- Botones de Acción Estilo Tinder (Solo visibles si hay tarjetas) -->
+            <div class="action-buttons" *ngIf="!batchComplete">
+                <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">
+                    ❌
+                </button>
+                <button class="btn-action like" (click)="handleDecision({ id: currentCard.id, action: 'like' })">
+                    🫰
+                </button>
+            </div>
+
+            <div class="batch-notification" *ngIf="batchStartedMessage()">
+                {{ batchStartedMessage() }}
+            </div>
         </div>
-      </div>
 
-      <!-- Barra de estado del batch -->
-      <div class="batch-status" *ngIf="currentBatch.length > 0">
-        <div class="status-block" *ngFor="let result of batchResults" [class.success]="result === 'success'" [class.error]="result === 'error'"></div>
-      </div>
-
-      <!-- Pantalla de fin de batch -->
-      <div class="no-more-cards" *ngIf="batchComplete">
-        <div class="result-summary">
-          <h1>Ronda completada</h1>
-          <div class="percentage" [class.red]="scoreColor === 'red'" [class.yellow]="scoreColor === 'yellow'" [class.green]="scoreColor === 'green'">
-            {{ percentScore }}%
-          </div>
-          <p class="result-text">Aciertos: {{ batchScore }} / {{ currentBatch.length }}</p>
-          <p class="result-text">Errores: {{ batchErrors }}</p>
-          <div class="batch-actions">
-            <button class="btn-action restart" (click)="nextBatch()">Jugar otra ronda</button>
-            <button class="btn-action restart" (click)="restart()">Reiniciar todo</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Botones de Acción Estilo Tinder (Solo visibles si hay tarjetas) -->
-      <div class="action-buttons" *ngIf="!batchComplete">
-        <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">
-          ❌
-        </button>
-        <button class="btn-action like" (click)="handleDecision({ id: currentCard.id, action: 'like' })">
-          🫰
-        </button>
-      </div>
-
-      <div class="batch-notification" *ngIf="batchStartedMessage()">
-        {{ batchStartedMessage() }}
-      </div>
+        <aside class="room-sidebar">
+            <app-room></app-room>
+        </aside>
     </div>
-
-    <aside class="room-sidebar">
-      <app-room></app-room>
-    </aside>
-  </div>
 </div>

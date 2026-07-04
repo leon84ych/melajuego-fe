@@ -9,10 +9,10 @@
   <div class="room-users">
     <p class="room-label">Conectados ({{ totalUsers() }})</p>
     <ul>
-      <li *ngFor="let nick of connectedUsers()" [class.current-user]="nick === currentNickname()">
+      <li *ngFor="let nick of sortedUsers()" [class.current-user]="nick === currentNickname()">
         {{ nick }}
       </li>
-      <li *ngIf="connectedUsers().length === 0">Nadie conectado aún</li>
+      <li *ngIf="sortedUsers().length === 0">Nadie conectado aún</li>
     </ul>
   </div>
 

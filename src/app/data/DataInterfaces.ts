@@ -25,3 +25,22 @@ export interface BatchSession {
   correctSwipes: SwipeRecord[];   // Full profile references for summary
   incorrectSwipes: SwipeRecord[]; // Full profile references for review
 }
+
+export interface ParticipantBatchResult {
+  id: string;
+  roomCode: string;
+  nickname: string;
+  correctCount: number;
+  incorrectCount: number;
+  percentScore: number;
+  totalCards: number;
+  results: Array<'success' | 'error' | 'pending'>;
+  timestamp: string;
+}
+
+export interface RoomBatchScores {
+  roomCode: string;
+  participantResults: ParticipantBatchResult[];
+  winner?: string;
+  updatedAt: string;
+}

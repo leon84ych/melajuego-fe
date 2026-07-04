@@ -1,6 +1,8 @@
 import { Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { ParticipantBatchResult, RoomBatchScores } from '../data/DataInterfaces';
+import { environment } from '../../environments/environment';
 
 export interface RoomState {
     roomName: string;
@@ -49,6 +51,7 @@ export class WebsocketService {
     public connectionStatusChanges$ = this.connectionStatus$.asObservable();
 
     public batchStarted$ = new Subject<BatchStartedPayload>();
+    public roomBatchScores$ = new Subject<RoomBatchScores>();
 
     // Available rooms list pushed from server on demand
     public availableRooms$ = new Subject<AvailableRoom[]>();
@@ -58,7 +61,7 @@ export class WebsocketService {
     constructor(zone: NgZone) {
         this.zone = zone;
         // En local usas localhost, en producción la URL de tu servidor en la nube
-        this.socket = io('https://fuchile-be.fly.dev', {
+        this.socket = io(environment.socketUrl, {
             autoConnect: false,
             auth: {
                 token: "BBjwBRieBjINCAIQABiABBjwBRieBjINCAMQABiABBjwBRieBjINCAQQABiABBjwBRieBjIN"
@@ -183,6 +186,21 @@ export class WebsocketService {
             });
         });
 
+        this.socket.on('room_batch_scores', (data: any) => {
+            console.log('[WebsocketService] room_batch_scores', data);
+            this.zone.run(() => {
+                if (!data || !data.roomCode || !Array.isArray(data.participantResults)) {
+                    return;
+                }
+                this.roomBatchScores$.next({
+                    roomCode: data.roomCode,
+                    participantResults: data.participantResults,
+                    winner: data.winner,
+                    updatedAt: data.updatedAt || new Date().toISOString(),
+                });
+            });
+        });
+
         // Lista de salas solicitada por el cliente
         this.socket.on('available_rooms_list', (data: AvailableRoom[]) => {
             console.log('[WebsocketService] available_rooms_list', data);
@@ -231,6 +249,16 @@ export class WebsocketService {
     startBatch(roomCode: string, itemIds: string[]) {
         console.log('[WebsocketService] startBatch requested', { roomCode, itemIds });
         this.socket.emit('start_batch', { roomCode, itemIds });
+    }
+
+    submitBatchResult(result: ParticipantBatchResult) {
+        console.log('[WebsocketService] submitBatchResult requested', result);
+        this.socket.emit('submit_batch_result', result);
+    }
+
+    requestRoomBatchScores(roomCode: string) {
+        console.log('[WebsocketService] requestRoomBatchScores requested', { roomCode });
+        this.socket.emit('get_room_batch_scores', { roomCode });
     }
 
     requestAvailableRooms() {

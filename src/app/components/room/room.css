@@ -30,6 +30,12 @@
   color: #111827;
 }
 
+.room-users {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 .room-users ul {
   list-style: none;
   padding: 0;
@@ -43,6 +49,16 @@
   background: #f8fafc;
   border-radius: 14px;
   color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .room-card {
+    padding: 18px;
+  }
+
+  .room-users {
+    max-height: 260px;
+  }
 }
 
 .room-users li.current-user {

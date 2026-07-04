@@ -1,9 +1,10 @@
 import { Component, OnDestroy, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { BatchSession, CardData, SwipeRecord } from '../../data/DataInterfaces';
+import { BatchSession, CardData, ParticipantBatchResult, SwipeRecord } from '../../data/DataInterfaces';
 import profiles from '../../data/Profiles.json';
 import { Card } from '../card/card';
 import { Room } from '../room/room';
+import { Scores } from '../scores/scores';
 import { CommonModule } from '@angular/common';
 import { WebsocketService, BatchStartedPayload } from '../../services/Websocket';
 
@@ -11,7 +12,7 @@ import { WebsocketService, BatchStartedPayload } from '../../services/Websocket'
 @Component({
   selector: 'app-batch',
   standalone: true,
-  imports: [Card, Room, CommonModule],
+  imports: [Card, Room, Scores, CommonModule],
   templateUrl: './batch.html',
   styleUrls: ['./batch.css'],
 })
@@ -203,16 +204,56 @@ export class Batch {
 
     // Save to browser LocalStorage
     localStorage.setItem('match_history', JSON.stringify(this.batchHistory));
-    
+
+    const batchResult = this.buildBatchResultPayload();
+    if (batchResult) {
+      this.websocket.submitBatchResult(batchResult);
+      this.websocket.requestRoomBatchScores(batchResult.roomCode);
+      localStorage.setItem(`room_batch_result_${batchResult.roomCode}_${batchResult.id}`, JSON.stringify(batchResult));
+    }
+
     console.log('Batch successfully archived to LocalStorage!');
   }
 
-private loadHistoryFromStorage() {
-  const storedData = localStorage.getItem('match_history');
-  if (storedData) {
-    this.batchHistory = JSON.parse(storedData);
+
+  private buildBatchResultPayload(): ParticipantBatchResult | null {
+    const sessionJSON = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
+    if (!sessionJSON) {
+      console.warn('[Batch] No session stored to send batch result.');
+      return null;
+    }
+
+    try {
+      const session = JSON.parse(sessionJSON) as { nickname?: string; room?: string };
+      const nickname = (session.nickname || '').trim();
+      const roomCode = (session.room || '').trim();
+      if (!nickname || !roomCode) {
+        return null;
+      }
+
+      return {
+        id: `batch_${Date.now()}`,
+        roomCode,
+        nickname,
+        correctCount: this.batchScore,
+        incorrectCount: this.batchErrors,
+        percentScore: this.percentScore,
+        totalCards: this.currentBatch.length,
+        results: this.batchResults,
+        timestamp: new Date().toISOString(),
+      };
+    } catch {
+      console.warn('[Batch] Error parsing saved session for batch result.');
+      return null;
+    }
   }
-}
+
+  private loadHistoryFromStorage() {
+    const storedData = localStorage.getItem('match_history');
+    if (storedData) {
+      this.batchHistory = JSON.parse(storedData);
+    }
+  }
 
   ngOnDestroy() {
     this.websocketSubscription.unsubscribe();

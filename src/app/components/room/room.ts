@@ -1,4 +1,4 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import profiles from '../../data/Profiles.json';
@@ -16,6 +16,17 @@ export class Room implements OnDestroy {
   nickname = signal('');
   currentNickname = signal('');
   connectedUsers = signal<string[]>([]);
+  sortedUsers = computed(() => {
+    const current = String(this.currentNickname()).trim().toLowerCase();
+    const users = this.connectedUsers();
+    if (!current || users.length === 0) {
+      return users;
+    }
+
+    const leadingUsers = users.filter((nick) => String(nick).trim().toLowerCase() === current);
+    const remainingUsers = users.filter((nick) => String(nick).trim().toLowerCase() !== current);
+    return [...leadingUsers, ...remainingUsers];
+  });
   roomMessage = signal('');
   batchMessage = signal('');
   totalUsers = signal(0);

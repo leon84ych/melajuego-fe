@@ -1,0 +1,19 @@
+<aside class="room-sidebar">
+    <section class="scoreboard" *ngIf="roomBatchScores()">
+        <div class="scoreboard-header">
+            <h3>Puntajes de sala</h3>
+            <span class="scoreboard-updated">Actualizado {{ roomBatchScores()?.updatedAt | date:'short' }}</span>
+        </div>
+            <span class="winner-text" *ngIf="roomBatchScores()?.winner">Ganador: {{ roomBatchScores()?.winner }}</span>
+        <ul>
+            <li *ngFor="let participant of roomBatchScores()?.participantResults | slice:0:100"
+                [class.winner]="participant.nickname === roomBatchScores()?.winner">
+                <div class="participant-name">{{ participant.nickname }}</div>
+                <div class="participant-score">{{ participant.percentScore }}%</div>
+                <div class="participant-detail">{{ participant.correctCount }} / {{ participant.totalCards }} • {{
+                    participant.incorrectCount }} errores</div>
+            </li>
+        </ul>
+        
+    </section>
+</aside>
