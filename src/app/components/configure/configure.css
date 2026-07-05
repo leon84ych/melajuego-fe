@@ -54,6 +54,35 @@
   gap: 8px;
 }
 
+.rooms-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rooms-count {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.total-users {
+  margin: 0;
+  color: #475569;
+}
+
+.rooms-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.rooms-list-container {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
 .rooms-list li {
   display: flex;
   justify-content: space-between;
@@ -81,6 +110,16 @@
 
 .room-count {
   color: #475569;
+}
+
+@media (max-width: 768px) {
+  .configure-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rooms-list-container {
+    max-height: 240px;
+  }
 }
 
 .configure-card h2 {

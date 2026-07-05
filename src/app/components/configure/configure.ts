@@ -2,12 +2,10 @@ import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { ConnectionStatus, WebsocketService } from '../../services/Websocket';
+import { WebsocketService } from '../../services/Websocket';
+import { ConnectionStatus, GameSession } from '../../data/DataInterfaces';
 
-interface GameSession {
-  nickname: string;
-  room: string;
-}
+
 
 @Component({
   selector: 'app-configure',
@@ -17,8 +15,10 @@ interface GameSession {
   styleUrls: ['./configure.css'],
 })
 export class Configure implements OnInit, OnDestroy {
+
   private errorSub!: Subscription;
   availableRooms = signal<{ roomCode: string; playerCount: number; host?: string }[]>([]);
+  totalUsersConnected = signal<number>(0);
   nickname = '';
   room = '';
   statusMessage = '';
@@ -47,13 +47,20 @@ export class Configure implements OnInit, OnDestroy {
       })
     );
 
+    this.subscription.add(
+      this.websocket.totalUsersConnected$.subscribe((count) => {
+        console.log('[Configure] total users connected update', count);
+        this.totalUsersConnected.set(count);
+      })
+    );
+
     // Only mark as `connected` when the server reports the room state containing our nickname
     this.subscription.add(
       this.websocket.roomState$.subscribe((state) => {
         try {
           const currentRoom = (this.room || '').trim().toUpperCase();
           const currentNick = (this.nickname || '').trim();
-          const serverRoom = (state.roomName || '').trim().toUpperCase();
+          const serverRoom = (state.roomCode || '').trim().toUpperCase();
           const users = state.connectedUsers || [];
 
           // Normalize nicknames to avoid case/whitespace mismatches (creator vs joiners)
@@ -64,11 +71,11 @@ export class Configure implements OnInit, OnDestroy {
           if (joined) {
             this.connected.set(true);
             // ensure connectionStatus reflects server acceptance
-            this.connectionStatus = { status: 'connected', message: `Conexión confirmada en ${state.roomName}` };
+            this.connectionStatus = { status: 'connected', message: `Conexión confirmada en ${state.roomCode}` };
             this.statusMessage = this.connectionStatus.message;
             // Refresh available rooms when server confirms we've joined (new room will appear)
             this.requestRooms();
-          } else if (state.roomName && serverRoom !== currentRoom) {
+          } else if (state.roomCode && serverRoom !== currentRoom) {
             // Room state changed to another room: ensure we are not showing connected
             this.connected.set(false);
           }

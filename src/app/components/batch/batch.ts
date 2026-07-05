@@ -1,12 +1,12 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { BatchSession, CardData, ParticipantBatchResult, SwipeRecord } from '../../data/DataInterfaces';
+import { BatchSession, BatchStartedPayload, CardData, ParticipantBatchResult, RoomBatchScores, RoomState, SwipeRecord } from '../../data/DataInterfaces';
 import profiles from '../../data/Profiles.json';
 import { Card } from '../card/card';
 import { Room } from '../room/room';
 import { Scores } from '../scores/scores';
 import { CommonModule } from '@angular/common';
-import { WebsocketService, BatchStartedPayload } from '../../services/Websocket';
+import { WebsocketService } from '../../services/Websocket';
 
 
 @Component({
@@ -18,6 +18,11 @@ import { WebsocketService, BatchStartedPayload } from '../../services/Websocket'
 })
 export class Batch {
   protected readonly title = signal('Fuchile');
+  isSoloGame = signal(true);
+  showRoomPanel = signal(false);
+  sharedBatchReceived = signal(false);
+  sharedGameFinished = signal(false);
+  private batchRenderVersion = 0;
   private successSound = new Audio('sounds/success.mp3');
   private errorSound = new Audio('sounds/error_1.mp3');
 
@@ -26,7 +31,6 @@ export class Batch {
   private currentBatchIncorrect: SwipeRecord[] = [];
 
   public batchHistory: BatchSession[] = [];
-  batchStartedMessage = signal('');
 
   batchStart = 0;
   batchPosition = 0;
@@ -35,17 +39,77 @@ export class Batch {
   batchResults: Array<'success' | 'error' | 'pending'> = Array(this.batchSize).fill('pending');
   private websocketSubscription = new Subscription();
 
-  constructor(private websocket: WebsocketService) {
+  constructor(private websocket: WebsocketService, private cdr: ChangeDetectorRef) {
     this.loadHistoryFromStorage();
     this.websocketSubscription.add(
-      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload) => {
+      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload | null) => {
         if (!payload?.itemIds || !Array.isArray(payload.itemIds)) {
           return;
         }
-        this.batchStartedMessage.set(`Mazo recibido de ${payload.host}. Jugando con ${payload.itemIds.length} cartas.`);
+
+        this.sharedBatchReceived.set(true);
+        this.sharedGameFinished.set(false);
         this.loadBatchFromItemIds(payload.itemIds);
       })
     );
+
+    this.websocketSubscription.add(
+      this.websocket.roomState$.subscribe((state: RoomState) => {
+        const connectedCount = state.connectedUsers?.length ?? 0;
+        this.isSoloGame.set(connectedCount <= 1);
+
+        const savedSession = this.getSavedSession();
+        const sessionRoom = String(savedSession?.room || '').trim().toUpperCase();
+        const sessionNickname = String(savedSession?.nickname || '').trim().toLowerCase();
+        const stateRoom = String(state.roomCode || '').trim().toUpperCase();
+        const connectedUsers = (state.connectedUsers ?? []).map((nick) => String(nick).trim().toLowerCase());
+
+        const isConnectedToActiveRoom = !!(
+          sessionRoom &&
+          sessionNickname &&
+          stateRoom &&
+          sessionRoom === stateRoom &&
+          connectedUsers.includes(sessionNickname)
+        );
+
+        this.showRoomPanel.set(isConnectedToActiveRoom);
+
+        if (!isConnectedToActiveRoom) {
+          this.sharedBatchReceived.set(false);
+          this.sharedGameFinished.set(false);
+        }
+      })
+    );
+
+    this.websocketSubscription.add(
+      this.websocket.roomBatchScores$.subscribe((scores: RoomBatchScores) => {
+        const savedSession = this.getSavedSession();
+        const sessionRoom = String(savedSession?.room || '').trim().toUpperCase();
+        const scoresRoom = String(scores?.roomCode || '').trim().toUpperCase();
+
+        if (!sessionRoom || !scoresRoom || sessionRoom !== scoresRoom) {
+          return;
+        }
+
+        if (scores.gameFinished) {
+          this.sharedGameFinished.set(true);
+          this.sharedBatchReceived.set(false);
+        }
+      })
+    );
+  }
+
+  private getSavedSession(): { nickname?: string; room?: string } | null {
+    const savedSession = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
+    if (!savedSession) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(savedSession) as { nickname?: string; room?: string };
+    } catch {
+      return null;
+    }
   }
 
   private shuffle<T>(array: T[]): T[] {
@@ -66,18 +130,32 @@ export class Batch {
       .map((id) => itemsById.get(id))
       .filter((card): card is CardData => Boolean(card));
 
+    const missingIds = itemIds.filter((id) => !itemsById.has(id));
+
     if (selected.length !== itemIds.length) {
       console.warn('[Batch] Algunos IDs del mazo no fueron encontrados en el catálogo local.');
+      if (missingIds.length > 0) {
+        console.warn('[Batch] IDs faltantes en el catálogo local:', missingIds);
+      }
     }
 
     if (selected.length === 0) {
+      console.error('[Batch] Batch ignored because no incoming IDs matched local catalog.', {
+        requestedIds: itemIds,
+      });
       return;
     }
 
     this.itemsStack = selected;
+    this.batchRenderVersion++;
     this.batchStart = 0;
     this.resetBatch();
+    this.cdr.detectChanges();
   }
+
+  trackCard = (_index: number, card: CardData): string => {
+    return `${this.batchRenderVersion}-${String(card.id)}`;
+  };
 
   // 1. Array genérico con tus elementos a deslizar
   itemsStack: CardData[] = this.shuffle(profiles as CardData[]);
@@ -88,6 +166,26 @@ export class Batch {
 
   get currentCard(): CardData {
     return this.currentBatch[this.batchPosition];
+  }
+
+  isPlayingInRoom(): boolean {
+    return this.showRoomPanel();
+  }
+
+  shouldWaitForSharedBatch(): boolean {
+    return this.isPlayingInRoom() && !this.sharedBatchReceived() && !this.sharedGameFinished();
+  }
+
+  shouldShowCards(): boolean {
+    if (!this.isPlayingInRoom()) {
+      return !this.batchComplete;
+    }
+
+    return !this.batchComplete && !this.shouldWaitForSharedBatch() && !this.sharedGameFinished();
+  }
+
+  shouldShowRoomScores(): boolean {
+    return this.isPlayingInRoom() && !this.isSoloGame() && (this.batchComplete || this.sharedGameFinished());
   }
 
   get batchComplete(): boolean {
@@ -138,6 +236,7 @@ export class Batch {
   }
 
   nextBatch() {
+    this.sharedGameFinished.set(false);
     if (this.hasNextBatch) {
       this.batchStart += this.batchSize;
     } else {
@@ -149,10 +248,10 @@ export class Batch {
 
   // 3. Método genérico para manejar la acción del swipe
   handleDecision(event: { id: string | number, action: 'like' | 'dislike' }) {
-    if (this.batchComplete) {
+    if (this.batchComplete || this.shouldWaitForSharedBatch() || this.sharedGameFinished()) {
       return;
     }
-    
+
     const correct = this.isCorrectDecision(event.id, event.action);
     const currentCardData = this.currentBatch[this.batchPosition];
 
@@ -162,7 +261,7 @@ export class Batch {
       subtitle: currentCardData.subtitle,
       actionTaken: event.action
     };
-    
+
     if (correct) {
       this.playAudio(this.successSound);
       this.batchScore++;
@@ -175,7 +274,6 @@ export class Batch {
       this.currentBatchIncorrect.push(record);
     }
 
-    console.log(`Item ${event.id} recibió un: ${event.action} — ${correct ? 'correcto' : 'incorrecto'}`);
     this.batchPosition++;
 
     if (this.batchComplete) {
@@ -186,7 +284,7 @@ export class Batch {
   // Helper method to reset and play audio seamlessly on rapid clicks
   private playAudio(audio: HTMLAudioElement) {
     audio.currentTime = 0;
-    audio.play().catch(err => console.log('Audio playback prevented by browser:', err));
+    audio.play().catch(err => console.warn('Audio playback prevented by browser:', err));
   }
 
   private saveCurrentBatchToHistory() {
@@ -212,7 +310,6 @@ export class Batch {
       localStorage.setItem(`room_batch_result_${batchResult.roomCode}_${batchResult.id}`, JSON.stringify(batchResult));
     }
 
-    console.log('Batch successfully archived to LocalStorage!');
   }
 
 

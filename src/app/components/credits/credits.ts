@@ -1,22 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import creditsData from '../../data/credits.json';
+import { CreditEntry } from '../../data/DataInterfaces';
 
 type SocialNetworkKey = 'github' | 'instagram' | 'tik-tok' | 'twitter';
 
-interface SocialLinks {
-  github?: string;
-  instagram?: string;
-  'tik-tok'?: string;
-  twitter?: string;
-}
 
-interface CreditEntry {
-  name: string;
-  nickname: string;
-  role: string;
-  socials: SocialLinks;
-}
 
 @Component({
   selector: 'app-credits',

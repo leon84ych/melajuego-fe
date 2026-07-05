@@ -1,32 +1,10 @@
 import { Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { ParticipantBatchResult, RoomBatchScores } from '../data/DataInterfaces';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { AvailableRoom, BatchStartedPayload, ConnectionStatus, ParticipantBatchResult, RoomBatchScores, RoomState } from '../data/DataInterfaces';
 import { environment } from '../../environments/environment';
 
-export interface RoomState {
-    roomName: string;
-    connectedUsers: string[];
-    message?: string;
-    totalUsers?: number;
-    newUser?: string;
-}
 
-export interface ConnectionStatus {
-    status: 'idle' | 'connecting' | 'connected' | 'error' | 'disconnected';
-    message: string;
-}
-
-export interface BatchStartedPayload {
-    host: string;
-    itemIds: string[];
-}
-
-export interface AvailableRoom {
-    roomCode: string;
-    playerCount: number;
-    host?: string;
-}
 
 @Injectable({
     providedIn: 'root'
@@ -39,8 +17,9 @@ export class WebsocketService {
     public opponentSwipe$ = new Subject<any>();
 
     public roomState$ = new BehaviorSubject<RoomState>({
-        roomName: '',
+        roomCode: '',
         connectedUsers: [],
+        host: '',
     });
 
     private connectionStatus$ = new BehaviorSubject<ConnectionStatus>({
@@ -50,11 +29,14 @@ export class WebsocketService {
 
     public connectionStatusChanges$ = this.connectionStatus$.asObservable();
 
-    public batchStarted$ = new Subject<BatchStartedPayload>();
+    public batchStarted$ = new ReplaySubject<BatchStartedPayload | null>(1);
     public roomBatchScores$ = new Subject<RoomBatchScores>();
 
     // Available rooms list pushed from server on demand
     public availableRooms$ = new Subject<AvailableRoom[]>();
+
+    // Total users connected to the server
+    public totalUsersConnected$ = new Subject<number>();
 
     private errorStatus$ = new Subject<{ message: string }>();
 
@@ -129,8 +111,9 @@ export class WebsocketService {
             console.log('[WebsocketService] room_info', data);
             this.zone.run(() => {
                 this.roomState$.next({
-                    roomName: data.roomName ?? data.roomCode ?? data.room ?? '',
+                    roomCode: data.roomName ?? data.roomCode ?? data.room ?? '',
                     connectedUsers: data.connectedUsers ?? data.users ?? data.nicknames ?? data.participants ?? [],
+                    host: data.host ?? '',
                 });
             });
         });
@@ -139,31 +122,28 @@ export class WebsocketService {
             console.log('[WebsocketService] room_users', data);
             this.zone.run(() => {
                 this.roomState$.next({
-                    roomName: data.roomName ?? data.roomCode ?? data.room ?? '',
+                    roomCode: data.roomName ?? data.roomCode ?? data.room ?? '',
                     connectedUsers: data.connectedUsers ?? data.users ?? data.nicknames ?? data.participants ?? [],
+                    host: data.host ?? '',
                 });
             });
         });
 
-        this.socket.on('room_updated', (data: {
-            roomCode: string,
-            connectedUsers: string[],
-            totalUsers: number,
-            message: string,
-            newUser?: string,
-        }) => {
+        this.socket.on('room_updated', (data: RoomState) => {
             console.log('[WebsocketService] room_updated received:', data);
             this.zone.run(() => {
                 this.connectionStatus$.next({
                     status: 'connected',
-                    message: data.message,
+                    message: data.message || 'Conexión establecida con el servidor.',
                 });
 
                 // Map the reactive state exactly to what the server dictated
                 this.roomState$.next({
-                    roomName: data.roomCode,
+                    roomCode: data.roomCode,
                     connectedUsers: data.connectedUsers,
+                    host: data.host,
                     totalUsers: data.totalUsers,
+                    message: data.message,
                 });
                 // Refresh available rooms list for this client so UI shows latest counts
                 try {
@@ -181,6 +161,7 @@ export class WebsocketService {
                     this.batchStarted$.next({
                         host: data.host,
                         itemIds: data.itemIds,
+                        startedAt: data.startedAt,
                     });
                 }
             });
@@ -192,10 +173,17 @@ export class WebsocketService {
                 if (!data || !data.roomCode || !Array.isArray(data.participantResults)) {
                     return;
                 }
+
+                if (data.gameFinished) {
+                    this.batchStarted$.next(null);
+                }
+
                 this.roomBatchScores$.next({
                     roomCode: data.roomCode,
                     participantResults: data.participantResults,
                     winner: data.winner,
+                    startedAt: data.startedAt,
+                    gameFinished: data.gameFinished,
                     updatedAt: data.updatedAt || new Date().toISOString(),
                 });
             });
@@ -208,6 +196,14 @@ export class WebsocketService {
                 if (Array.isArray(data)) {
                     this.availableRooms$.next(data);
                 }
+            });
+        });
+
+        // Lista de salas solicitada por el cliente
+        this.socket.on('total_users_connected', (total: number) => {
+            console.log('[WebsocketService] total_users_connected', total);
+            this.zone.run(() => {
+                this.totalUsersConnected$.next(total);
             });
         });
     }
@@ -244,6 +240,26 @@ export class WebsocketService {
     private emitJoinRoom(roomCode: string, nickname: string) {
         console.log('[WebsocketService] emit join_room', { roomCode, nickname });
         this.socket.emit('join_room', { roomCode, nickname });
+    }
+
+    refreshRoomState(roomCode: string, nickname: string) {
+        if (!roomCode.trim() || !nickname.trim()) {
+            return;
+        }
+
+        if (this.socket.connected) {
+            this.emitJoinRoom(roomCode, nickname);
+            return;
+        }
+
+        try {
+            this.socket.connect();
+            this.socket.once('connect', () => {
+                this.emitJoinRoom(roomCode, nickname);
+            });
+        } catch (e) {
+            console.warn('[WebsocketService] failed to refresh room state', e);
+        }
     }
 
     startBatch(roomCode: string, itemIds: string[]) {

@@ -2,23 +2,30 @@
     <div class="game-layout">
         <div class="game-content">
             <!-- Contenedor de Tarjetas del batch -->
-            <div class="swipe-container" *ngIf="!batchComplete">
-                <div class="card-wrapper" *ngFor="let card of currentBatch; let idx = index"
+            <div class="swipe-container" *ngIf="shouldShowCards()">
+                <div class="card-wrapper" *ngFor="let card of currentBatch; let idx = index; trackBy: trackCard"
                     [class.active]="idx === batchPosition" [class.hidden]="idx < batchPosition">
                     <app-card [data]="card" (onSwipe)="handleDecision($event)">
                     </app-card>
                 </div>
             </div>
 
+            <div class="no-more-cards" *ngIf="shouldWaitForSharedBatch()">
+                <div class="result-summary">
+                    <h1>Esperando cartas</h1>
+                    <p class="result-text">El juego compartido iniciara cuando la sala reciba el mazo.</p>
+                </div>
+            </div>
+
             <!-- Barra de estado del batch -->
-            <div class="batch-status" *ngIf="!batchComplete" >
+            <div class="batch-status" *ngIf="shouldShowCards()" >
                 <div class="status-block" *ngFor="let result of batchResults" [class.success]="result === 'success'"
                     [class.error]="result === 'error'"></div>
             </div>
 
             <!-- Pantalla de fin de batch -->
 
-            <div class="no-more-cards" *ngIf="batchComplete">
+            <div class="no-more-cards" *ngIf="batchComplete && isSoloGame()">
                 <div class="result-summary">
                     <h1>Ronda completada</h1>
                     <div class="percentage" [class.red]="scoreColor === 'red'" [class.yellow]="scoreColor === 'yellow'"
@@ -33,11 +40,11 @@
                     </div>
                 </div>
             </div>
-            <app-scores *ngIf="batchComplete"></app-scores>
+            <app-scores *ngIf="shouldShowRoomScores()"></app-scores>
 
 
             <!-- Botones de Acción Estilo Tinder (Solo visibles si hay tarjetas) -->
-            <div class="action-buttons" *ngIf="!batchComplete">
+            <div class="action-buttons" *ngIf="shouldShowCards()">
                 <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">
                     ❌
                 </button>
@@ -46,12 +53,9 @@
                 </button>
             </div>
 
-            <div class="batch-notification" *ngIf="batchStartedMessage()">
-                {{ batchStartedMessage() }}
-            </div>
         </div>
 
-        <aside class="room-sidebar">
+        <aside class="room-sidebar" *ngIf="showRoomPanel()">
             <app-room></app-room>
         </aside>
     </div>

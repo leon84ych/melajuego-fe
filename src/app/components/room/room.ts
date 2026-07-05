@@ -2,7 +2,9 @@ import { Component, OnDestroy, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import profiles from '../../data/Profiles.json';
-import { WebsocketService, RoomState, BatchStartedPayload } from '../../services/Websocket';
+import { BatchStartedPayload, RoomBatchScores, RoomState } from '../../data/DataInterfaces';
+import { WebsocketService } from '../../services/Websocket';
+import { Configuration } from '../../data/Configuration';
 
 @Component({
   selector: 'app-room',
@@ -12,6 +14,7 @@ import { WebsocketService, RoomState, BatchStartedPayload } from '../../services
   styleUrls: ['./room.css'],
 })
 export class Room implements OnDestroy {
+  private readonly messageDurationMs = Configuration.messageTimeout;
   roomName = signal('');
   nickname = signal('');
   currentNickname = signal('');
@@ -29,8 +32,11 @@ export class Room implements OnDestroy {
   });
   roomMessage = signal('');
   batchMessage = signal('');
+  roomHost = signal('');
   totalUsers = signal(0);
   batchInProgress = false;
+  private roomMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private batchMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private subscription = new Subscription();
 
   constructor(private websocket: WebsocketService) {
@@ -53,22 +59,42 @@ export class Room implements OnDestroy {
     this.subscription.add(
       this.websocket.roomState$.subscribe((state: RoomState) => {
         console.log('[Room] roomState update', state);
-        if (state.roomName) {
-          this.roomName.set(state.roomName);
+        if (state.roomCode) {
+          this.roomName.set(state.roomCode);
         }
+        this.roomHost.set(state.host);
         this.connectedUsers.set(state.connectedUsers ?? []);
-        this.roomMessage.set(state.message ?? '');
+        this.setTimedRoomMessage(state.message ?? '');
         this.totalUsers.set(state.totalUsers ?? (state.connectedUsers?.length ?? 0));
       })
     );
 
     this.subscription.add(
-      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload) => {
+      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload | null) => {
         if (!payload) {
           return;
         }
-        this.batchMessage.set(`Partida iniciada por ${payload.host}. Mazo recibido (${payload.itemIds.length} cartas).`);
+        this.setTimedBatchMessage(`Partida iniciada por ${payload.host}. Mazo recibido (${payload.itemIds.length} cartas).`);
         this.batchInProgress = true;
+      })
+    );
+
+    this.subscription.add(
+      this.websocket.roomBatchScores$.subscribe((scores: RoomBatchScores) => {
+        if (!scores?.roomCode) {
+          return;
+        }
+
+        const currentRoom = String(this.roomName()).trim().toUpperCase();
+        const scoresRoom = String(scores.roomCode).trim().toUpperCase();
+        if (!currentRoom || currentRoom !== scoresRoom) {
+          return;
+        }
+
+        if (scores.gameFinished) {
+          this.batchInProgress = false;
+          this.setTimedBatchMessage('Partida finalizada. Puedes iniciar otro juego.');
+        }
       })
     );
   }
@@ -77,10 +103,52 @@ export class Room implements OnDestroy {
     if (!this.roomName()) {
       return;
     }
-    this.batchMessage.set('Iniciando partida… solicitando mazo compartido.');
+    this.setTimedBatchMessage('Iniciando partida... solicitando mazo compartido.');
     this.batchInProgress = true;
     const itemIds = this.pickRandomItemIds();
     this.websocket.startBatch(this.roomName(), itemIds);
+  }
+
+  private setTimedRoomMessage(message: string) {
+    this.roomMessage.set(message);
+    this.scheduleRoomMessageClear(message);
+  }
+
+  private setTimedBatchMessage(message: string) {
+    this.batchMessage.set(message);
+    this.scheduleBatchMessageClear(message);
+  }
+
+  private scheduleRoomMessageClear(message: string) {
+    if (this.roomMessageTimeoutId) {
+      clearTimeout(this.roomMessageTimeoutId);
+      this.roomMessageTimeoutId = null;
+    }
+
+    if (!message) {
+      return;
+    }
+
+    this.roomMessageTimeoutId = setTimeout(() => {
+      this.roomMessage.set('');
+      this.roomMessageTimeoutId = null;
+    }, this.messageDurationMs);
+  }
+
+  private scheduleBatchMessageClear(message: string) {
+    if (this.batchMessageTimeoutId) {
+      clearTimeout(this.batchMessageTimeoutId);
+      this.batchMessageTimeoutId = null;
+    }
+
+    if (!message) {
+      return;
+    }
+
+    this.batchMessageTimeoutId = setTimeout(() => {
+      this.batchMessage.set('');
+      this.batchMessageTimeoutId = null;
+    }, this.messageDurationMs);
   }
 
   private pickRandomItemIds(): string[] {
@@ -93,6 +161,12 @@ export class Room implements OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.roomMessageTimeoutId) {
+      clearTimeout(this.roomMessageTimeoutId);
+    }
+    if (this.batchMessageTimeoutId) {
+      clearTimeout(this.batchMessageTimeoutId);
+    }
     this.subscription.unsubscribe();
   }
 }

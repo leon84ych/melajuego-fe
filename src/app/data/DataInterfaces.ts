@@ -42,5 +42,54 @@ export interface RoomBatchScores {
   roomCode: string;
   participantResults: ParticipantBatchResult[];
   winner?: string;
+  startedAt?: string;
+  gameFinished?: boolean;
   updatedAt: string;
+}
+
+
+export interface RoomState {
+  roomCode: string;
+  connectedUsers: string[];
+  host: string;
+  message?: string;
+  totalUsers?: number;
+  newUser?: string;
+}
+
+export interface ConnectionStatus {
+  status: 'idle' | 'connecting' | 'connected' | 'error' | 'disconnected';
+  message: string;
+}
+
+export interface BatchStartedPayload {
+  host: string;
+  itemIds: string[];
+  startedAt?: string;
+}
+
+export interface AvailableRoom {
+  roomCode: string;
+  playerCount: number;
+  host?: string;
+}
+
+export interface SocialLinks {
+  github?: string;
+  instagram?: string;
+  'tik-tok'?: string;
+  twitter?: string;
+}
+
+export interface CreditEntry {
+  name: string;
+  nickname: string;
+  role: string;
+  socials: SocialLinks;
+}
+
+
+export interface GameSession {
+  nickname: string;
+  room: string;
 }

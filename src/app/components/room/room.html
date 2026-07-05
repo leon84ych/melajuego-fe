@@ -16,7 +16,7 @@
     </ul>
   </div>
 
-  <button class="btn-action start" *ngIf="roomName() && !batchInProgress" (click)="requestBatchStart()">
+  <button class="btn-action start" *ngIf="roomName() && (!roomHost() || roomHost()===currentNickname()) && !batchInProgress" (click)="requestBatchStart()">
     Iniciar partida
   </button>
 
