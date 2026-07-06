@@ -46,7 +46,7 @@
     <aside class="configure-card available-rooms">
         <div class="rooms-summary">
             <h3 class="rooms-count">Salas abiertas: {{ availableRooms().length }}</h3>
-            <p class="total-users">Usuarios en linea: <strong>{{ totalUsersConnected() }}</strong></p>
+            <p class="total-users">Usuarios en linea: <strong>{{ totalUsersConnected() }} / 100</strong></p>
             <div class="rooms-actions">
                 <button class="btn-refresh" (click)="requestRooms()">Actualizar</button>
             </div>

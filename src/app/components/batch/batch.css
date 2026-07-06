@@ -113,6 +113,10 @@
     align-items: stretch;
   }
 
+  .game-content {
+    width: 100%;
+  }
+
   .room-sidebar {
     order: 2;
     width: 100%;
@@ -209,6 +213,12 @@
 app-scores {
   display: block;
   width: min(100%, 480px);
+}
+
+@media (max-width: 900px) {
+  app-scores {
+    width: 100%;
+  }
 }
 
 .batch-status {

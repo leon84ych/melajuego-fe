@@ -3,172 +3,235 @@
     "id": "one_1",
     "title": "Santiago Alarcón",
     "subtitle": "Actor",
-    "imageUrl": "images/Cepeda_1.jpeg",
+    "instagram": "santiagoalarconu",
+    "tiktok": "santiagoalarconu",
+    "x": "Santialarconu",
+    "imageUrl": "images/Santiago_Alarcon.jpeg",
     "description": "Reconocido actor de televisión fuertemente implicado en el activismo político y la defensa de los derechos culturales.",
     "tags": [
-      "Televisión",
-      "Cultura"
+      "Actuación",
+      "Cultura",
+      "Activismo"
     ]
   },
   {
     "id": "one_2",
     "title": "Adriana Lucía",
     "subtitle": "Cantante",
-    "imageUrl": "images/Cepeda_2.jpeg",
+    "instagram": "adrianalucia",
+    "tiktok": "adrianaluciaoficial",
+    "x": "Adrianalucia",
+    "imageUrl": "images/Adriana_Lucia.jpeg",
     "description": "Artista cordobesa que lidera banderas sociales y utiliza sus plataformas musicales para respaldar liderazgos alternativos.",
     "tags": [
       "Música",
-      "Social"
+      "Social",
+      "Liderazgo"
     ]
   },
   {
     "id": "one_3",
     "title": "Julián Román",
     "subtitle": "Actor",
-    "imageUrl": "images/Cepeda_3.jpeg",
+    "instagram": "julianroman1",
+    "tiktok": "julianromanactor",
+    "x": "julianRoman",
+    "imageUrl": "images/Julian_Roman.jpeg",
     "description": "Uno de los rostros artísticos con mayor constancia en las movilizaciones y el debate de ideas de centro-izquierda.",
     "tags": [
-      "Televisión",
-      "Sindicatos"
+      "Actuación",
+      "Opinión",
+      "Movilización"
     ]
   },
   {
     "id": "one_4",
     "title": "Edson Velandia",
     "subtitle": "Músico",
-    "imageUrl": "images/Cepeda_4.jpeg",
+    "instagram": "edsonvelandia",
+    "tiktok": "",
+    "x": "VelandiaEdson",
+    "imageUrl": "images/Edson_Velandia.jpeg",
     "description": "Cantautor independiente cuyas letras de crítica social conectan con los movimientos agrarios y el Pacto Histórico.",
     "tags": [
       "Música",
-      "Crítica"
+      "Crítica Social",
+      "Independiente"
     ]
   },
   {
     "id": "one_5",
     "title": "Beto Coral",
     "subtitle": "Influencer Político",
-    "imageUrl": "images/Cepeda_5.jpeg",
+    "instagram": "betocoraloficial",
+    "tiktok": "betocoraloficial",
+    "x": "betocoral",
+    "imageUrl": "images/Beto_Coral.jpeg",
     "description": "Creador de contenido digital enfocado en la veeduría ciudadana y la denuncia de esquemas tradicionales desde el exterior.",
     "tags": [
-      "Redes",
-      "Debate"
+      "Política",
+      "Veeduría",
+      "Denuncia"
     ]
   },
   {
     "id": "one_6",
     "title": "Carolina Ramírez",
     "subtitle": "Actriz",
-    "imageUrl": "images/Cepeda_6.jpeg",
+    "instagram": "caroramirez7",
+    "tiktok": "caroramirez7",
+    "x": "caroramirez7",
+    "imageUrl": "images/Carolina_Ramirez.jpeg",
     "description": "Intérprete con gran alcance digital que visibiliza la agenda ambiental y de derechos humanos en el país.",
     "tags": [
-      "Cine",
-      "Activismo"
+      "Actuación",
+      "Ambiente",
+      "Derechos Humanos"
     ]
   },
   {
     "id": "one_7",
     "title": "Mario Muñoz (Subcantante)",
     "subtitle": "Músico",
-    "imageUrl": "images/Cepeda_7.jpeg",
+    "instagram": "subcantante",
+    "tiktok": "subcantante",
+    "x": "subcantante",
+    "imageUrl": "images/Mario_Munoz.jpeg",
     "description": "Vocalista de Doctor Krápula y defensor permanente de la construcción de paz a través del arte y la educación comunitaria.",
     "tags": [
-      "Rock",
-      "Paz"
+      "Música",
+      "Paz",
+      "Educación"
     ]
   },
   {
     "id": "one_8",
     "title": "Lalis Smile",
     "subtitle": "Influencer",
-    "imageUrl": "images/Cepeda_8.jpeg",
+    "instagram": "smilelalis",
+    "tiktok": "smilelalis",
+    "x": "smilelalis",
+    "imageUrl": "images/Lalis_Smile.jpeg",
     "description": "Generadora de contenido juvenil enfocada en desmontar desinformación y defender reformas estructurales.",
     "tags": [
-      "YouTube",
-      "Juventud"
+      "Opinión",
+      "Juventud",
+      "Reformas"
     ]
   },
   {
     "id": "one_9",
     "title": "Fabio Rubiano",
     "subtitle": "Director de Teatro",
-    "imageUrl": "images/Cepeda_9.jpeg",
+    "instagram": "fabiorubianoorjuela",
+    "tiktok": "",
+    "x": "FabioRubianoO",
+    "imageUrl": "images/Fabio_Rubiano.jpeg",
     "description": "Dramaturgo clave en el decálogo de cultura nacional entregado formalmente para nutrir las propuestas de gobierno.",
     "tags": [
       "Teatro",
-      "Políticas Públicas"
+      "Cultura",
+      "Dramaturgia"
     ]
   },
   {
     "id": "one_10",
     "title": "Cony Camelo",
     "subtitle": "Actriz y Presentadora",
-    "imageUrl": "images/Cepeda_10.jpeg",
+    "instagram": "conycamelo",
+    "tiktok": "conycamelooficial",
+    "x": "conycamelo",
+    "imageUrl": "images/Cony_Camelo.jpeg",
     "description": "Figura pública en X con un perfil de opinión constante sobre la redistribución económica y la justicia transicional.",
     "tags": [
+      "Actuación",
       "Opinión",
-      "Medios"
+      "Justicia Social"
     ]
   },
   {
     "id": "one_11",
     "title": "Levy Rincón",
     "subtitle": "Creador de Contenido",
-    "imageUrl": "images/Cepeda_11.jpeg",
+    "instagram": "levyrincon",
+    "tiktok": "levyrincon",
+    "x": "levyrincon",
+    "imageUrl": "images/Levy_Rincón.jpeg",
     "description": "Conductor del espacio NotiParaco, caracterizado por su estilo directo, satírico y de confrontación a las élites.",
     "tags": [
-      "Streaming",
-      "Sátira"
+      "Sátira",
+      "Política",
+      "Entrevistas"
     ]
   },
   {
     "id": "one_12",
     "title": "César López",
     "subtitle": "Músico y Activista",
-    "imageUrl": "images/Cepeda_12.jpeg",
+    "instagram": "cesarlopezoficial",
+    "tiktok": "",
+    "x": "CesarLopezMusic",
+    "imageUrl": "images/Cesar_Lopez.jpeg",
     "description": "Creador de la \"escopetarra\" y firme promotor de proyectos artísticos destinados a la reparación de víctimas del conflicto.",
     "tags": [
-      "Arte",
-      "Derechos Humanos"
+      "Música",
+      "Paz",
+      "Víctimas"
     ]
   },
   {
     "id": "one_13",
     "title": "Aida Bossa",
     "subtitle": "Actriz y Cantante",
-    "imageUrl": "images/Cepeda_13.jpeg",
+    "instagram": "aidabossa",
+    "tiktok": "aidabossaoficial",
+    "x": "aidabossa",
+    "imageUrl": "images/Aida_Bossa.jpeg",
     "description": "Impulsora de las expresiones culturales de las periferias que apoya la institucionalidad comunitaria.",
     "tags": [
-      "Caribe",
-      "Televisión"
+      "Actuación",
+      "Cultura",
+      "Música"
     ]
   },
   {
     "id": "one_14",
     "title": "Alejandro Riaño",
     "subtitle": "Comediante",
-    "imageUrl": "images/Cepeda_14.jpeg",
+    "instagram": "alejandroriano",
+    "tiktok": "alejandrorianoj",
+    "x": "AlejandroRiano",
+    "imageUrl": "images/Alejandro_Riano.jpeg",
     "description": "Humorista que, de forma independiente, fomenta el pensamiento crítico y la reforma a las estructuras tradicionales de poder.",
     "tags": [
-      "Humor",
-      "Crítica Social"
+      "Comedia",
+      "Crítica",
+      "Independiente"
     ]
   },
   {
     "id": "one_15",
     "title": "Andrés Parra",
     "subtitle": "Actor",
-    "imageUrl": "images/Cepeda_15.jpeg",
-    "description": "Rostro influyente del cine que utiliza su notoriedad digital para cuestionar la corrupción institucional del sector público.",
+    "instagram": "soyandresparra",
+    "tiktok": "soyandresparra",
+    "x": "soyandresparra",
+    "imageUrl": "images/Andres_Parra.jpeg",
+    "description": "Rostro influyente del cine que utiliza su notoriety digital para cuestionar la corrupción institucional del sector público.",
     "tags": [
       "Cine",
-      "Sociedad"
+      "Actuación",
+      "Opinión"
     ]
   },
   {
     "id": "one_16",
     "title": "Nórida Rodríguez",
     "subtitle": "Actriz y Gestora",
-    "imageUrl": "images/Cepeda_16.jpeg",
+    "instagram": "norida_rodriguez",
+    "tiktok": "",
+    "x": "Noridaoficial",
+    "imageUrl": "images/Norida_Rodriguez.jpeg",
     "description": "Defensora de las industrias creativas locales y aliada en foros ambientales del sector progresista.",
     "tags": [
       "Cultura",
@@ -179,65 +242,388 @@
     "id": "one_17",
     "title": "Wally Opina",
     "subtitle": "Satírico Digital",
-    "imageUrl": "images/Cepeda_17.jpeg",
+    "instagram": "meconozcanwally",
+    "tiktok": "wallyopina",
+    "x": "MeLlamoWally",
+    "imageUrl": "images/Wally_Opina.jpeg",
     "description": "Analista de redes centrado en videoblogs humorísticos que exponen las incoherencias de los movimientos derechistas.",
     "tags": [
-      "YouTube",
-      "Análisis"
+      "Sátira",
+      "Humor",
+      "Política"
     ]
   },
   {
     "id": "one_18",
     "title": "Diana Ángel",
     "subtitle": "Actriz y Cantante",
-    "imageUrl": "images/Cepeda_18.jpeg",
+    "instagram": "dianaangeloficial",
+    "tiktok": "didangel",
+    "x": "didangeloficial",
+    "imageUrl": "images/Diana_Angel.jpeg",
     "description": "Promotora de las asambleas del sector cultural que dieron soporte al programa alternativo de gobierno.",
     "tags": [
-      "Teatro",
-      "Unión"
+      "Actuación",
+      "Música",
+      "Cultura"
     ]
   },
   {
     "id": "one_19",
     "title": "Daniel Samper Ospina",
     "subtitle": "Periodista e Influencer",
-    "imageUrl": "images/Cepeda_19.jpeg",
+    "instagram": "danielsamperospina",
+    "tiktok": "danielsamperospina",
+    "x": "DanielSamperO",
+    "imageUrl": "images/Daniel_Samper_Ospina.jpeg",
     "description": "Si bien mantiene posturas críticas generales, canaliza votantes jóvenes hacia el control político ciudadano de centro.",
     "tags": [
+      "Periodismo",
       "Sátira",
-      "Periodismo"
+      "Juventud"
     ]
   },
   {
     "id": "one_20",
     "title": "Diego Trujillo",
     "subtitle": "Actor",
-    "imageUrl": "images/Cepeda_20.jpeg",
+    "instagram": "diegotrujilloart",
+    "tiktok": "diegotrujilloart",
+    "x": "DiegoTrujillo",
+    "imageUrl": "images/Diego_Trujillo.jpeg",
     "description": "Opinador activo en entornos de microblogging, alineado con las posturas anticorrupción y renovación de legisladores.",
     "tags": [
+      "Actuación",
       "Opinión",
-      "Arte"
+      "Anticorrupción"
+    ]
+  },
+  {
+    "id": "one_21",
+    "title": "Juan Fernando Cristo",
+    "subtitle": "Abogado",
+    "instagram": "juanfercristo",
+    "tiktok": "",
+    "x": "atrabajarco",
+    "imageUrl": "images/Juan_Fernando_Cristo.jpeg",
+    "description": "Juan Fernando Cristo es un abogado y político colombiano que actualmente se desempeña como Ministro del Interior de Colombia.",
+    "tags": [
+      "Política",
+      "Gobierno",
+      "Leyes"
+    ]
+  },
+  {
+    "id": "one_22",
+    "title": "Hollman Morris",
+    "subtitle": "Periodista y Funcionario",
+    "instagram": "hollmanmorris",
+    "tiktok": "hollmanmorrisoficial",
+    "x": "HOLLMANMORRIS",
+    "imageUrl": "images/Hollman_Morris.jpeg",
+    "description": "Periodista y exconcejal de Bogotá enfocado en la defensa de los derechos humanos y la gestión de medios públicos de comunicación.",
+    "tags": [
+      "Periodismo",
+      "Derechos Humanos",
+      "Medios"
+    ]
+  },
+  {
+    "id": "one_23",
+    "title": "David Muñetones",
+    "subtitle": "Influencer",
+    "instagram": "_elmune",
+    "tiktok": "_elmune",
+    "x": "ElMune_",
+    "imageUrl": "images/David_Munetones.jpeg",
+    "description": "Creador de contenido digital de comedia y sketches cortos que aborda situaciones de la vida cotidiana con un enfoque juvenil.",
+    "tags": [
+      "Comedia",
+      "Entretenimiento",
+      "Juventud"
+    ]
+  },
+  {
+    "id": "one_24",
+    "title": "Karen Sevillano",
+    "subtitle": "Influencer",
+    "instagram": "karensevillano7",
+    "tiktok": "karensevillano7",
+    "x": "karensevillano_",
+    "imageUrl": "images/Karen_Sevillano.jpeg",
+    "description": "Personalidad digital de gran alcance nacional conocida por su humor directo, vlogs de opinión y participación en realities de TV.",
+    "tags": [
+      "Entretenimiento",
+      "Humor",
+      "Televisión"
+    ]
+  },
+  {
+    "id": "one_25",
+    "title": "La Parce",
+    "subtitle": "Influencer",
+    "instagram": "laparce",
+    "tiktok": "laparce",
+    "x": "",
+    "imageUrl": "images/La_Parce.jpeg",
+    "description": "Creadora de contenido digital enfocada en blogs de estilo de vida, tendencias estéticas y entretenimiento para plataformas de video.",
+    "tags": [
+      "Estilo de Vida",
+      "Entretenimiento"
+    ]
+  },
+  {
+    "id": "one_26",
+    "title": "Julian Valencia",
+    "subtitle": "Influencer",
+    "instagram": "julianvalenciatmk",
+    "tiktok": "julianvalenciatmk",
+    "x": "",
+    "imageUrl": "images/Julian_Valencia.jpeg",
+    "description": "Creador de contenido enfocado en dinámicas de humor, tendencias masivas de internet y entretenimiento dirigido al público joven.",
+    "tags": [
+      "Humor",
+      "Juventud",
+      "Tendencias"
+    ]
+  },
+  {
+    "id": "one_27",
+    "title": "Natalia Reyes",
+    "subtitle": "Actriz e Influencer",
+    "instagram": "nataliareyesg",
+    "tiktok": "nataliareyesg",
+    "x": "nataliareyesg",
+    "imageUrl": "images/Natalia_Reyes.jpeg",
+    "description": "Destacada actriz de cine internacional y activista medioambiental que promueve el desarrollo sostenible a través de sus plataformas.",
+    "tags": [
+      "Cine",
+      "Ambiente",
+      "Activismo"
+    ]
+  },
+  {
+    "id": "one_28",
+    "title": "Chanty",
+    "subtitle": "Influencer",
+    "instagram": "yosoyelchanty",
+    "tiktok": "elchantyy",
+    "x": "",
+    "imageUrl": "images/Chanty.jpeg",
+    "description": "Creador de contenido enfocado en humor situacional cotidiano, vlogs de experiencias y formatos colaborativos con otros creadores.",
+    "tags": [
+      "Humor",
+      "Vlogs",
+      "Entretenimiento"
+    ]
+  },
+  {
+    "id": "one_29",
+    "title": "Neider Garcia",
+    "subtitle": "Influencer",
+    "instagram": "neidergarcia_",
+    "tiktok": "neidergarcia_6",
+    "x": "",
+    "imageUrl": "images/Neider_Garcia.jpeg",
+    "description": "Generador de contenido audiovisual especializado en sketches cómicos y reacciones humorísticas sobre dinámicas de pareja y familia.",
+    "tags": [
+      "Comedia",
+      "Sketches",
+      "Familia"
+    ]
+  },
+  {
+    "id": "one_30",
+    "title": "Tiago (Santiago Gómez)",
+    "subtitle": "Influencer",
+    "instagram": "tiaagoomz",
+    "tiktok": "tiaagoomz",
+    "x": "",
+    "imageUrl": "images/Tiago.jpeg",
+    "description": "Joven creador de contenido digital centrado en las últimas tendencias musicales, retos virales y vlogs diarios de entretenimiento.",
+    "tags": [
+      "Música",
+      "Juventud",
+      "Vlogs"
+    ]
+  },
+  {
+    "id": "one_31",
+    "title": "Lali Fernando Riascos",
+    "subtitle": "Influencer",
+    "instagram": "soy_lalif",
+    "tiktok": "soy_lalif",
+    "x": "",
+    "imageUrl": "images/Lali_Fernando_Riascos.jpeg",
+    "description": "Creador de contenido dedicado al humor digital mediante la parodia y la representación exagerada de vivencias del día a día.",
+    "tags": [
+      "Humor",
+      "Parodia",
+      "Entretenimiento"
+    ]
+  },
+  {
+    "id": "one_32",
+    "title": "Camilo Sánchez",
+    "subtitle": "Comediante",
+    "instagram": "dejemequieto",
+    "tiktok": "dejemequieto_",
+    "x": "CamiloSanchez6",
+    "imageUrl": "images/Camilo_Sanchez.jpeg",
+    "description": "Reconocido comediante de stand-up comedy y creador del exitoso formato de noticiero satírico independiente Fucks News.",
+    "tags": [
+      "Comedia",
+      "Sátira",
+      "Stand-up"
+    ]
+  },
+  {
+    "id": "one_33",
+    "title": "Macafolla",
+    "subtitle": "Influencer",
+    "instagram": "macafolla",
+    "tiktok": "macafolla2.0",
+    "x": "",
+    "imageUrl": "images/Macafolla.jpeg",
+    "description": "Creador de contenido satírico enfocado en parodias urbanas, tendencias de redes y entretenimiento con lenguaje coloquial.",
+    "tags": [
+      "Sátira",
+      "Cultura Urbana",
+      "Humor"
+    ]
+  },
+  {
+    "id": "one_34",
+    "title": "Brayan Mantilla",
+    "subtitle": "Influencer",
+    "instagram": "elbrayan",
+    "tiktok": "elbrayan",
+    "x": "Elbrayan_",
+    "imageUrl": "images/Brayan_Mantilla.jpeg",
+    "description": "Popular creador de contenido digital con una larga trayectoria en sketches de comedia y vlogs de viajes por el territorio nacional.",
+    "tags": [
+      "Comedia",
+      "Viajes",
+      "Vlogs"
+    ]
+  },
+  {
+    "id": "one_35",
+    "title": "Laura Tula",
+    "subtitle": "Influencer",
+    "instagram": "lauraa_tula",
+    "tiktok": "lauraatula",
+    "x": "",
+    "imageUrl": "images/Laura_Tula.jpeg",
+    "description": "Creadora de contenido digital enfocada en el nicho de moda juvenil, consejos de belleza y vlogs personales de estilo de vida.",
+    "tags": [
+      "Moda",
+      "Belleza",
+      "Estilo de Vida"
+    ]
+  },
+  {
+    "id": "one_36",
+    "title": "Laura Isabela Leon",
+    "subtitle": "Influencer",
+    "instagram": "lauraisabelaleon",
+    "tiktok": "lauraisabelaleon_",
+    "x": "",
+    "imageUrl": "images/Laura_Isabela_Leon.jpeg",
+    "description": "Joven generadora de contenido orientada a las tendencias estéticas de internet, recomendaciones de marcas y vlogs de rutinas.",
+    "tags": [
+      "Tendencias",
+      "Estética",
+      "Juventud"
+    ]
+  },
+  {
+    "id": "one_37",
+    "title": "Thomas Perez",
+    "subtitle": "Influencer",
+    "instagram": "sin_rol_especifico",
+    "tiktok": "sin_rol_especifico",
+    "x": "",
+    "imageUrl": "images/Thomas_Perez.jpeg",
+    "description": "Creador de contenido digital enfocado en formatos de comedia ligera, desafíos virales y entretenimiento para audiencias adolescentes.",
+    "tags": [
+      "Comedia",
+      "Retos",
+      "Adolescentes"
+    ]
+  },
+  {
+    "id": "one_38",
+    "title": "2ombiegirl (Alejandra)",
+    "subtitle": "Influencer",
+    "instagram": "2ombiegirl",
+    "tiktok": "2ombiegirl",
+    "x": "",
+    "imageUrl": "images/2ombiegirl.jpeg",
+    "description": "Creadora de contenido alternativa y streamer enfocada en cultura geek, videojuegos y vlogs personales con estética urbana.",
+    "tags": [
+      "Geek",
+      "Videojuegos",
+      "Streaming"
+    ]
+  },
+  {
+    "id": "one_39",
+    "title": "Camilo Pardo Mago",
+    "subtitle": "Comediante y Mago",
+    "instagram": "camilopmagia",
+    "tiktok": "camilopmagia",
+    "x": "CamiloPardoMago",
+    "imageUrl": "images/Camilo_Pardo_Mago.jpeg",
+    "description": "Destacado comediante y mago profesional, co-creador del formato Fucks News y reconocido por su estilo irreverente de humor negro.",
+    "tags": [
+      "Comedia",
+      "Magia",
+      "Humor Negro"
+    ]
+  },
+  {
+    "id": "one_40",
+    "title": "Culotauro (Camilo Díaz)",
+    "subtitle": "Comediante",
+    "instagram": "culotauro",
+    "tiktok": "culotauro",
+    "x": "culotauro_",
+    "imageUrl": "images/Culotauro.jpeg",
+    "description": "Comediante de stand-up y creador de contenido digital reconocido por su característico personaje humorístico de sátira popular.",
+    "tags": [
+      "Comedia",
+      "Stand-up",
+      "Sátira"
     ]
   },
   {
     "id": "two_1",
     "title": "Westcol",
     "subtitle": "Streamer / Influencer",
-    "imageUrl": "images/Abelardo_1.jpeg",
+    "instagram": "westcol",
+    "tiktok": "westcol",
+    "x": "WestCOL",
+    "imageUrl": "images/Westcol.jpeg",
     "description": "Eje clave de la campaña digital masiva en plataformas de transmisión en vivo enfocada en el sector juvenil masculino.",
     "tags": [
-      "Twitch",
-      "Juventud"
+      "Streaming",
+      "Juventud",
+      "Entretenimiento"
     ]
   },
   {
     "id": "two_2",
     "title": "Marbelle",
     "subtitle": "Cantante",
-    "imageUrl": "images/Abelardo_2.jpeg",
+    "instagram": "marbelle.oficial",
+    "tiktok": "",
+    "x": "Marbelle30",
+    "imageUrl": "images/Marbelle.jpeg",
     "description": "Ferviente defensora del ala conservadora que utiliza su masivo alcance para movilizar votos en contra de la izquierda.",
     "tags": [
       "Música",
+      "Opinión",
       "Nacionalismo"
     ]
   },
@@ -245,98 +631,134 @@
     "id": "two_3",
     "title": "Cristina Hurtado",
     "subtitle": "Presentadora e Influencer",
-    "imageUrl": "images/Abelardo_3.jpeg",
+    "instagram": "crisshurtado",
+    "tiktok": "crisshurtado8",
+    "x": "",
+    "imageUrl": "images/Cristina_Hurtado.jpeg",
     "description": "Reconocida figura de la televisión nacional alineada con las propuestas tradicionales del partido Defensores de la Patria.",
     "tags": [
       "Televisión",
-      "Familiar"
+      "Familiar",
+      "Influencer"
     ]
   },
   {
     "id": "two_4",
     "title": "Sebastián Caicedo",
     "subtitle": "Actor",
-    "imageUrl": "images/Abelardo_4.jpeg",
+    "instagram": "sebastiancaicedo",
+    "tiktok": "_sebastiancaicedo_",
+    "x": "SebasCaicedo_",
+    "imageUrl": "images/Sebastian_Caicedo.jpeg",
     "description": "Personalidad pública defensora del libre mercado, los valores tradicionales y el fortalecimiento de la seguridad privada.",
     "tags": [
-      "Moda",
-      "Emprendimiento"
+      "Actuación",
+      "Valores",
+      "Empresa"
     ]
   },
   {
     "id": "two_5",
     "title": "Epa Colombia",
     "subtitle": "Influencer / Empresaria",
-    "imageUrl": "images/Abelardo_5.jpeg",
+    "instagram": "epa_colombia",
+    "tiktok": "oficialepa",
+    "x": "BarreraDaneidy",
+    "imageUrl": "images/Epa_Colombia.jpeg",
     "description": "Creadora de contenido comercial que respalda discursos asociados a la reducción de impuestos empresariales.",
     "tags": [
-      "Negocios",
-      "Instagram"
+      "Empresa",
+      "Estética",
+      "Redes"
     ]
   },
   {
     "id": "two_6",
     "title": "Jorge Cárdenas",
     "subtitle": "Actor y Músico",
-    "imageUrl": "images/Abelardo_6.jpeg",
+    "instagram": "cardenasjorgee",
+    "tiktok": "",
+    "x": "cardenasjorgee",
+    "imageUrl": "images/Jorge_Cardenas.jpeg",
     "description": "Destacada figura de opinión digital que defiende firmemente el modelo económico capitalista y las fuerzas armadas.",
     "tags": [
       "Opinión",
-      "Derechas"
+      "Actuación",
+      "Economía"
     ]
   },
   {
     "id": "two_7",
     "title": "Miguel Polo Polo",
     "subtitle": "Influencer / Político",
-    "imageUrl": "images/Abelardo_7.jpeg",
+    "instagram": "miguelpolopolo",
+    "tiktok": "miguelpolopolo",
+    "x": "MiguelPoloP",
+    "imageUrl": "images/Miguel_Polo_Polo.jpeg",
     "description": "Creador de estrategias digitales agresivas orientadas a la confrontación frontal del ideario progresista.",
     "tags": [
-      "TikTok",
-      "Confrontación"
+      "Política",
+      "Oposición",
+      "Estrategia"
     ]
   },
   {
     "id": "two_8",
     "title": "Lucas Arnau",
     "subtitle": "Cantautor",
-    "imageUrl": "images/Abelardo_8.jpeg",
+    "instagram": "lucasarnau",
+    "tiktok": "lucas_arnau",
+    "x": "LucasArnau",
+    "imageUrl": "images/Lucas_Arnau.jpeg",
     "description": "Músico de pop latino que comparte públicamente visiones sobre la necesidad de reactivación económica del empresariado.",
     "tags": [
       "Música",
-      "Economía"
+      "Economía",
+      "Pop"
     ]
   },
   {
     "id": "two_9",
     "title": "Natalia París",
     "subtitle": "DJ / Modelo",
-    "imageUrl": "images/Abelardo_9.jpeg",
+    "instagram": "nataliaparisartist",
+    "tiktok": "",
+    "x": "NataliaParis_",
+    "imageUrl": "images/Natalia_Paris.jpeg",
     "description": "Referente cultural que promueve la defensa de las libertades individuales comerciales contra las regulaciones estatales.",
     "tags": [
-      "Eventos",
-      "Libre Mercado"
+      "Modelaje",
+      "Música",
+      "Libertad"
     ]
   },
   {
     "id": "two_10",
     "title": "Mr. Stiven",
     "subtitle": "Gamer / Streamer",
-    "imageUrl": "images/Abelardo_10.jpeg",
+    "instagram": "stivenstc",
+    "tiktok": "mrstiventc",
+    "x": "MrStivenTc",
+    "imageUrl": "images/Mr_Stiven.jpeg",
     "description": "Creador en el entorno de los videojuegos enfocado en canalizar el voto joven hacia coaliciones de derecha.",
     "tags": [
       "Gaming",
-      "Redes"
+      "Streaming",
+      "Juventud"
     ]
   },
   {
     "id": "two_11",
     "title": "Silvestre Dangond",
     "subtitle": "Músico Vallenato",
-    "imageUrl": "images/Abelardo_11.jpeg",
+    "instagram": "silvestredangond",
+    "tiktok": "silvestredangond",
+    "x": "SilvestreFDC",
+    "imageUrl": "images/Silvestre_Dangond.jpeg",
     "description": "Referente del vallenato tradicional que suele respaldar liderazgos con fuertes conexiones en los departamentos del norte.",
     "tags": [
       "Vallenato",
+      "Música",
       "Tradición"
     ]
   },
@@ -344,21 +766,29 @@
     "id": "two_12",
     "title": "Aura Cristina Geithner",
     "subtitle": "Actriz / Creadora",
-    "imageUrl": "images/Abelardo_12.jpeg",
+    "instagram": "crissgeithner",
+    "tiktok": "auracristinageithner",
+    "x": "crissgeithner",
+    "imageUrl": "images/Aura_Cristina_Geithner.jpeg",
     "description": "Personalidad pública con amplio alcance multiplataforma orientada hacia discursos de orden social tradicional.",
     "tags": [
+      "Actuación",
       "Entretenimiento",
-      "Digital"
+      "Redes"
     ]
   },
   {
     "id": "two_13",
     "title": "Juan José Lafaurie",
     "subtitle": "Influencer de Opinión",
-    "imageUrl": "images/Abelardo_13.jpeg",
+    "instagram": "juanjolafe",
+    "tiktok": "",
+    "x": "LafaurieJuanJo",
+    "imageUrl": "images/Juan_Jose_Lafaurie.jpeg",
     "description": "Líder juvenil conservador que fundamenta su contenido en la defensa de la propiedad privada y la tradición familiar.",
     "tags": [
-      "Debate",
+      "Opinión",
+      "Juventud",
       "Conservador"
     ]
   },
@@ -366,33 +796,285 @@
     "id": "two_14",
     "title": "Yeferson Cossio",
     "subtitle": "Creador de Contenido",
-    "imageUrl": "images/Abelardo_14.jpeg",
+    "instagram": "yefersoncossio",
+    "tiktok": "yefersoncossio",
+    "x": "YefersonCossio",
+    "imageUrl": "images/Yeferson_Cossio.jpeg",
     "description": "Focalizado en la fuerte crítica a los impuestos nacionales y partidario de propuestas orientadas a incentivos de capital.",
     "tags": [
-      "Redes",
-      "Finanzas"
+      "Entretenimiento",
+      "Economía",
+      "Redes"
     ]
   },
   {
     "id": "two_15",
     "title": "Poncho Zuleta",
     "subtitle": "Cantante Vallenato",
-    "imageUrl": "images/Abelardo_15.jpeg",
+    "instagram": "ponchozuletadiaz",
+    "tiktok": "",
+    "x": "PonchoZuleta",
+    "imageUrl": "images/Poncho_Zuleta.jpeg",
     "description": "Emblemático artista del folclor que representa la visión terrateniente e institucional clásica de la costa atlántica.",
     "tags": [
-      "Folclor",
-      "Gremios"
+      "Vallenato",
+      "Música",
+      "Cultura"
     ]
   },
   {
     "id": "two_16",
     "title": "Carlos Antonio Vélez",
     "subtitle": "Comentarista Deportivo",
-    "imageUrl": "images/Abelardo_16.jpeg",
+    "instagram": "velezfutbol",
+    "tiktok": "",
+    "x": "velezfutbol",
+    "imageUrl": "images/Carlos_Antonio_Velez.jpeg",
     "description": "Líder de opinión con alta difusión mediática firmemente opositor a cualquier modelo de economía intervenida.",
     "tags": [
       "Deportes",
-      "Radio"
+      "Periodismo",
+      "Opinión"
+    ]
+  },
+  {
+    "id": "two_17",
+    "title": "Sebastian Moreno",
+    "subtitle": "Fotógrafo e Influencer",
+    "instagram": "sebasmorenooo",
+    "tiktok": "sebasmorenooo",
+    "x": "SebasMoreno_21",
+    "imageUrl": "images/Sebastian_Moreno.jpeg",
+    "description": "Creador de contenido y fotógrafo urbano reconocido por contar historias reales a través de retratos espontáneos en la calle.",
+    "tags": [
+      "Fotografía",
+      "Historias",
+      "Cultura"
+    ]
+  },
+  {
+    "id": "two_18",
+    "title": "Sofia Vergara",
+    "subtitle": "Actriz y Empresaria",
+    "instagram": "sofiavergara",
+    "tiktok": "sofiavergara",
+    "x": "SofiaVergara",
+    "imageUrl": "images/Sofia_Vergara.jpeg",
+    "description": "Ícono global de la televisión y el entretenimiento, empresaria de marcas de belleza y jurado activa en formatos internacionales.",
+    "tags": [
+      "Televisión",
+      "Hollywood",
+      "Empresa"
+    ]
+  },
+  {
+    "id": "two_19",
+    "title": "Jorge Rausch",
+    "subtitle": "Chef y Personalidad de TV",
+    "instagram": "jorge.rausch",
+    "tiktok": "jorge.rausch",
+    "x": "jorgerausch",
+    "imageUrl": "images/Jorge_Rausch.jpeg",
+    "description": "Reconocido chef de alta cocina, restaurantero internacional y exigente jurado en múltiples formatos del programa MasterChef.",
+    "tags": [
+      "Gastronomía",
+      "Televisión",
+      "Negocios"
+    ]
+  },
+  {
+    "id": "two_20",
+    "title": "Roberto Cardona",
+    "subtitle": "Locutor y Periodista",
+    "instagram": "roberto_cardona",
+    "tiktok": "roberto_cardona",
+    "x": "Roberto_Cardona",
+    "imageUrl": "images/Roberto_Cardona.jpeg",
+    "description": "Host de radio y televisión, director en Los 40 Colombia y productor enfocado en el entretenimiento musical juvenil.",
+    "tags": [
+      "Radio",
+      "Música",
+      "Periodismo"
+    ]
+  },
+  {
+    "id": "two_21",
+    "title": "Ramiro Meneces",
+    "subtitle": "Actor y Director",
+    "instagram": "ramiromenesesc",
+    "tiktok": "ramiromenesesactor",
+    "x": "RAMIROMENESES",
+    "imageUrl": "images/Ramiro_Meneces.jpeg",
+    "description": "Prolífico actor, músico y director audiovisual de larga trayectoria en el cine y las principales producciones de la televisión nacional.",
+    "tags": [
+      "Actuación",
+      "Dirección",
+      "Cine"
+    ]
+  },
+  {
+    "id": "two_22",
+    "title": "Ricardo Orrego",
+    "subtitle": "Periodista Deportivo",
+    "instagram": "orregoricardo",
+    "tiktok": "",
+    "x": "OrregoRicardo",
+    "imageUrl": "images/Ricardo_Orrego.jpeg",
+    "description": "Experimentado comentarista y presentador deportivo con una extensa carrera liderando coberturas de grandes eventos internacionales.",
+    "tags": [
+      "Deportes",
+      "Periodismo",
+      "Televisión"
+    ]
+  },
+  {
+    "id": "two_23",
+    "title": "Kathy Sáenz",
+    "subtitle": "Actriz y Empresaria",
+    "instagram": "kathysaenzh",
+    "tiktok": "",
+    "x": "kathysaenzh",
+    "imageUrl": "images/Kathy_Saenz.jpeg",
+    "description": "Reconocida exreina de belleza y actriz de telenovelas que actualmente enfoca su alcance en proyectos de bienestar, meditación y naturaleza.",
+    "tags": [
+      "Bienestar",
+      "Empresa",
+      "Actuación"
+    ]
+  },
+  {
+    "id": "two_24",
+    "title": "Charlie Ossa",
+    "subtitle": "Influencer Fitness",
+    "instagram": "charlie.ossa",
+    "tiktok": "",
+    "x": "charlieossaa",
+    "imageUrl": "images/Charlie_Ossa.jpeg",
+    "description": "Creador de contenido enfocado en el entrenamiento físico de alta intensidad, vlogs de superación personal y marcas de nutrición.",
+    "tags": [
+      "Fitness",
+      "Salud",
+      "Deporte"
+    ]
+  },
+  {
+    "id": "two_25",
+    "title": "Carolina Gaitán",
+    "subtitle": "Actriz y Cantante",
+    "instagram": "lagaita",
+    "tiktok": "lagaitagaitan",
+    "x": "lagaita",
+    "imageUrl": "images/Carolina_Gaitan.jpeg",
+    "description": "Destacada actriz y cantautora con proyección internacional en televisión y doblaje cinematográfico, defensora del arte humano.",
+    "tags": [
+      "Música",
+      "Actuación",
+      "Cine"
+    ]
+  },
+  {
+    "id": "two_26",
+    "title": "Miguel Varoni",
+    "subtitle": "Actor y Director",
+    "instagram": "soyvaroni",
+    "tiktok": "",
+    "x": "soyVaroni",
+    "imageUrl": "images/Miguel_Varoni.jpeg",
+    "description": "Legendario actor de la televisión hispana, director y productor ejecutivo ligado a grandes cadenas de entretenimiento internacional.",
+    "tags": [
+      "Actuación",
+      "Dirección",
+      "Televisión"
+    ]
+  },
+  {
+    "id": "two_27",
+    "title": "Carolina Soto",
+    "subtitle": "Presentadora e Influencer",
+    "instagram": "caritosotooficial",
+    "tiktok": "caritosotooficial",
+    "x": "carosotooficial",
+    "imageUrl": "images/Carolina_Soto.jpeg",
+    "description": "Presentadora de la televisión matutina colombiana, empresaria y creadora de contenido enfocado en estilo de vida familiar y maternidad.",
+    "tags": [
+      "Televisión",
+      "Familiar",
+      "Moda"
+    ]
+  },
+  {
+    "id": "two_28",
+    "title": "Carolina Cruz",
+    "subtitle": "Presentadora y Empresaria",
+    "instagram": "carolinacruzosorio",
+    "tiktok": "carocruzosorio",
+    "x": "CarolCruzOsorio",
+    "imageUrl": "images/Carolina_Cruz.jpeg",
+    "description": "Exreina de belleza, modelo y presentadora icónica de la televisión nacional, fuertemente orientada al apoyo social y marcas de moda.",
+    "tags": [
+      "Televisión",
+      "Moda",
+      "Social"
+    ]
+  },
+  {
+    "id": "two_29",
+    "title": "Ana del Castillo",
+    "subtitle": "Cantante Vallenata",
+    "instagram": "anadelcastilloj",
+    "tiktok": "anadelcastilloj",
+    "x": "anadelcastilloj",
+    "imageUrl": "images/Ana_Del_Castillo.jpeg",
+    "description": "Exponente de la música vallenata con una potente voz y una arrolladora presencia en redes sociales que conecta con el público joven.",
+    "tags": [
+      "Vallenato",
+      "Música",
+      "Redes"
+    ]
+  },
+  {
+    "id": "two_30",
+    "title": "José Narváez",
+    "subtitle": "Actor y Presentador",
+    "instagram": "jossenarvaezm",
+    "tiktok": "jossenarvaezm",
+    "x": "jossenarvaez",
+    "imageUrl": "images/Jose_Narvaez.jpeg",
+    "description": "Reconocido actor, cantante y presentador de realities que proyecta una fuerte imagen de paternidad y valores familiares en medios.",
+    "tags": [
+      "Televisión",
+      "Música",
+      "Familiar"
+    ]
+  },
+  {
+    "id": "two_31",
+    "title": "Alex Campos",
+    "subtitle": "Cantante y Compositor",
+    "instagram": "camposalex",
+    "tiktok": "alexcamposoficial",
+    "x": "CamposAlex",
+    "imageUrl": "images/Alex_Campos.jpeg",
+    "description": "Destacado cantautor de música cristiana, ganador de premios internacionales, enfocado en dar mensajes de fe y superación personal.",
+    "tags": [
+      "Música",
+      "Espiritualidad",
+      "Inspiración"
+    ]
+  },
+  {
+    "id": "two_32",
+    "title": "Alejandra Azcárate",
+    "subtitle": "Comediante y Actriz",
+    "instagram": "laazcarateoficial",
+    "tiktok": "laazcarate",
+    "x": "LAAZCARATE",
+    "imageUrl": "images/Alejandra_Azcarate.jpeg",
+    "description": "Modelo, presentadora y humorista de stand-up comedy conocida por su estilo directo, humor negro y giras internacionales.",
+    "tags": [
+      "Comedia",
+      "Televisión",
+      "Opinión"
     ]
   }
 ]
