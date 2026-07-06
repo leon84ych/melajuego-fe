@@ -15,9 +15,11 @@ import { Configuration } from '../../data/Configuration';
 })
 export class Room implements OnDestroy {
   private readonly messageDurationMs = Configuration.messageTimeout;
+  readonly durationOptions = [1, 5, 10];
   roomName = signal('');
   nickname = signal('');
   currentNickname = signal('');
+  selectedDurationMinutes = signal(5);
   connectedUsers = signal<string[]>([]);
   sortedUsers = computed(() => {
     const current = String(this.currentNickname()).trim().toLowerCase();
@@ -99,14 +101,27 @@ export class Room implements OnDestroy {
     );
   }
 
-  requestBatchStart() {
+  requestBatchStart(selectedDuration?: string | number) {
     if (!this.roomName()) {
       return;
     }
-    this.setTimedBatchMessage('Iniciando partida... solicitando mazo compartido.');
+    const parsedSelectedDuration = Number(selectedDuration ?? this.selectedDurationMinutes());
+    const duration = this.durationOptions.includes(parsedSelectedDuration)
+      ? parsedSelectedDuration
+      : this.selectedDurationMinutes();
+
+    this.selectedDurationMinutes.set(duration);
+    this.setTimedBatchMessage(`Iniciando partida (${duration} min)... solicitando mazo compartido.`);
     this.batchInProgress = true;
     const itemIds = this.pickRandomItemIds();
-    this.websocket.startBatch(this.roomName(), itemIds);
+    this.websocket.startBatch(this.roomName(), itemIds, duration);
+  }
+
+  onDurationChange(event: Event): void {
+    const value = Number((event.target as HTMLSelectElement)?.value);
+    if (this.durationOptions.includes(value)) {
+      this.selectedDurationMinutes.set(value);
+    }
   }
 
   private setTimedRoomMessage(message: string) {

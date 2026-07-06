@@ -68,6 +68,21 @@
   font-weight: 700;
 }
 
+.room-duration {
+  display: grid;
+  gap: 8px;
+}
+
+.duration-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+}
+
 .btn-action.start {
   width: 100%;
   margin-top: 18px;

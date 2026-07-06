@@ -16,9 +16,24 @@
     </ul>
   </div>
 
-  <button class="btn-action start" *ngIf="roomName() && (!roomHost() || roomHost()===currentNickname()) && !batchInProgress" (click)="requestBatchStart()">
-    Iniciar partida
-  </button>
+  <ng-container *ngIf="roomName() && (!roomHost() || roomHost()===currentNickname()) && !batchInProgress">
+    <div class="room-duration">
+      <label for="duration-select" class="room-label">Duración de la partida</label>
+      <select
+        #durationSelect
+        id="duration-select"
+        class="duration-select"
+        [value]="selectedDurationMinutes()"
+        (change)="onDurationChange($event)"
+      >
+        <option *ngFor="let option of durationOptions" [value]="option">{{ option }}m</option>
+      </select>
+    </div>
+
+    <button class="btn-action start" (click)="requestBatchStart(durationSelect.value)">
+      Iniciar partida
+    </button>
+  </ng-container>
 
   <p class="room-batch-message" *ngIf="batchMessage()">{{ batchMessage() }}</p>
   <p class="room-message" *ngIf="roomMessage()">{{ roomMessage() }}</p>

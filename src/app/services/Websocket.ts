@@ -162,6 +162,7 @@ export class WebsocketService {
                         host: data.host,
                         itemIds: data.itemIds,
                         startedAt: data.startedAt,
+                        durationMinutes: data.durationMinutes,
                     });
                 }
             });
@@ -262,9 +263,9 @@ export class WebsocketService {
         }
     }
 
-    startBatch(roomCode: string, itemIds: string[]) {
-        console.log('[WebsocketService] startBatch requested', { roomCode, itemIds });
-        this.socket.emit('start_batch', { roomCode, itemIds });
+    startBatch(roomCode: string, itemIds: string[], durationMinutes: number) {
+        console.log('[WebsocketService] startBatch requested', { roomCode, itemIds, durationMinutes });
+        this.socket.emit('start_batch', { roomCode, itemIds, durationMinutes });
     }
 
     submitBatchResult(result: ParticipantBatchResult) {

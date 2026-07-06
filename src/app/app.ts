@@ -2,24 +2,24 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Batch } from './components/batch/batch';
 import { History } from './components/history/history';
-import { Credits } from './components/credits/credits';
+import { About } from './components/about/about';
 import { Configure } from './components/configure/configure';
 import { WebsocketService } from './services/Websocket';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, Batch, History, Credits, Configure],
+  imports: [CommonModule, Batch, History, About, Configure],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.css'],
 })
 export class App {
-  view = 'play' as 'play' | 'history' | 'configure' | 'credits';
+  view = 'play' as 'play' | 'history' | 'configure' | 'about';
 
   constructor(private websocket: WebsocketService) {}
 
-  setView(value: 'play' | 'history' | 'configure' | 'credits') {
+  setView(value: 'play' | 'history' | 'configure' | 'about') {
     this.view = value;
 
     if (value !== 'play') {

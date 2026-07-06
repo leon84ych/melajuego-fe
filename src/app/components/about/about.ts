@@ -8,15 +8,24 @@ type SocialNetworkKey = 'github' | 'instagram' | 'tik-tok' | 'twitter';
 
 
 @Component({
-  selector: 'app-credits',
+  selector: 'app-about',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './credits.html',
-  styleUrls: ['./credits.css'],
+  templateUrl: './about.html',
+  styleUrls: ['./about.css'],
 })
-export class Credits {
+export class About {
+  activeTab: 'general' | 'technical' = 'general';
   readonly credits = creditsData as CreditEntry[];
   readonly socialNetworks = ['github', 'instagram', 'tik-tok', 'twitter'];
+
+  setTab(tab: 'general' | 'technical'): void {
+    this.activeTab = tab;
+  }
+
+  isTabActive(tab: 'general' | 'technical'): boolean {
+    return this.activeTab === tab;
+  }
 
   getSocialUrl(network: string, handle: string) {
     switch (network) {

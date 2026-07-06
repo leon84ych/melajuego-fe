@@ -9,19 +9,37 @@
     </button>
   </div>
 
-  <div class="batch-card" *ngFor="let session of batchHistory">
+  <div class="batch-card" *ngFor="let session of paginatedHistory">
     <div class="batch-header">
       <strong>Sesión: {{ session.date }}</strong>
       <span>🟢 {{ session.correctCount }} | 🔴 {{ session.incorrectCount }}</span>
     </div>
 
-    <div class="batch-details">
+    <div class="batch-details" *ngIf="session.incorrectSwipes.length === 0">
+      <h4>¡Juego perfecto!</h4>
+      <p>Tienes perfectamente claro quienes apoyaron a Iván Cepeda en las elecciones presidenciales.</p>
+    </div>
+
+    <div class="batch-details" *ngIf="session.incorrectSwipes.length > 0">
       <h4>Te equivocaste en:</h4>
       <ul>
         <li *ngFor="let item of session.incorrectSwipes">
-          {{ item.title }} - Eligió: {{ item.actionTaken }}
+          <strong>{{ item.title }}</strong> - Tu respuesta: 
+          <strong>{{ actionLabel(item.actionTaken) }}</strong>
+            pero la respuesta correcta era:
+          <strong>{{ expectedLabel(item.cardId) }}</strong>
         </li>
       </ul>
     </div>
+  </div>
+
+  <div class="history-pagination" *ngIf="batchHistory.length > pageSize">
+    <button class="btn-page" type="button" (click)="goPrevPage()" [disabled]="!canGoPrev">
+      Anterior
+    </button>
+    <span class="page-indicator">Página {{ currentPage }} de {{ totalPages }}</span>
+    <button class="btn-page" type="button" (click)="goNextPage()" [disabled]="!canGoNext">
+      Siguiente
+    </button>
   </div>
 </section>

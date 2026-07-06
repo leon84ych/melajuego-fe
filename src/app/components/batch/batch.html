@@ -1,6 +1,17 @@
 <div class="main-layout">
     <div class="game-layout">
         <div class="game-content">
+            <div class="swipe-instructions" *ngIf="shouldShowCards()">
+                <p class="instruction-main">
+                    Puedes identificar quiénes apoyaron a Iván? <br>
+                    <img class="arrow-icon left" src="images/icons/redArrow1.png" alt="Flecha roja a la izquierda" />
+                    No lo apoyaron |
+                    Sí lo apoyaron
+                    <img class="arrow-icon right" src="images/icons/greenArrow1.png" alt="Flecha verde a la derecha" />
+                    
+                </p>
+            </div>
+
             <!-- Contenedor de Tarjetas del batch -->
             <div class="swipe-container" *ngIf="shouldShowCards()">
                 <div class="card-wrapper" *ngFor="let card of currentBatch; let idx = index; trackBy: trackCard"
@@ -18,14 +29,14 @@
             </div>
 
             <!-- Barra de estado del batch -->
-            <div class="batch-status" *ngIf="shouldShowCards()" >
+            <div class="batch-status" *ngIf="shouldShowCards()">
                 <div class="status-block" *ngFor="let result of batchResults" [class.success]="result === 'success'"
                     [class.error]="result === 'error'"></div>
             </div>
 
             <!-- Pantalla de fin de batch -->
 
-            <div class="no-more-cards" *ngIf="batchComplete && isSoloGame()">
+            <div class="no-more-cards results-panel" *ngIf="batchComplete && isSoloGame()">
                 <div class="result-summary">
                     <h1>Ronda completada</h1>
                     <div class="percentage" [class.red]="scoreColor === 'red'" [class.yellow]="scoreColor === 'yellow'"
@@ -34,6 +45,16 @@
                     </div>
                     <p class="result-text">Aciertos: {{ batchScore }} / {{ currentBatch.length }}</p>
                     <p class="result-text">Errores: {{ batchErrors }}</p>
+                    <div class="batch-details" *ngIf="incorrectSwipes.length > 0">
+                        <h4>Te equivocaste en:</h4>
+                        <ul>
+                            <li *ngFor="let item of incorrectSwipes">
+                                <strong>{{ item.title }}</strong> -> Tu respuesta:
+                                <strong>{{ actionLabel(item.actionTaken) }}</strong> pero la respuesta era:
+                                <strong>{{ expectedLabel(item.cardId) }}</strong>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="batch-actions">
                         <button class="btn-action restart" (click)="nextBatch()">Jugar otra ronda</button>
                         <button class="btn-action restart" (click)="restart()">Reiniciar todo</button>
@@ -44,6 +65,11 @@
 
 
             <!-- Botones de Acción Estilo Tinder (Solo visibles si hay tarjetas) -->
+            <div class="batch-timer" *ngIf="showCountdown()">
+                <span class="timer-label">Tiempo restante</span>
+                <strong class="timer-value">{{ formattedTimeRemaining }}</strong>
+            </div>
+
             <div class="action-buttons" *ngIf="shouldShowCards()">
                 <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">
                     ❌

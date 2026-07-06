@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Credits } from './credits';
+import { Credits } from './about';
 
 describe('Credits', () => {
   let component: Credits;

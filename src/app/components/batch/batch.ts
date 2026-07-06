@@ -20,6 +20,7 @@ export class Batch {
   protected readonly title = signal('Fuchile');
   isSoloGame = signal(true);
   showRoomPanel = signal(false);
+  showCountdown = signal(false);
   sharedBatchReceived = signal(false);
   sharedGameFinished = signal(false);
   private batchRenderVersion = 0;
@@ -36,20 +37,29 @@ export class Batch {
   batchPosition = 0;
   batchScore = 0;
   batchErrors = 0;
+  timeRemainingSeconds = 0;
+  batchDurationMinutes = 0;
   batchResults: Array<'success' | 'error' | 'pending'> = Array(this.batchSize).fill('pending');
+  private countdownIntervalId: ReturnType<typeof setInterval> | null = null;
+  private batchPersisted = false;
   private websocketSubscription = new Subscription();
 
   constructor(private websocket: WebsocketService, private cdr: ChangeDetectorRef) {
     this.loadHistoryFromStorage();
     this.websocketSubscription.add(
       this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload | null) => {
+        if (!payload) {
+          this.stopCountdown();
+          return;
+        }
+
         if (!payload?.itemIds || !Array.isArray(payload.itemIds)) {
           return;
         }
 
         this.sharedBatchReceived.set(true);
         this.sharedGameFinished.set(false);
-        this.loadBatchFromItemIds(payload.itemIds);
+        this.loadBatchFromItemIds(payload.itemIds, payload.durationMinutes);
       })
     );
 
@@ -77,6 +87,7 @@ export class Batch {
         if (!isConnectedToActiveRoom) {
           this.sharedBatchReceived.set(false);
           this.sharedGameFinished.set(false);
+          this.stopCountdown(true);
         }
       })
     );
@@ -92,11 +103,25 @@ export class Batch {
         }
 
         if (scores.gameFinished) {
+          this.completeBatchFromRoomFinish();
           this.sharedGameFinished.set(true);
           this.sharedBatchReceived.set(false);
+          this.stopCountdown();
         }
       })
     );
+  }
+
+  private completeBatchFromRoomFinish(): void {
+    if (!this.isPlayingInRoom() || this.batchPersisted) {
+      return;
+    }
+
+    if (!this.batchComplete) {
+      this.batchPosition = this.currentBatch.length;
+    }
+
+    this.saveCurrentBatchToHistory();
   }
 
   private getSavedSession(): { nickname?: string; room?: string } | null {
@@ -121,7 +146,7 @@ export class Batch {
     return copy;
   }
 
-  private loadBatchFromItemIds(itemIds: string[]) {
+  private loadBatchFromItemIds(itemIds: string[], durationMinutes?: number) {
     const itemsById = new Map<string, CardData>(
       (profiles as CardData[]).map((profile) => [String(profile.id), profile])
     );
@@ -150,6 +175,7 @@ export class Batch {
     this.batchRenderVersion++;
     this.batchStart = 0;
     this.resetBatch();
+    this.configureCountdown(durationMinutes);
     this.cdr.detectChanges();
   }
 
@@ -172,12 +198,19 @@ export class Batch {
     return this.showRoomPanel();
   }
 
+  isSharedSession(): boolean {
+    const savedSession = this.getSavedSession();
+    const room = String(savedSession?.room || '').trim();
+    const nickname = String(savedSession?.nickname || '').trim();
+    return room.length > 0 && nickname.length > 0;
+  }
+
   shouldWaitForSharedBatch(): boolean {
-    return this.isPlayingInRoom() && !this.sharedBatchReceived() && !this.sharedGameFinished();
+    return this.isSharedSession() && !this.sharedBatchReceived() && !this.sharedGameFinished();
   }
 
   shouldShowCards(): boolean {
-    if (!this.isPlayingInRoom()) {
+    if (!this.isSharedSession()) {
       return !this.batchComplete;
     }
 
@@ -212,6 +245,24 @@ export class Batch {
     return this.batchStart + this.batchSize < this.itemsStack.length;
   }
 
+  get formattedTimeRemaining(): string {
+    const minutes = Math.floor(this.timeRemainingSeconds / 60);
+    const seconds = this.timeRemainingSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  get incorrectSwipes(): SwipeRecord[] {
+    return this.currentBatchIncorrect;
+  }
+
+  actionLabel(action: 'like' | 'dislike'): string {
+    return action === 'like' ? 'Sí Apoyó' : 'No Apoyó';
+  }
+
+  expectedLabel(cardId: string | number): string {
+    return String(cardId).toLowerCase().startsWith('one') ? 'Sí Apoyó' : 'No Apoyó';
+  }
+
   private isCorrectDecision(id: string | number, action: 'like' | 'dislike'): boolean {
     const key = String(id).toLowerCase();
     const isOne = key.startsWith('one');
@@ -221,6 +272,7 @@ export class Batch {
   }
 
   restart() {
+    this.stopCountdown(true);
     this.itemsStack = this.shuffle(profiles as CardData[]);
     this.batchStart = 0;
     this.resetBatch();
@@ -230,12 +282,14 @@ export class Batch {
     this.batchPosition = 0;
     this.batchScore = 0;
     this.batchErrors = 0;
+    this.batchPersisted = false;
     this.batchResults = Array(this.batchSize).fill('pending');
     this.currentBatchCorrect = [];
     this.currentBatchIncorrect = [];
   }
 
   nextBatch() {
+    this.stopCountdown(true);
     this.sharedGameFinished.set(false);
     if (this.hasNextBatch) {
       this.batchStart += this.batchSize;
@@ -244,6 +298,69 @@ export class Batch {
       this.batchStart = 0;
     }
     this.resetBatch();
+  }
+
+  private configureCountdown(durationMinutes?: number): void {
+    this.stopCountdown(true);
+
+    const parsedDuration = Number(durationMinutes ?? 0);
+    if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
+      return;
+    }
+
+    this.batchDurationMinutes = parsedDuration;
+    this.timeRemainingSeconds = Math.floor(parsedDuration * 60);
+    this.startCountdown();
+  }
+
+  private startCountdown(): void {
+    this.stopCountdown();
+    if (this.timeRemainingSeconds <= 0) {
+      this.showCountdown.set(false);
+      return;
+    }
+
+    this.showCountdown.set(true);
+
+    this.countdownIntervalId = setInterval(() => {
+      if (this.timeRemainingSeconds <= 0) {
+        return;
+      }
+
+      this.timeRemainingSeconds -= 1;
+      if (this.timeRemainingSeconds <= 0) {
+        this.timeRemainingSeconds = 0;
+        this.handleCountdownFinished();
+      }
+      this.cdr.detectChanges();
+    }, 1000);
+  }
+
+  private stopCountdown(resetValues = false): void {
+    if (this.countdownIntervalId) {
+      clearInterval(this.countdownIntervalId);
+      this.countdownIntervalId = null;
+    }
+
+    this.showCountdown.set(false);
+
+    if (resetValues) {
+      this.timeRemainingSeconds = 0;
+      this.batchDurationMinutes = 0;
+    }
+  }
+
+  private handleCountdownFinished(): void {
+    this.stopCountdown();
+    if (this.batchPersisted) {
+      return;
+    }
+
+    if (!this.batchComplete) {
+      this.batchPosition = this.currentBatch.length;
+    }
+
+    this.saveCurrentBatchToHistory();
   }
 
   // 3. Método genérico para manejar la acción del swipe
@@ -277,6 +394,7 @@ export class Batch {
     this.batchPosition++;
 
     if (this.batchComplete) {
+      this.stopCountdown();
       this.saveCurrentBatchToHistory();
     }
   }
@@ -288,6 +406,11 @@ export class Batch {
   }
 
   private saveCurrentBatchToHistory() {
+    if (this.batchPersisted) {
+      return;
+    }
+    this.batchPersisted = true;
+
     const newSession: BatchSession = {
       id: `batch_${Date.now()}`,
       date: new Date().toLocaleString(),
@@ -353,6 +476,7 @@ export class Batch {
   }
 
   ngOnDestroy() {
+    this.stopCountdown();
     this.websocketSubscription.unsubscribe();
   }
 

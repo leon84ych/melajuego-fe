@@ -13,6 +13,52 @@
   font-size: 1.9rem;
 }
 
+.about-tabs {
+  display: inline-flex;
+  align-items: stretch;
+  margin: 12px 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 0;
+  overflow: hidden;
+  background: rgba(2, 6, 23, 0.55);
+}
+
+.tab-btn {
+  padding: 10px 18px;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  background: #e2e8f0;
+}
+
+.tab-btn.active {
+  background: rgba(15, 23, 42, 0.95);
+  color: #f8fafc;
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: -2px;
+}
+
+.technical-info ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
 .credits-description {
   margin: 0;
   color: rgba(255, 255, 255, 0.78);

@@ -66,6 +66,7 @@ export interface BatchStartedPayload {
   host: string;
   itemIds: string[];
   startedAt?: string;
+  durationMinutes?: number;
 }
 
 export interface AvailableRoom {

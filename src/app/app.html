@@ -26,8 +26,8 @@
   <button
     type="button"
     class="menu-button"
-    [class.active]="view === 'credits'"
-    (click)="setView('credits')"
+    [class.active]="view === 'about'"
+    (click)="setView('about')"
   >
     Acerca de
   </button>
@@ -37,5 +37,5 @@
   <app-batch *ngIf="view === 'play'"></app-batch>
   <app-history *ngIf="view === 'history'"></app-history>
   <app-configure *ngIf="view === 'configure'"></app-configure>
-  <app-credits *ngIf="view === 'credits'"></app-credits>
+  <app-about *ngIf="view === 'about'"></app-about>
 </main>
