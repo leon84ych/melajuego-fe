@@ -3,13 +3,12 @@
         <div class="game-content">
             <div class="swipe-instructions" *ngIf="shouldShowCards()">
                 <p class="instruction-main">
-                    Puedes identificar quiénes apoyaron a Iván? <br>
-                    <img class="arrow-icon left" src="images/icons/redArrow1.png" alt="Flecha roja a la izquierda" />
-                    No lo apoyaron |
-                    Sí lo apoyaron
-                    <img class="arrow-icon right" src="images/icons/greenArrow1.png" alt="Flecha verde a la derecha" />
-                    
+                    ¿Sábes quiénes apoyaron a Iván? <br>
                 </p>
+                <div class="batch-timer" *ngIf="showCountdown() && sharedBatchReceived()">
+                    <span class="timer-label">Tiempo restante</span>
+                    <strong class="timer-value">{{ formattedTimeRemaining }}</strong>
+                </div>
             </div>
 
             <!-- Contenedor de Tarjetas del batch -->
@@ -49,7 +48,7 @@
                         <h4>Te equivocaste en:</h4>
                         <ul>
                             <li *ngFor="let item of incorrectSwipes">
-                                <strong>{{ item.title }}</strong> -> Tu respuesta:
+                                <strong>{{ item.title }}</strong> <br> Tu respuesta:
                                 <strong>{{ actionLabel(item.actionTaken) }}</strong> pero la respuesta era:
                                 <strong>{{ expectedLabel(item.cardId) }}</strong>
                             </li>
@@ -62,13 +61,6 @@
                 </div>
             </div>
             <app-scores *ngIf="shouldShowRoomScores()"></app-scores>
-
-
-            <!-- Botones de Acción Estilo Tinder (Solo visibles si hay tarjetas) -->
-            <div class="batch-timer" *ngIf="showCountdown()">
-                <span class="timer-label">Tiempo restante</span>
-                <strong class="timer-value">{{ formattedTimeRemaining }}</strong>
-            </div>
 
             <div class="action-buttons" *ngIf="shouldShowCards()">
                 <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">

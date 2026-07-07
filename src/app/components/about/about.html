@@ -1,5 +1,5 @@
 <section class="credits-card">
-  <h2>Acerca de</h2>
+  <h2>Acerca de Fuchile</h2>
   <div class="about-tabs" role="tablist" aria-label="Secciones de información">
     <button
       type="button"
@@ -43,7 +43,7 @@
     <p><b>Necesitamos ayuda para registrar los perfiles.</b></p>
 
     <h3>Creadores</h3>
-    <div class="credits-grid">
+    <div class="credits-grid credits-desktop">
       <div class="credits-grid-header">Nombre</div>
       <div class="credits-grid-header">Alias</div>
       <div class="credits-grid-header">Rol</div>
@@ -89,6 +89,42 @@
           </a>
         </div>
       </ng-container>
+    </div>
+
+    <div class="credits-mobile">
+      <article class="credit-card" *ngFor="let person of credits">
+        <div class="credit-card-header">
+          <h4>{{ person.name }}</h4>
+          <p *ngIf="person.nickname">{{ person.nickname }}</p>
+        </div>
+        <p class="credit-role">{{ person.role }}</p>
+        <div class="credit-socials">
+          <a *ngIf="person.socials.github" [href]="getSocialUrl('github', person.socials.github)" target="_blank"
+            rel="noreferrer noopener" aria-label="GitHub de {{ person.name }}">
+            <span class="social-icon">
+              <img src="images/icons/github.png" alt="GitHub" />
+            </span>
+          </a>
+          <a *ngIf="person.socials.instagram" [href]="getSocialUrl('instagram', person.socials.instagram)" target="_blank"
+            rel="noreferrer noopener" aria-label="Instagram de {{ person.name }}">
+            <span class="social-icon">
+              <img src="images/icons/instagram.jpeg" alt="Instagram" />
+            </span>
+          </a>
+          <a *ngIf="person.socials['tik-tok']" [href]="getSocialUrl('tik-tok', person.socials['tik-tok'])" target="_blank"
+            rel="noreferrer noopener" aria-label="TikTok de {{ person.name }}">
+            <span class="social-icon">
+              <img src="images/icons/tiktok.jpeg" alt="TikTok" />
+            </span>
+          </a>
+          <a *ngIf="person.socials.twitter" [href]="getSocialUrl('twitter', person.socials.twitter)" target="_blank"
+            rel="noreferrer noopener" aria-label="X de {{ person.name }}">
+            <span class="social-icon">
+              <img src="images/icons/x.jpeg" alt="X" />
+            </span>
+          </a>
+        </div>
+      </article>
     </div>
   </div>
 

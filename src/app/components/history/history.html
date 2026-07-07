@@ -24,7 +24,7 @@
       <h4>Te equivocaste en:</h4>
       <ul>
         <li *ngFor="let item of session.incorrectSwipes">
-          <strong>{{ item.title }}</strong> - Tu respuesta: 
+          <strong>{{ item.title }}</strong><br> Tu respuesta: 
           <strong>{{ actionLabel(item.actionTaken) }}</strong>
             pero la respuesta correcta era:
           <strong>{{ expectedLabel(item.cardId) }}</strong>

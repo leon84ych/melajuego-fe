@@ -1,1 +1,70 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Shared scoreboard styles used by batch/room score panels */
+.scoreboard {
+	padding: 18px;
+	background: rgba(255, 255, 255, 0.96);
+	border: 1px solid rgba(15, 23, 42, 0.08);
+	box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.scoreboard-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	align-items: baseline;
+	margin-bottom: 12px;
+}
+
+.scoreboard-header h3 {
+	margin: 0;
+	font-size: 1.05rem;
+}
+
+.scoreboard-updated {
+	color: #6b7280;
+	font-size: 0.8rem;
+}
+
+.scoreboard ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 10px;
+}
+
+.scoreboard li {
+	display: grid;
+	gap: 4px;
+	padding: 12px 14px;
+	border-radius: 16px;
+	background: #f8fafc;
+	border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.scoreboard li.winner {
+	border-color: #16a34a;
+	background: #dcfce7;
+}
+
+.participant-name {
+	font-weight: 700;
+	color: #111827;
+}
+
+.participant-score {
+	color: #2563eb;
+	font-weight: 700;
+}
+
+.participant-detail {
+	color: #475569;
+	font-size: 0.9rem;
+}
+
+.winner-text {
+	margin: 14px 0 0;
+	color: #166534;
+	font-weight: 700;
+}
