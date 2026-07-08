@@ -1,0 +1,23 @@
+<app-card-set></app-card-set>
+<app-room-scores *ngIf="shouldShowRoomScores()"></app-room-scores>
+
+
+<div>
+    <ng-container *ngIf="isHost && !gameInProgress">
+        <div class="room-duration">
+            <label for="duration-select" class="room-label">Duración de la partida</label>
+            <select #durationSelect id="duration-select" class="duration-select" [value]="selectedDurationMinutes()"
+                (change)="onDurationChange($event)">
+                <option *ngFor="let option of durationOptions" [value]="option">{{ option }}m</option>
+            </select>
+        </div>
+
+        <button class="btn-action start" (click)="requestBatchStart(durationSelect.value)">
+            Iniciar partida
+        </button>
+    </ng-container>
+
+    <p class="room-batch-message" *ngIf="batchMessage()">{{ batchMessage() }}</p>
+    <p class="room-message" *ngIf="roomMessage()">{{ roomMessage() }}</p>
+
+</div>

@@ -1,0 +1,156 @@
+.game-room-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* --- Main Viewport (Game) --- */
+.game-viewport {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+/* --- Aside Sidebar Panel --- */
+.room-sidebar {
+    width: 320px;
+    height: 100%;
+    background-color: #a74997;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    /* Stacks header above list */
+    border-left: 1px solid #334155;
+    box-sizing: border-box;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    background-color: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+/* --- Isolated Scroll Container --- */
+.user-list-scroll-container {
+    flex: 1;
+    /* Takes up all remaining vertical space */
+    overflow-y: auto;
+    /* Activates local vertical scrolling */
+    overflow-x: hidden;
+    padding: 1rem;
+
+    /* Smooth scrollbars for modern browsers */
+    scrollbar-width: thin;
+    scrollbar-color: #475569 #1e293b;
+}
+
+/* Custom Scrollbar Styles for Webkit (Chrome, Safari, Edge) */
+.user-list-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.user-list-scroll-container::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+.user-list-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #475569;
+    border-radius: 3px;
+}
+
+/* --- Hide Toggle Mechanisms on Desktop Screens --- */
+.sidebar-checkbox,
+.toggle-arrow-btn {
+    display: none;
+}
+
+/* ==========================================================================
+   📱 MOBILE RESPONSIvE MEDIA QUERY (Screens smaller than 768px)
+   ========================================================================== */
+@media (max-width: 767px) {
+
+    /* Make the sidebar float off-screen onto a separate structural layer */
+    .room-sidebar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        box-shadow: -10px 0 25px -5px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(100%);
+        /* Default hidden state */
+    }
+
+    /* Make the arrow toggle trigger visible */
+    .toggle-arrow-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 50px;
+        background-color: #a74997;
+        color: #f8fafc;
+        border-radius: 8px 0 0 8px;
+        cursor: pointer;
+        z-index: 101;
+        box-shadow: -4px 0 10px rgba(167, 73, 151, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    /* Keep the tracking checkbox functional but entirely invisible */
+    .sidebar-checkbox {
+        display: none;
+    }
+
+    /* --- Connected Logic States when Checkbox is Checked (Menu Open) --- */
+
+    /* Slide sidebar into frame */
+    .sidebar-checkbox:checked~.room-sidebar {
+        transform: translateX(0);
+    }
+
+    /* Move the arrow pull-tab over and rotate it to point out */
+    .sidebar-checkbox:checked~.toggle-arrow-btn {
+        right: 320px;
+    }
+
+    .sidebar-checkbox:checked~.toggle-arrow-btn .arrow-icon {
+        transform: rotate(180deg);
+        display: inline-block;
+    }
+
+
+    .sidebar-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        /* Efecto difuminado moderno */
+        z-index: 99;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Cuando el checkbox está activo, mostramos el fondo oscuro */
+    .sidebar-checkbox:checked~.sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}

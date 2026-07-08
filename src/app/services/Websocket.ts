@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { AvailableRoom, BatchStartedPayload, ConnectionStatus, ParticipantBatchResult, RoomBatchScores, RoomState } from '../data/DataInterfaces';
+import { AvailableRoom, BaseGameComponent, BaseGamePayload, BatchStartedPayload, ConnectionStatus, ParticipantBatchResult, RoomBatchScores, RoomState } from '../data/DataInterfaces';
 import { environment } from '../../environments/environment';
 
 
@@ -13,8 +13,7 @@ export class WebsocketService {
     private socket: Socket;
     private zone: NgZone;
 
-    // Usamos un Subject de RxJS para que los componentes se suscriban a las acciones del rival
-    public opponentSwipe$ = new Subject<any>();
+
 
     public roomState$ = new BehaviorSubject<RoomState>({
         roomCode: '',
@@ -29,7 +28,13 @@ export class WebsocketService {
 
     public connectionStatusChanges$ = this.connectionStatus$.asObservable();
 
+    public baseGameStart$ = new BehaviorSubject<BaseGamePayload | null>({
+        gameType: '',
+        payload: null
+    });
+
     public batchStarted$ = new ReplaySubject<BatchStartedPayload | null>(1);
+
     public roomBatchScores$ = new Subject<RoomBatchScores>();
 
     // Available rooms list pushed from server on demand
@@ -99,14 +104,6 @@ export class WebsocketService {
             });
         });
 
-        // Escuchar eventos del servidor
-        this.socket.on('receive_swipe', (data) => {
-            console.log('[WebsocketService] receive_swipe', data);
-            this.zone.run(() => {
-                this.opponentSwipe$.next(data);
-            });
-        });
-
         this.socket.on('room_info', (data) => {
             console.log('[WebsocketService] room_info', data);
             this.zone.run(() => {
@@ -151,6 +148,18 @@ export class WebsocketService {
                 } catch (e) {
                     console.warn('[WebsocketService] failed to request updated available rooms', e);
                 }
+            });
+        });
+
+
+        this.socket.on('open_game', (data: { gameType: string, payload: any }) => {
+            console.log('[WebsocketService] open_game', data);
+
+            this.zone.run(() => {
+                this.baseGameStart$.next({
+                    gameType: data.gameType,
+                    payload: data.payload,
+                });
             });
         });
 

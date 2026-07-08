@@ -1,0 +1,29 @@
+<div class="game-room-layout">
+    <!-- Cabecera de la sala (Siempre visible: PIN, Usuarios, etc.) 
+  <app-game-header [roomCode]="roomCode"></app-game-header>
+  -->
+
+    <!-- CONTENEDOR DINÁMICO DEL JUEGO -->
+    <section class="game-viewport" *ngIf="currentGameComponent">
+        <!--<ng-container *ngComponentOutlet="currentGameComponent; 
+                          inputs: { payload: currentGamePayload };
+                          outputs: { onGameComplete: handleGameFinished.bind(this) }">
+        </ng-container>
+    -->
+        <ng-container *ngComponentOutlet="currentGameComponent; inputs: { payload: currentGamePayload }"
+            (activate)="onComponentActivated($event)">
+        </ng-container>
+    </section>
+
+    <!-- Mobile Toggle Trigger Button -->
+    <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />
+    <label for="sidebar-toggle" class="toggle-arrow-btn" aria-label="Toggle scores">
+        <span class="arrow-icon">◀</span>
+    </label>
+    <!-- Side Panel Container -->
+     <div class="sidebar-backdrop"></div>
+    <aside class="room-sidebar">
+        <players-list></players-list>
+    </aside>
+
+</div>

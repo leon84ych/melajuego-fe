@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Batch } from './batch';
+import { RoomScores } from './room-scores';
 
-describe('Batch', () => {
-  let component: Batch;
-  let fixture: ComponentFixture<Batch>;
+describe('Scores', () => {
+  let component: RoomScores;
+  let fixture: ComponentFixture<RoomScores>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Batch]
+      imports: [RoomScores]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Batch);
+    fixture = TestBed.createComponent(RoomScores);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Scores } from './scores';
+import { Batch } from './card-set';
 
-describe('Scores', () => {
-  let component: Scores;
-  let fixture: ComponentFixture<Scores>;
+describe('Batch', () => {
+  let component: Batch;
+  let fixture: ComponentFixture<Batch>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Scores]
+      imports: [Batch]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Scores);
+    fixture = TestBed.createComponent(Batch);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -35,6 +35,10 @@
   margin: 16px 0 0;
 }
 
+.global-scoreboard {
+  margin-top: 16px;
+}
+
 @media (max-width: 900px) {
   .scoreboard {
     max-width: 100%;

@@ -1,15 +1,15 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Batch } from './components/batch/batch';
 import { History } from './components/history/history';
 import { About } from './components/about/about';
 import { Configure } from './components/configure/configure';
 import { WebsocketService } from './services/Websocket';
+import { GameRoom } from './components/game-room/game-room';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, Batch, History, About, Configure],
+  imports: [CommonModule, GameRoom, History, About, Configure],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.css'],

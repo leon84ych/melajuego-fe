@@ -1,0 +1,69 @@
+<aside class="room-sidebar">
+    <!-- SECCIÓN: PUNTAJES DE SALA -->
+    @if (scoresService.roomBatchScores()) {
+        <section class="scoreboard">
+            <div class="scoreboard-header">
+                <h3>Puntajes de sala</h3>
+                <span class="scoreboard-updated">
+                    Actualizado {{ scoresService.roomBatchScores()?.updatedAt | date:'short' }}
+                </span>
+            </div>
+            
+            @if (scoresService.leadingParticipant()) {
+                <span class="winner-text">
+                    Ganador: {{ scoresService.leadingParticipant()?.nickname }}
+                </span>
+            }
+
+            <ul>
+                <!-- En la nueva sintaxis, limitamos la lista usando slice directamente en el TS o manteniendo el pipe -->
+                @for (participant of (scoresService.sortedParticipantResults() | slice:0:100); track participant.nickname; let i = $index) {
+                    <li [class.winner]="i === 0">
+                        <div class="participant-name">{{ participant.nickname }}</div>
+                        <div class="participant-score">{{ participant.percentScore }}%</div>
+                        <div class="participant-detail">
+                            {{ participant.correctCount }} / {{ participant.totalCards }} • {{ participant.incorrectCount }} errores
+                        </div>
+                        
+                        @if (participant.responseSeconds !== null) {
+                            <div class="participant-detail">
+                                Tiempo: {{ participant.responseSeconds }}s
+                                @if (participant.responseDeltaSeconds && participant.responseDeltaSeconds > 0) {
+                                    <span>• +{{ participant.responseDeltaSeconds }}s</span>
+                                }
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <!-- SECCIÓN: RESULTADOS GLOBALES -->
+    @if (scoresService.hasGlobalScores()) {
+        <section class="scoreboard global-scoreboard">
+            <div class="scoreboard-header">
+                <h3>Resultados globales de sala</h3>
+                <span class="scoreboard-updated">
+                    Actualizado {{ scoresService.roomGlobalStats()?.updatedAt | date:'short' }}
+                </span>
+            </div>
+
+            <ul>
+                @for (participant of (scoresService.roomGlobalStats()?.participants || []); track participant.nickname; let i = $index) {
+                    <li [class.winner]="i === 0">
+                        <div class="participant-name">{{ participant.nickname }}</div>
+                        <div class="participant-score">Promedio: {{ participant.averagePercent }}%</div>
+                        <div class="participant-detail">
+                            Batches: {{ participant.batchesPlayed }} • Victorias: {{ participant.wins }}
+                        </div>
+                        <div class="participant-detail">
+                            Aciertos: {{ participant.totalCorrect }} / {{ participant.totalCards }} • Errores: {{ participant.totalIncorrect }}
+                        </div>
+                        <div class="participant-detail">Mejor puntaje: {{ participant.bestPercent }}%</div>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+</aside>

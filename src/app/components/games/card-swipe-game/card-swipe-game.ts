@@ -1,75 +1,44 @@
-import { Component, OnDestroy, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { BaseGameComponent, BatchStartedPayload, RoomBatchScores } from '../../../data/DataInterfaces';
+import { CardSet } from './card-set/card-set';
+import { RoomScores } from '../../scores/room-scores';
 import { CommonModule } from '@angular/common';
+import profiles from '../../../data/Profiles.json';
+import { WebsocketService } from '../../../services/Websocket';
 import { Subscription } from 'rxjs';
-import profiles from '../../data/Profiles.json';
-import { BatchStartedPayload, RoomBatchScores, RoomState } from '../../data/DataInterfaces';
-import { WebsocketService } from '../../services/Websocket';
-import { Configuration } from '../../data/Configuration';
+import { Configuration } from '../../../data/Configuration';
+
 
 @Component({
-  selector: 'app-room',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './room.html',
-  styleUrls: ['./room.css'],
+  selector: 'app-card-swipe-game',
+  imports: [CardSet, RoomScores, CommonModule],
+  templateUrl: './card-swipe-game.html',
+  styleUrls: ['./card-swipe-game.css'],
 })
-export class Room implements OnDestroy {
-  private readonly messageDurationMs = Configuration.messageTimeout;
-  readonly durationOptions = [1, 5, 10];
-  roomName = signal('');
-  nickname = signal('');
-  currentNickname = signal('');
-  selectedDurationMinutes = signal(5);
-  connectedUsers = signal<string[]>([]);
-  sortedUsers = computed(() => {
-    const current = String(this.currentNickname()).trim().toLowerCase();
-    const users = this.connectedUsers();
-    if (!current || users.length === 0) {
-      return users;
-    }
+export class CardSwipeGame implements BaseGameComponent {
 
-    const leadingUsers = users.filter((nick) => String(nick).trim().toLowerCase() === current);
-    const remainingUsers = users.filter((nick) => String(nick).trim().toLowerCase() !== current);
-    return [...leadingUsers, ...remainingUsers];
-  });
+  private readonly messageDurationMs = Configuration.messageTimeout;
+
+  @Input() payload: any;
+  @Output() onGameComplete = new EventEmitter<any>();
+
+  readonly durationOptions = [1, 5, 10];
+
+  selectedDurationMinutes = signal(5);
+  gameInProgress = false;
+  isHost = false;
+
+  roomName = signal('');
   roomMessage = signal('');
   batchMessage = signal('');
-  roomHost = signal('');
-  totalUsers = signal(0);
-  batchInProgress = false;
+
   private roomMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private batchMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private subscription = new Subscription();
 
-  constructor(private websocket: WebsocketService) {
-    const stored = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
-    if (stored) {
-      try {
-        const session = JSON.parse(stored) as { nickname?: string; room?: string };
-        this.nickname.set(session.nickname ?? '');
-        this.currentNickname.set(session.nickname ?? '');
-        this.roomName.set(session.room ?? '');
-        if (this.nickname() && this.roomName()) {
-          this.connectedUsers.set([this.nickname()]);
-          this.totalUsers.set(1);
-        }
-      } catch {
-        this.roomName.set('');
-      }
-    }
 
-    this.subscription.add(
-      this.websocket.roomState$.subscribe((state: RoomState) => {
-        console.log('[Room] roomState update', state);
-        if (state.roomCode) {
-          this.roomName.set(state.roomCode);
-        }
-        this.roomHost.set(state.host);
-        this.connectedUsers.set(state.connectedUsers ?? []);
-        this.setTimedRoomMessage(state.message ?? '');
-        this.totalUsers.set(state.totalUsers ?? (state.connectedUsers?.length ?? 0));
-      })
-    );
+  constructor(private websocket: WebsocketService) {
+
 
     this.subscription.add(
       this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload | null) => {
@@ -77,7 +46,7 @@ export class Room implements OnDestroy {
           return;
         }
         this.setTimedBatchMessage(`Partida iniciada por ${payload.host}. Mazo recibido (${payload.itemIds.length} cartas).`);
-        this.batchInProgress = true;
+        this.gameInProgress = true;
       })
     );
 
@@ -94,11 +63,27 @@ export class Room implements OnDestroy {
         }
 
         if (scores.gameFinished) {
-          this.batchInProgress = false;
+          this.gameInProgress = false;
           this.setTimedBatchMessage('Partida finalizada. Puedes iniciar otro juego.');
         }
       })
     );
+  }
+
+
+
+
+
+  shouldShowRoomScores(): boolean {
+    return false;
+    //return this.isPlayingInRoom() && !this.isSoloGame() && (this.batchComplete || this.sharedGameFinished());
+  }
+
+  onDurationChange(event: Event): void {
+    const value = Number((event.target as HTMLSelectElement)?.value);
+    if (this.durationOptions.includes(value)) {
+      this.selectedDurationMinutes.set(value);
+    }
   }
 
   requestBatchStart(selectedDuration?: string | number) {
@@ -112,17 +97,20 @@ export class Room implements OnDestroy {
 
     this.selectedDurationMinutes.set(duration);
     this.setTimedBatchMessage(`Iniciando partida (${duration} min)... solicitando mazo compartido.`);
-    this.batchInProgress = true;
+    this.gameInProgress = true;
     const itemIds = this.pickRandomItemIds();
     this.websocket.startBatch(this.roomName(), itemIds, duration);
   }
 
-  onDurationChange(event: Event): void {
-    const value = Number((event.target as HTMLSelectElement)?.value);
-    if (this.durationOptions.includes(value)) {
-      this.selectedDurationMinutes.set(value);
-    }
+  private pickRandomItemIds(): string[] {
+    const allIds = (profiles as { id: string | number }[])
+      .map((item) => String(item.id))
+      .filter((id) => id.length > 0);
+
+    const shuffled = [...allIds].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 10);
   }
+
 
   private setTimedRoomMessage(message: string) {
     this.roomMessage.set(message);
@@ -134,7 +122,7 @@ export class Room implements OnDestroy {
     this.scheduleBatchMessageClear(message);
   }
 
-  private scheduleRoomMessageClear(message: string) {
+    private scheduleRoomMessageClear(message: string) {
     if (this.roomMessageTimeoutId) {
       clearTimeout(this.roomMessageTimeoutId);
       this.roomMessageTimeoutId = null;
@@ -166,16 +154,7 @@ export class Room implements OnDestroy {
     }, this.messageDurationMs);
   }
 
-  private pickRandomItemIds(): string[] {
-    const allIds = (profiles as { id: string | number }[])
-      .map((item) => String(item.id))
-      .filter((id) => id.length > 0);
-
-    const shuffled = [...allIds].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 10);
-  }
-
-  ngOnDestroy() {
+    ngOnDestroy() {
     if (this.roomMessageTimeoutId) {
       clearTimeout(this.roomMessageTimeoutId);
     }
@@ -184,4 +163,5 @@ export class Room implements OnDestroy {
     }
     this.subscription.unsubscribe();
   }
+
 }

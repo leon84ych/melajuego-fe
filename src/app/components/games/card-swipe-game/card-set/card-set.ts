@@ -1,22 +1,20 @@
 import { ChangeDetectorRef, Component, OnDestroy, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { BatchSession, BatchStartedPayload, CardData, ParticipantBatchResult, RoomBatchScores, RoomState, SwipeRecord } from '../../data/DataInterfaces';
-import profiles from '../../data/Profiles.json';
+import { BatchSession, BatchStartedPayload, CardData, ParticipantBatchResult, RoomBatchScores, RoomState, SwipeRecord } from '../../../../data/DataInterfaces';
+import profiles from '../../../../data/Profiles.json';
 import { Card } from '../card/card';
-import { Room } from '../room/room';
-import { Scores } from '../scores/scores';
 import { CommonModule } from '@angular/common';
-import { WebsocketService } from '../../services/Websocket';
+import { WebsocketService } from '../../../../services/Websocket';
 
 
 @Component({
-  selector: 'app-batch',
+  selector: 'app-card-set',
   standalone: true,
-  imports: [Card, Room, Scores, CommonModule],
-  templateUrl: './batch.html',
-  styleUrls: ['./batch.css'],
+  imports: [Card, CommonModule],
+  templateUrl: './card-set.html',
+  styleUrls: ['./card-set.css'],
 })
-export class Batch {
+export class CardSet {
   protected readonly title = signal('Fuchile');
   isSoloGame = signal(true);
   showRoomPanel = signal(false);
@@ -121,7 +119,7 @@ export class Batch {
       this.batchPosition = this.currentBatch.length;
     }
 
-    this.saveCurrentBatchToHistory();
+    this.saveCurrentBatchToHistory(false);
   }
 
   private getSavedSession(): { nickname?: string; room?: string } | null {
@@ -217,9 +215,7 @@ export class Batch {
     return !this.batchComplete && !this.shouldWaitForSharedBatch() && !this.sharedGameFinished();
   }
 
-  shouldShowRoomScores(): boolean {
-    return this.isPlayingInRoom() && !this.isSoloGame() && (this.batchComplete || this.sharedGameFinished());
-  }
+
 
   get batchComplete(): boolean {
     return this.batchPosition >= this.currentBatch.length;
@@ -360,7 +356,7 @@ export class Batch {
       this.batchPosition = this.currentBatch.length;
     }
 
-    this.saveCurrentBatchToHistory();
+    this.saveCurrentBatchToHistory(true);
   }
 
   // 3. Método genérico para manejar la acción del swipe
@@ -395,7 +391,7 @@ export class Batch {
 
     if (this.batchComplete) {
       this.stopCountdown();
-      this.saveCurrentBatchToHistory();
+      this.saveCurrentBatchToHistory(true);
     }
   }
 
@@ -405,7 +401,7 @@ export class Batch {
     audio.play().catch(err => console.warn('Audio playback prevented by browser:', err));
   }
 
-  private saveCurrentBatchToHistory() {
+  private saveCurrentBatchToHistory(shouldSubmitResult = true) {
     if (this.batchPersisted) {
       return;
     }
@@ -425,6 +421,10 @@ export class Batch {
 
     // Save to browser LocalStorage
     localStorage.setItem('match_history', JSON.stringify(this.batchHistory));
+
+    if (!shouldSubmitResult) {
+      return;
+    }
 
     const batchResult = this.buildBatchResultPayload();
     if (batchResult) {

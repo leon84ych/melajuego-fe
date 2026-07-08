@@ -60,7 +60,7 @@
                     </div>
                 </div>
             </div>
-            <app-scores *ngIf="shouldShowRoomScores()"></app-scores>
+
 
             <div class="action-buttons" *ngIf="shouldShowCards()">
                 <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">
@@ -72,9 +72,5 @@
             </div>
 
         </div>
-
-        <aside class="room-sidebar" *ngIf="showRoomPanel()">
-            <app-room></app-room>
-        </aside>
     </div>
 </div>

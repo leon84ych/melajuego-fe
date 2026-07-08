@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardData } from '../../data/DataInterfaces';
+import { CardData } from '../../../../data/DataInterfaces';
 import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({

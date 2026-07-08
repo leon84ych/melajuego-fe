@@ -94,3 +94,46 @@ export interface GameSession {
   nickname: string;
   room: string;
 }
+
+export interface ParticipantResultView extends ParticipantBatchResult {
+  responseSeconds: number | null;
+  responseDeltaSeconds: number | null;
+}
+
+export interface RoomGlobalParticipantStats {
+  nickname: string;
+  batchesPlayed: number;
+  totalCorrect: number;
+  totalIncorrect: number;
+  totalCards: number;
+  averagePercent: number;
+  bestPercent: number;
+  wins: number;
+  updatedAt: string;
+};
+
+export interface RoomGlobalStats {
+  roomCode: string;
+  updatedAt: string;
+  participants: RoomGlobalParticipantStats[];
+};
+
+export interface RoomGlobalStatsStorage {
+  roomCode: string;
+  updatedAt: string;
+  participants: Array<
+    Omit<RoomGlobalParticipantStats, 'averagePercent'> & {
+      totalPercentSum: number;
+    }
+  >;
+};
+
+export interface BaseGameComponent {
+  payload: any; // Datos del juego actual enviados por el socket
+  onGameComplete: any; // Evento para avisar a la sala que el juego terminó
+}
+
+export interface BaseGamePayload {
+  gameType: string; // Tipo de juego, por ejemplo, 'card-swipe', 'quiz', etc.
+  payload: any; // Datos del juego actual enviados por el socket
+}
