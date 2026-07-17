@@ -1,3 +1,4 @@
+import { EventEmitter } from "@angular/core";
 
 
 export interface CardData {
@@ -52,9 +53,9 @@ export interface RoomState {
   roomCode: string;
   connectedUsers: string[];
   host: string;
-  message?: string;
   totalUsers?: number;
-  newUser?: string;
+  gameActive?: boolean;
+  message?: string;
 }
 
 export interface ConnectionStatus {
@@ -128,12 +129,44 @@ export interface RoomGlobalStatsStorage {
   >;
 };
 
-export interface BaseGameComponent {
-  payload: any; // Datos del juego actual enviados por el socket
-  onGameComplete: any; // Evento para avisar a la sala que el juego terminó
+export interface BaseGameComponent<T = any, R = any> {
+  payload: T;                         // Datos específicos ya limpios
+  onGameComplete: EventEmitter<R>;    // Evento tipado con el resultado del juego
 }
 
-export interface BaseGamePayload {
-  gameType: string; // Tipo de juego, por ejemplo, 'card-swipe', 'quiz', etc.
-  payload: any; // Datos del juego actual enviados por el socket
+export interface BaseGamePayload<T = any> {
+  gameType: string;      // Ej: 'card-swipe', 'quiz'
+  roomCode: string;
+  gameHost: string;
+  startedAt: string;
+  durationMinutes?: number;
+  payload: T;            // Datos específicos del juego que vienen del socket
+}
+
+export interface GameCardSwipePayload {
+  question: string;
+  options: string[];
+}
+
+export interface GameCardSwipeResult {
+  score: number;
+  timeSpent: number;
+}
+
+// export interface PlayerListState_ {
+//   roomName: string;
+//   nickname: string;
+//   currentNickname: string;
+//   connectedUsers: string[];
+//   roomHost: string;
+//   totalUsers: number;
+// }
+
+export interface PlayersListState {  // 👈 Asegúrate de que tenga la "s"
+  roomName: string;
+  nickname: string;
+  currentNickname: string;
+  connectedUsers: string[];
+  roomHost: string;
+  totalUsers: number;
 }

@@ -1,9 +1,6 @@
-import { Component, OnDestroy, computed, signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
-
-import { RoomState } from '../../data/DataInterfaces';
-import { WebsocketService } from '../../services/Websocket';
+import { PlayersListState } from '../../data/DataInterfaces';
 
 @Component({
   selector: 'players-list',
@@ -12,60 +9,32 @@ import { WebsocketService } from '../../services/Websocket';
   templateUrl: './playersList.html',
   styleUrls: ['./playersList.css'],
 })
-export class PlayersList implements OnDestroy {
+export class PlayersList {
 
-  roomName = signal('');
-  nickname = signal('');
-  currentNickname = signal('');
-  connectedUsers = signal<string[]>([]);
+
+  state = input.required<PlayersListState>();
+
   sortedUsers = computed(() => {
-    const current = String(this.currentNickname()).trim().toLowerCase();
-    const users = this.connectedUsers();
+    const current = String(this.state().currentNickname).trim().toLowerCase();
+    const users = this.state().connectedUsers;
+
     if (!current || users.length === 0) {
       return users;
     }
-    const leadingUsers = users.filter((nick) => String(nick).trim().toLowerCase() === current);
-    const remainingUsers = users.filter((nick) => String(nick).trim().toLowerCase() !== current);
+
+    // ⚡ TIPADO EXPLÍCITO: (nick: string) evita el error de tipo implícito "any"
+    const leadingUsers = users.filter((nick: string) => String(nick).trim().toLowerCase() === current);
+    const remainingUsers = users.filter((nick: string) => String(nick).trim().toLowerCase() !== current);
+
     return [...leadingUsers, ...remainingUsers];
   });
 
-  roomHost = signal('');
-  totalUsers = signal(0);
-
-  private subscription = new Subscription();
-
-  constructor(private websocket: WebsocketService) {
-    const stored = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
-    if (stored) {
-      try {
-        const session = JSON.parse(stored) as { nickname?: string; room?: string };
-        this.nickname.set(session.nickname ?? '');
-        this.currentNickname.set(session.nickname ?? '');
-        this.roomName.set(session.room ?? '');
-        if (this.nickname() && this.roomName()) {
-          this.connectedUsers.set([this.nickname()]);
-          this.totalUsers.set(1);
-        }
-      } catch {
-        this.roomName.set('');
-      }
-    }
-
-    this.subscription.add(
-      this.websocket.roomState$.subscribe((state: RoomState) => {
-        console.log('[Room] roomState update', state);
-        if (state.roomCode) {
-          this.roomName.set(state.roomCode);
-        }
-        this.roomHost.set(state.host);
-        this.connectedUsers.set(state.connectedUsers ?? []);
-        this.totalUsers.set(state.totalUsers ?? (state.connectedUsers?.length ?? 0));
-      })
-    );
-
+  isCurrentUser(nick: string): boolean {
+    return String(nick).trim().toLowerCase() === String(this.state().currentNickname).trim().toLowerCase();
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  isHost(nick: string): boolean {
+    return String(nick).trim().toLowerCase() === String(this.state().roomHost).trim().toLowerCase();
   }
+
 }

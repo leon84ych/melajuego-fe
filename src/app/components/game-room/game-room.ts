@@ -1,9 +1,9 @@
-import { Component, OnInit, Type } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, Type } from '@angular/core';
 import { CardSwipeGame } from '../games/card-swipe-game/card-swipe-game';
 import { WebsocketService } from '../../services/Websocket';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { BaseGameComponent, BaseGamePayload } from '../../data/DataInterfaces';
+import { BaseGameComponent, BaseGamePayload, PlayersListState, RoomState } from '../../data/DataInterfaces';
 import { PlayersList } from '../playersList/playersList';
 
 @Component({
@@ -12,22 +12,30 @@ import { PlayersList } from '../playersList/playersList';
   templateUrl: './game-room.html',
   styleUrls: ['./game-room.css'],
 })
-export class GameRoom implements OnInit {
+export class GameRoom implements OnInit, OnDestroy {
 
-  private gameRegistry: Record<string, Type<any>> = {
+  private gameRegistry: Record<string, Type<BaseGameComponent<any, any>>> = {
     'SWIPE': CardSwipeGame
     // 'ORDER': OrderGameComponent -> Lo agregas aquí cuando lo crees
   };
 
   // Variables de estado de la sala
-  currentGameComponent: Type<any> | null = null;
+  currentGameComponent: Type<BaseGameComponent<any, any>> | null = null;
   currentGameType: any = null;
   currentGamePayload: any = null;
-  roomCode: string = '';
 
   private websocketSubscription = new Subscription();
 
-  constructor(private websocket: WebsocketService) {
+  playerListState = signal<PlayersListState>({
+    roomName: '',
+    nickname: '',
+    currentNickname: '',
+    connectedUsers: [],
+    roomHost: '',
+    totalUsers: 0
+  });
+
+  constructor(public websocket: WebsocketService) {
     this.currentGameComponent = this.gameRegistry['SWIPE'];
   }
 
@@ -49,6 +57,19 @@ export class GameRoom implements OnInit {
       })
     );
 
+    this.websocketSubscription.add(
+      this.websocket.roomState$.subscribe((state: RoomState) => {
+        this.playerListState.update((currentState) => ({
+          ...currentState,
+          roomName: state.roomCode || currentState.roomName, // Mantiene el anterior si roomCode es False
+          roomHost: state.host,
+          connectedUsers: state.connectedUsers ?? [],
+          totalUsers: state.totalUsers ?? (state.connectedUsers?.length ?? 0)
+        }));
+      })
+    );
+
+    this.checkPlayers();
   }
 
   // 3. Manejar cuando el juego actual termina en el cliente
@@ -68,5 +89,28 @@ export class GameRoom implements OnInit {
         this.handleGameFinished(result);
       });
     }
+  }
+
+checkPlayers() {
+  const roomCode = this.websocket.roomName().trim();
+  if (!roomCode) return;
+
+  console.log('Checking players in room:', roomCode);
+  this.websocket.requestRoomUsers(roomCode);
+}
+
+  ngOnDestroy() {
+    this.websocketSubscription.unsubscribe();
+  }
+
+  resetComponentState() {
+    this.playerListState.set({
+      roomName: '',
+      nickname: '',
+      currentNickname: '',
+      connectedUsers: [],
+      roomHost: '',
+      totalUsers: 0
+    });
   }
 }

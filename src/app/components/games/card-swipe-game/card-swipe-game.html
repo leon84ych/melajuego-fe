@@ -3,6 +3,7 @@
 
 
 <div>
+    {{isHost }} - {{gameInProgress}}
     <ng-container *ngIf="isHost && !gameInProgress">
         <div class="room-duration">
             <label for="duration-select" class="room-label">Duración de la partida</label>

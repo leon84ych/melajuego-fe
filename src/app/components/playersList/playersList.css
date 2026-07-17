@@ -1,6 +1,11 @@
 .room-card {
   display: flex;
   flex-direction: column;
+  
+  /* ⚡ FUERZA A LA TARJETA A MEDIR EL ALTO COMPLETO DE LA PANTALLA MENOS UN MARGEN */
+  height: calc(100vh - 40px); 
+  box-sizing: border-box;
+  
   gap: 18px;
   padding: 22px;
   min-width: 240px;
@@ -31,8 +36,11 @@
 }
 
 .room-users {
-  max-height: 320px;
-  overflow-y: auto;
+  /* ⚡ ELIMINA EL max-height: 80% O max-height: 300px Y PON ESTO: */
+  
+  /* Calcula dinámicamente el espacio restante restando la cabecera y márgenes */
+  height: calc(100vh - 160px); 
+  overflow-y: auto;             /* Activa el scroll interno de inmediato */
   padding-right: 4px;
 }
 
@@ -54,10 +62,12 @@
 @media (max-width: 768px) {
   .room-card {
     padding: 18px;
+    height: calc(100vh - 20px); /* Margen más pequeño en móviles */
   }
 
   .room-users {
-    max-height: 260px;
+    /* ⚡ REEMPLAZA LOS 300px POR ESTE CÁLCULO MÓVIL: */
+    height: calc(100vh - 130px); 
   }
 }
 

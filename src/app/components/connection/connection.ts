@@ -8,30 +8,31 @@ import { ConnectionStatus, GameSession } from '../../data/DataInterfaces';
 
 
 @Component({
-  selector: 'app-configure',
+  selector: 'app-connection',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './configure.html',
-  styleUrls: ['./configure.css'],
+  templateUrl: './connection.html',
+  styleUrls: ['./connection.css'],
 })
-export class Configure implements OnInit, OnDestroy {
+export class Connection implements OnInit, OnDestroy {
 
   private errorSub!: Subscription;
   availableRooms = signal<{ roomCode: string; playerCount: number; host?: string }[]>([]);
   totalUsersConnected = signal<number>(0);
+
   nickname = '';
   room = '';
+
   statusMessage = '';
   connected = signal(false);
   connectionStatus: ConnectionStatus = {
     status: 'idle',
-    message: 'Pendiente de conexión...',
+    message: 'Esperando conexión con el servidor...',
   };
 
   private subscription = new Subscription();
 
-  constructor(private websocket: WebsocketService) {
-    this.loadSession();
+  constructor(public websocket: WebsocketService) {
     this.subscription.add(
       this.websocket.connectionStatusChanges$.subscribe((status) => {
         console.log('[Configure] socket status update', status);
@@ -53,54 +54,13 @@ export class Configure implements OnInit, OnDestroy {
         this.totalUsersConnected.set(count);
       })
     );
-
-    // Only mark as `connected` when the server reports the room state containing our nickname
-    this.subscription.add(
-      this.websocket.roomState$.subscribe((state) => {
-        try {
-          const currentRoom = (this.room || '').trim().toUpperCase();
-          const currentNick = (this.nickname || '').trim();
-          const serverRoom = (state.roomCode || '').trim().toUpperCase();
-          const users = state.connectedUsers || [];
-
-          // Normalize nicknames to avoid case/whitespace mismatches (creator vs joiners)
-          const normalizedUsers = users.map((u: any) => (String(u || '').trim().toLowerCase()));
-          const normalizedNick = String(currentNick).trim().toLowerCase();
-
-          const joined = !!(serverRoom && currentRoom && serverRoom === currentRoom && normalizedUsers.includes(normalizedNick));
-          if (joined) {
-            this.connected.set(true);
-            // ensure connectionStatus reflects server acceptance
-            this.connectionStatus = { status: 'connected', message: `Conexión confirmada en ${state.roomCode}` };
-            this.statusMessage = this.connectionStatus.message;
-            // Refresh available rooms when server confirms we've joined (new room will appear)
-            this.requestRooms();
-          } else if (state.roomCode && serverRoom !== currentRoom) {
-            // Room state changed to another room: ensure we are not showing connected
-            this.connected.set(false);
-          }
-        } catch (e) {
-          // swallow parsing issues
-          this.connected.set(false);
-        }
-      })
-    );
   }
 
   ngOnInit() {
-    // 📢 Catch the error immediately when the server shoots it back
-    this.errorSub = this.websocket.getErrorStatus().subscribe(error => {
-      console.warn('[Configure] Resetting UI due to server rejection:', error.message);
-      this.statusMessage = error.message;
-      // Reflect the server validation error in the connection state
-      this.connectionStatus = {
-        status: 'error',
-        message: error.message,
-      };
-      this.connected.set(false);
-    });
-
-    // Fetch rooms immediately when the form loads
+    if (this.websocket.isInRoom()) {
+      this.room = this.websocket.roomName();
+      this.nickname = this.websocket.nickname();
+    }
     this.requestRooms();
   }
 
@@ -136,27 +96,7 @@ export class Configure implements OnInit, OnDestroy {
     this.statusMessage = `Sala seleccionada: ${this.room}`;
   }
 
-  private loadSession() {
-    const saved = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
-    if (!saved) {
-      return;
-    }
 
-    try {
-      const session = JSON.parse(saved) as GameSession;
-      this.nickname = session.nickname ?? '';
-      const cleanRoom = (session.room ?? '').trim().toUpperCase();
-      if (this.isRoomCodeValid(cleanRoom)) {
-        this.room = cleanRoom;
-      } else {
-        console.warn('[Configure] Sesión guardada corrupta o inválida eliminada por seguridad.');
-        this.clearSession();
-      }
-      // only join if we set a valid room above
-    } catch {
-      // ignore malformed session
-    }
-  }
 
   saveSession() {
     console.log('[Configure] saveSession', { nickname: this.nickname, room: this.room });
@@ -203,19 +143,19 @@ export class Configure implements OnInit, OnDestroy {
     this.joinRoom();
   }
 
-  joinRoom() {
+  async joinRoom() {
     console.log('[Configure] joinRoom', { room: this.room, nickname: this.nickname });
     if (!this.room.trim()) {
-      this.connectionStatus = {
-        status: 'error',
-        message: 'La sala es obligatoria para conectarse.',
-      };
+      this.connectionStatus = { status: 'error', message: 'La sala es obligatoria.' };
       return;
     }
-
-    this.websocket.joinRoom(this.room.trim(), this.nickname.trim());
-    // Request the available rooms immediately (server will include the new room shortly)
-    this.requestRooms();
+    try {
+      // El servicio se encargará de guardar los estados globales si el backend responde OK
+      await this.websocket.joinRoom(this.room.trim(), this.nickname.trim());
+      this.connectionStatus = { status: 'connected', message: '¡Conectado!' };
+    } catch (error: any) {
+      this.connectionStatus = { status: 'error', message: error || 'Error al unirse.' };
+    }
   }
 
   leaveRoom() {

@@ -2,24 +2,24 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { History } from './components/history/history';
 import { About } from './components/about/about';
-import { Configure } from './components/configure/configure';
+import { Connection } from './components/connection/connection';
 import { WebsocketService } from './services/Websocket';
 import { GameRoom } from './components/game-room/game-room';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, GameRoom, History, About, Configure],
+  imports: [CommonModule, GameRoom, History, About, Connection, Connection],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.css'],
 })
 export class App {
-  view = 'play' as 'play' | 'history' | 'configure' | 'about';
+  view = 'play' as 'play' | 'history' | 'connection' | 'about';
 
   constructor(private websocket: WebsocketService) {}
 
-  setView(value: 'play' | 'history' | 'configure' | 'about') {
+  setView(value: 'play' | 'history' | 'connection' | 'about') {
     this.view = value;
 
     if (value !== 'play') {

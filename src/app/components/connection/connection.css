@@ -18,11 +18,11 @@
 }
 
 .form-column {
-  max-width: none;
+  width: 90%;
 }
 
 .available-rooms {
-  padding: 18px;
+  width: 80%;
 }
 
 .rooms-header {
@@ -118,7 +118,8 @@
   }
 
   .rooms-list-container {
-    max-height: 240px;
+    max-height: 340px;
+    max-width: none;
   }
 }
 

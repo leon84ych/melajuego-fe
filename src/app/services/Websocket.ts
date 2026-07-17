@@ -1,7 +1,7 @@
-import { Injectable, NgZone } from '@angular/core';
+import { computed, Injectable, NgZone, signal } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { AvailableRoom, BaseGameComponent, BaseGamePayload, BatchStartedPayload, ConnectionStatus, ParticipantBatchResult, RoomBatchScores, RoomState } from '../data/DataInterfaces';
+import { AvailableRoom, BaseGamePayload, BatchStartedPayload, ConnectionStatus, ParticipantBatchResult, RoomBatchScores, RoomState } from '../data/DataInterfaces';
 import { environment } from '../../environments/environment';
 
 
@@ -10,27 +10,41 @@ import { environment } from '../../environments/environment';
     providedIn: 'root'
 })
 export class WebsocketService {
+
     private socket: Socket;
     private zone: NgZone;
 
+    // 1. Estados reactivos globales
+    roomName = signal<string>('');
+    nickname = signal<string>('');
+
+    // Señal computada para saber en cualquier componente si está en una sala válida
+    isInRoom = computed(() => !!this.roomName().trim() && !!this.nickname().trim());
 
 
     public roomState$ = new BehaviorSubject<RoomState>({
         roomCode: '',
-        connectedUsers: [],
         host: '',
+        connectedUsers: [],
+        totalUsers: 0,
+        gameActive: false
     });
+
 
     private connectionStatus$ = new BehaviorSubject<ConnectionStatus>({
         status: 'idle',
-        message: 'Pendiente de conexión...',
+        message: 'Esperando conexión con el servidor...',
     });
 
     public connectionStatusChanges$ = this.connectionStatus$.asObservable();
 
-    public baseGameStart$ = new BehaviorSubject<BaseGamePayload | null>({
-        gameType: '',
-        payload: null
+    public baseGameStart$ = new BehaviorSubject<BaseGamePayload<any> | null>({
+        gameType: '',      // Ej: 'card-swipe', 'quiz'
+        roomCode: '',
+        gameHost: '',
+        startedAt: '',
+        durationMinutes: undefined,
+        payload: null,
     });
 
     public batchStarted$ = new ReplaySubject<BatchStartedPayload | null>(1);
@@ -55,6 +69,27 @@ export class WebsocketService {
             }
         });
 
+
+        // 2. AUTO-RECONEXIÓN CENTRALIZADA (Solo ocurre UNA VEZ al nacer la app)
+        const stored = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
+        if (stored) {
+            try {
+                const session = JSON.parse(stored) as { room?: string; nickname?: string };
+                if (session.room && session.nickname) {
+                    console.log('[WebsocketService] Sesión recuperada globalmente. Conectando por red...');
+
+                    // Actualizamos los estados globales de inmediato
+                    this.roomName.set(session.room);
+                    this.nickname.set(session.nickname);
+
+                    // Disparamos la conexión física por red de forma silenciosa
+                    this.refreshRoomState(session.room, session.nickname);
+                }
+            } catch {
+                this.clearSession();
+            }
+        }
+
         this.socket.on('error_response', (data: { message: string }) => {
             console.error('[WebsocketService] Server error received:', data);
             this.zone.run(() => {
@@ -67,7 +102,7 @@ export class WebsocketService {
             this.zone.run(() => {
                 this.connectionStatus$.next({
                     status: 'connected',
-                    message: 'Conexión establecida con el servidor.',
+                    message: 'Servidor en línea, puede conectarse a una sala.',
                 });
             });
         });
@@ -87,7 +122,7 @@ export class WebsocketService {
             this.zone.run(() => {
                 this.connectionStatus$.next({
                     status: 'error',
-                    message: `Error de conexión: ${error?.message || error}`,
+                    message: `Error al conectar al servidor: ${error?.message || error}`,
                 });
             });
         });
@@ -108,7 +143,7 @@ export class WebsocketService {
             console.log('[WebsocketService] room_info', data);
             this.zone.run(() => {
                 this.roomState$.next({
-                    roomCode: data.roomName ?? data.roomCode ?? data.room ?? '',
+                    roomCode: data.roomCode ?? '',
                     connectedUsers: data.connectedUsers ?? data.users ?? data.nicknames ?? data.participants ?? [],
                     host: data.host ?? '',
                 });
@@ -119,45 +154,38 @@ export class WebsocketService {
             console.log('[WebsocketService] room_users', data);
             this.zone.run(() => {
                 this.roomState$.next({
-                    roomCode: data.roomName ?? data.roomCode ?? data.room ?? '',
-                    connectedUsers: data.connectedUsers ?? data.users ?? data.nicknames ?? data.participants ?? [],
+                    roomCode: data.roomCode ?? '',
+                    connectedUsers: data.connectedUsers ?? [],
                     host: data.host ?? '',
+                    totalUsers: data.totalUsers ?? 0,
+                    message: data.message ?? ''
                 });
             });
         });
 
-        this.socket.on('room_updated', (data: RoomState) => {
-            console.log('[WebsocketService] room_updated received:', data);
-            this.zone.run(() => {
-                this.connectionStatus$.next({
-                    status: 'connected',
-                    message: data.message || 'Conexión establecida con el servidor.',
-                });
 
-                // Map the reactive state exactly to what the server dictated
-                this.roomState$.next({
-                    roomCode: data.roomCode,
-                    connectedUsers: data.connectedUsers,
-                    host: data.host,
-                    totalUsers: data.totalUsers,
-                    message: data.message,
-                });
-                // Refresh available rooms list for this client so UI shows latest counts
-                try {
-                    this.socket.emit('get_available_rooms');
-                } catch (e) {
-                    console.warn('[WebsocketService] failed to request updated available rooms', e);
-                }
-            });
+        // En tu escucha de Socket.io, alimentas tu BehaviorSubject existente:
+        this.socket.on('room_updated', (state: RoomState) => {
+            console.log('[WebsocketService] room_updated recibido:', state);
+            this.roomState$.next(state);
         });
 
 
-        this.socket.on('open_game', (data: { gameType: string, payload: any }) => {
+        // 3. Escuchar las actualizaciones globales que envíe el servidor para mantener los estados limpios
+        this.socket.on('room_updated', (state: any) => {
+            // Si por alguna razón el servidor nos actualiza los metadatos, los sincronizamos aquí
+            if (state.roomCode) this.roomName.set(state.roomCode);
+        });
+
+        this.socket.on('open_game', (data: BaseGamePayload<any>) => {
             console.log('[WebsocketService] open_game', data);
-
             this.zone.run(() => {
                 this.baseGameStart$.next({
                     gameType: data.gameType,
+                    roomCode: data.roomCode ?? '',
+                    gameHost: data.gameHost ?? '',
+                    startedAt: data.startedAt ?? '',
+                    durationMinutes: data.durationMinutes ?? undefined,
                     payload: data.payload,
                 });
             });
@@ -223,34 +251,52 @@ export class WebsocketService {
         return this.errorStatus$.asObservable();
     }
 
-    joinRoom(roomCode: string, nickname: string) {
+    joinRoom(roomCode: string, nickname: string): Promise<any> {
         console.log('[WebsocketService] joinRoom requested', { roomCode, nickname });
 
         this.connectionStatus$.next({
             status: 'connecting',
             message: 'Conectando a la sala…',
         });
+        return new Promise((resolve, reject) => {
 
-        if (!this.socket.connected) {
-            console.log('[WebsocketService] socket not connected, calling connect()');
-            this.socket.connect();
+            if (!this.socket.connected) {
+                console.log('[WebsocketService] socket not connected, calling connect()');
+                this.socket.connect();
 
-            // ⚡ SOLUCIÓN: Esperar a que se conecte antes de emitir el evento
-            this.socket.once('connect', () => {
-                this.emitJoinRoom(roomCode, nickname);
-            });
-        } else {
-            // Si ya estaba conectado, emitimos de inmediato
-            this.emitJoinRoom(roomCode, nickname);
-        }
-
-        // Nota: la emisión se realiza en `emitJoinRoom` o tras la conexión.
+                // ⚡ SOLUCIÓN: Esperar a que se conecte antes de emitir el evento
+                this.socket.once('connect', () => {
+                    this.emitJoinRoom(roomCode, nickname, resolve, reject);
+                });
+            } else {
+                // Si ya estaba conectado, emitimos de inmediato
+                this.emitJoinRoom(roomCode, nickname, resolve, reject);
+            }
+        });
     }
 
-    private emitJoinRoom(roomCode: string, nickname: string) {
-        console.log('[WebsocketService] emit join_room', { roomCode, nickname });
-        this.socket.emit('join_room', { roomCode, nickname });
+    private emitJoinRoom(roomCode: string, nickname: string, resolve: Function, reject: Function) {
+        console.log('[WebsocketService] room_join', { roomCode, nickname });
+
+        this.socket.emit('room_join', { roomCode, nickname }, (response: any) => {
+            if (response.success) {
+                console.log('¡Entré con éxito a la sala!', response.roomCode);
+                // Guardamos el estado global reactivo al entrar exitosamente
+                this.roomName.set(roomCode);
+                this.nickname.set(nickname);
+
+                // Guardamos en el disco de sesión física
+                sessionStorage.setItem('game_session', JSON.stringify({ room: roomCode, nickname }));
+                resolve(response); // Éxito: resuelve la promesa
+            } else {
+                console.error('Error al entrar:', response.error);
+                reject(response.error); // Fallo: rechaza la promesa con el mensaje de error
+            }
+        });
     }
+
+
+
 
     refreshRoomState(roomCode: string, nickname: string) {
         if (!roomCode.trim() || !nickname.trim()) {
@@ -258,14 +304,14 @@ export class WebsocketService {
         }
 
         if (this.socket.connected) {
-            this.emitJoinRoom(roomCode, nickname);
+            this.emitJoinRoom(roomCode, nickname, () => { }, () => { });
             return;
         }
 
         try {
             this.socket.connect();
             this.socket.once('connect', () => {
-                this.emitJoinRoom(roomCode, nickname);
+                this.emitJoinRoom(roomCode, nickname, () => { }, () => { });
             });
         } catch (e) {
             console.warn('[WebsocketService] failed to refresh room state', e);
@@ -309,17 +355,32 @@ export class WebsocketService {
         }
     }
 
+    requestRoomUsers(roomCode: string): void {
+        if (!this.socket.connected) return;
+        console.log('[WebsocketService] Solicitando actualización de usuarios para:', roomCode);
+        this.socket.emit('get_room_users', { roomCode });
+    }
+
     emitSwipe(roomCode: string, cardId: string | number, action: 'like' | 'dislike') {
         this.socket.emit('send_swipe', { roomCode, cardId, action });
     }
 
     disconnect() {
+        console.log('[WebsocketService] disconnecting socket');
         if (this.socket) {
             this.socket.disconnect();
             this.connectionStatus$.next({
                 status: 'idle',
-                message: 'Pendiente de conexión...',
+                message: 'Esperando conexión con el servidor...',
             });
+            this.clearSession();
         }
+    }
+
+    clearSession() {
+        this.roomName.set('');
+        this.nickname.set('');
+        sessionStorage.removeItem('game_session');
+        localStorage.removeItem('game_session');
     }
 }

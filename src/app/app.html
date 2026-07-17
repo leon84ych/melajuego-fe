@@ -10,8 +10,8 @@
     <button
     type="button"
     class="menu-button"
-    [class.active]="view === 'configure'"
-    (click)="setView('configure')"
+    [class.active]="view === 'connection'"
+    (click)="setView('connection')"
   >
     Salas
   </button>
@@ -36,6 +36,6 @@
 <main class="app-view">
   <app-game-room *ngIf="view === 'play'"></app-game-room>
   <app-history *ngIf="view === 'history'"></app-history>
-  <app-configure *ngIf="view === 'configure'"></app-configure>
+  <app-connection *ngIf="view === 'connection'"></app-connection>
   <app-about *ngIf="view === 'about'"></app-about>
 </main>

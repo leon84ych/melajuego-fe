@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { BaseGameComponent, BatchStartedPayload, RoomBatchScores } from '../../../data/DataInterfaces';
+import { BaseGameComponent, BatchStartedPayload, GameCardSwipePayload, GameCardSwipeResult, RoomBatchScores } from '../../../data/DataInterfaces';
 import { CardSet } from './card-set/card-set';
 import { RoomScores } from '../../scores/room-scores';
 import { CommonModule } from '@angular/common';
@@ -15,12 +15,12 @@ import { Configuration } from '../../../data/Configuration';
   templateUrl: './card-swipe-game.html',
   styleUrls: ['./card-swipe-game.css'],
 })
-export class CardSwipeGame implements BaseGameComponent {
+export class CardSwipeGame implements BaseGameComponent<GameCardSwipePayload, GameCardSwipeResult> {
 
   private readonly messageDurationMs = Configuration.messageTimeout;
 
-  @Input() payload: any;
-  @Output() onGameComplete = new EventEmitter<any>();
+  @Input() payload!: GameCardSwipePayload;
+  @Output() onGameComplete = new EventEmitter<GameCardSwipeResult>();
 
   readonly durationOptions = [1, 5, 10];
 

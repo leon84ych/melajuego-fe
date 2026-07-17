@@ -1,6 +1,7 @@
 <div class="configure-grid">
     <section class="configure-card form-column">
-        <ng-container *ngIf="!connected()">
+        @if (!websocket.isInRoom()) {
+        <ng-container>
             <h2>Conectarme a una Sala</h2>
 
             <div class="form-group">
@@ -27,20 +28,22 @@
                 {{ statusMessage }}
             </p>
         </ng-container>
-
-        <ng-container *ngIf="connected()">
+        } @else {
+        <ng-container>
             <div class="connected-header">
                 <h2>Conexión establecida</h2>
             </div>
-            <p class="connected-info">Jugando como <strong>{{ nickname }}</strong> en la Sala: <strong>{{ room
+            <p class="connected-info">Jugando como <strong>{{ websocket.nickname() }}</strong> en la Sala: <strong>{{
+                    websocket.roomName()
                     }}</strong></p>
             <div class="actions-row">
                 <button class="btn-action exit" (click)="leaveRoom()">Salir de la Sala</button>
             </div>
             <p class="status-text status-connected">
-                Disfruta tu juego
+                Conectado a una sala, disfruta tu juego
             </p>
         </ng-container>
+        }
     </section>
 
     <aside class="configure-card available-rooms">
@@ -53,15 +56,15 @@
         </div>
 
         <div class="rooms-list-container">
-          <ul class="rooms-list">
-            <li *ngFor="let r of availableRooms()">
-                <button type="button" class="room-select" (click)="selectRoom(r.roomCode)">
-                    <span class="room-name">{{ r.roomCode }}</span>
-                </button>
-                <span class="room-count">({{ r.playerCount }})</span>
-            </li>
-            <li *ngIf="availableRooms().length === 0">No hay salas abiertas</li>
-          </ul>
+            <ul class="rooms-list">
+                <li *ngFor="let r of availableRooms()">
+                    <button type="button" class="room-select" (click)="selectRoom(r.roomCode)">
+                        <span class="room-name">{{ r.roomCode }}</span>
+                    </button>
+                    <span class="room-count">({{ r.playerCount }})</span>
+                </li>
+                <li *ngIf="availableRooms().length === 0">No hay salas abiertas</li>
+            </ul>
         </div>
-    </aside> 
+    </aside>
 </div>

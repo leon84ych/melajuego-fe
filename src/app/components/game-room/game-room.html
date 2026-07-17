@@ -14,16 +14,16 @@
             (activate)="onComponentActivated($event)">
         </ng-container>
     </section>
-
+    @if (websocket.isInRoom()) {
     <!-- Mobile Toggle Trigger Button -->
     <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />
     <label for="sidebar-toggle" class="toggle-arrow-btn" aria-label="Toggle scores">
         <span class="arrow-icon">◀</span>
     </label>
     <!-- Side Panel Container -->
-     <div class="sidebar-backdrop"></div>
+    <div class="sidebar-backdrop"></div>
     <aside class="room-sidebar">
-        <players-list></players-list>
+        <players-list [state]="playerListState()"></players-list>
     </aside>
-
+    }
 </div>
