@@ -5,12 +5,14 @@ import { Subscription } from 'rxjs';
 import {
   ParticipantResultView,
   RoomBatchScores,
+  RoomGeneralScore,
   RoomGlobalParticipantStats,
-  RoomGlobalStats,
-  RoomGlobalStatsStorage
+  RoomGlobalStats
 } from '../../../../data/DataInterfaces';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CardSwipeRoomScoresService implements OnDestroy {
 
 
@@ -18,12 +20,11 @@ export class CardSwipeRoomScoresService implements OnDestroy {
   private readonly _roomBatchScores = signal<RoomBatchScores | null>(null);
   readonly roomBatchScores = this._roomBatchScores.asReadonly();
 
+  private readonly _roomGeneralScore = signal<RoomGeneralScore | null>(null);
+  readonly roomGeneralScore = this._roomGeneralScore.asReadonly();
+
   private readonly _roomGlobalStats = signal<RoomGlobalStats | null>(null);
   readonly roomGlobalStats = this._roomGlobalStats.asReadonly();
-
-  private readonly roomBatchScoresStoragePrefix = 'room_batch_scores_';
-  private readonly roomGlobalScoresStoragePrefix = 'room_global_scores_';
-  private readonly roomProcessedBatchesStoragePrefix = 'room_global_processed_batches_';
 
   private subscription = new Subscription();
 
@@ -36,13 +37,16 @@ export class CardSwipeRoomScoresService implements OnDestroy {
       this.websocket.roomBatchScores$.subscribe((scores) => {
         if (!scores) return;
         this._roomBatchScores.set(scores);
-        this.storeRoomBatchScores(scores);
-        this.updateGlobalStatsOnBatchFinished(scores);
+        if (scores.room_general_score) {
+          this._roomGeneralScore.set(scores.room_general_score);
+          this._roomGlobalStats.set(this.normalizeGeneralScores(scores));
+        } else {
+          this._roomGlobalStats.set(this.normalizeParticipantResults(scores));
+        }
       })
     );
 
-    this.loadStoredRoomBatchScores();
-    this.loadStoredRoomGlobalScores();
+    // no local storage loading for room scores; use only live server data
   }
 
   ngOnDestroy() {
@@ -54,6 +58,38 @@ export class CardSwipeRoomScoresService implements OnDestroy {
   readonly hasGlobalScores = computed(() => {
     const stats = this._roomGlobalStats();
     return !!stats && stats.participants.length > 0;
+  });
+
+  readonly hasRoomGeneralScores = computed(() => {
+    const scores = this._roomGeneralScore();
+    return !!scores && Object.keys(scores).length > 0;
+  });
+
+  readonly sortedRoomGeneralScores = computed(() => {
+    const scores = this._roomGeneralScore();
+    if (!scores) return [];
+
+    return Object.entries(scores)
+      .map(([nickname, entry]) => ({
+        nickname,
+        batchCount: entry.batchCount,
+        totalTimeMs: entry.totalTimeMs,
+        totalBatchTimeMs: entry.totalBatchTimeMs,
+        accumulatedScore: entry.accumulatedScore,
+        roomGeneralScore: entry.room_general_score,
+        cumulativeTimeRatio: entry.cumulativeTimeRatio,
+      }))
+      .sort((a, b) => {
+        if (b.roomGeneralScore !== a.roomGeneralScore) {
+          return b.roomGeneralScore - a.roomGeneralScore;
+        }
+        return a.nickname.localeCompare(b.nickname, 'es');
+      });
+  });
+
+  readonly leadingRoomGeneralParticipant = computed(() => {
+    const sorted = this.sortedRoomGeneralScores();
+    return sorted.length > 0 ? sorted[0] : null;
   });
 
   readonly sortedParticipantResults = computed(() => {
@@ -115,11 +151,10 @@ export class CardSwipeRoomScoresService implements OnDestroy {
       const generalStats = statsByNickname.get(participant.nickname.trim().toLowerCase());
       return {
         ...participant,
-        generalAveragePercent: generalStats?.averagePercent ?? participant.percentScore,
-        generalBatchesPlayed: generalStats?.batchesPlayed ?? 0,
-        generalTotalCards: generalStats?.totalCards ?? participant.totalCards,
-        generalWins: generalStats?.wins ?? 0,
-        generalBestPercent: generalStats?.bestPercent ?? participant.percentScore,
+        generalScore: generalStats?.room_general_score ?? participant.percentScore,
+        generalBatchCount: generalStats?.batchCount ?? 0,
+        generalTotalTimeMs: generalStats?.totalTimeMs ?? 0,
+        generalTotalBatchTimeMs: generalStats?.totalBatchTimeMs ?? 0,
       };
     });
   });
@@ -147,230 +182,57 @@ export class CardSwipeRoomScoresService implements OnDestroy {
     return Math.max(0, Math.round((endTimeMs - startTimeMs) / 1000));
   }
 
-  private getSavedRoomCode(): string | null {
-    const sessionJSON = sessionStorage.getItem('game_session') || localStorage.getItem('game_session');
-    if (!sessionJSON) return null;
-    try {
-      const session = JSON.parse(sessionJSON) as { room?: string };
-      return (session.room || '').trim() || null;
-    } catch {
-      return null;
-    }
-  }
+  private normalizeParticipantResults(scores: RoomBatchScores): RoomGlobalStats {
+    const participants: RoomGlobalParticipantStats[] = scores.participantResults.map((participant) => ({
+      nickname: participant.nickname,
+      batchCount: 1,
+      totalTimeMs: 0,
+      totalBatchTimeMs: scores.durationMinutes ? scores.durationMinutes * 60 * 1000 : 0,
+      accumulatedScore: participant.percentScore,
+      room_general_score: participant.percentScore,
+      cumulativeTimeRatio: 0,
+      updatedAt: scores.updatedAt || new Date().toISOString(),
+    }));
 
-  private loadStoredRoomBatchScores() {
-    const roomCode = this.getSavedRoomCode();
-    if (!roomCode) return;
-
-    const stored = this.getLatestStoredRoomBatchScores(roomCode);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored) as RoomBatchScores;
-      this._roomBatchScores.set(parsed);
-    } catch { /* Ignore */ }
-  }
-
-  private loadStoredRoomGlobalScores() {
-    const roomCode = this.getSavedRoomCode();
-    if (!roomCode) return;
-
-    const stored = localStorage.getItem(`${this.roomGlobalScoresStoragePrefix}${roomCode}`);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored) as RoomGlobalStatsStorage;
-      this._roomGlobalStats.set(this.normalizeGlobalStorage(parsed));
-    } catch { /* Ignore */ }
-  }
-
-  private storeRoomBatchScores(scores: RoomBatchScores) {
-    const timestamp = scores.updatedAt || new Date().toISOString();
-    localStorage.setItem(
-      `${this.roomBatchScoresStoragePrefix}${scores.roomCode}_${timestamp}`,
-      JSON.stringify(scores)
-    );
-  }
-
-  private getLatestStoredRoomBatchScores(roomCode: string): string | null {
-    const prefix = `${this.roomBatchScoresStoragePrefix}${roomCode}_`;
-    let latestKey: string | null = null;
-    let latestTimestamp = Number.NEGATIVE_INFINITY;
-
-    for (let index = 0; index < localStorage.length; index++) {
-      const key = localStorage.key(index);
-      if (!key || !key.startsWith(prefix)) continue;
-
-      const timestampText = key.slice(prefix.length);
-      const timestamp = this.parseTime(timestampText);
-      if (!Number.isFinite(timestamp) || timestamp <= latestTimestamp) continue;
-
-      latestTimestamp = timestamp;
-      latestKey = key;
-    }
-
-    if (latestKey) return localStorage.getItem(latestKey);
-    return localStorage.getItem(`${this.roomBatchScoresStoragePrefix}${roomCode}`);
-  }
-
-  private updateGlobalStatsOnBatchFinished(scores: RoomBatchScores) {
-    if (!scores.gameFinished || !scores.roomCode || !Array.isArray(scores.participantResults)) return;
-
-    const batchKey = this.getBatchKey(scores);
-    if (!batchKey) return;
-
-    const processedBatches = this.getProcessedBatchKeys(scores.roomCode);
-    if (processedBatches.has(batchKey)) return;
-
-    const storedGlobal = this.getStoredGlobalStorage(scores.roomCode);
-    const byNickname = new Map<string, RoomGlobalStatsStorage['participants'][number]>(
-      storedGlobal.participants.map((participant) => [
-        participant.nickname.trim().toLowerCase(),
-        { ...participant },
-      ])
-    );
-
-    const batchWinner = this.getBatchWinner(scores);
-
-    for (const participant of scores.participantResults) {
-      const key = participant.nickname.trim().toLowerCase();
-      const existing = byNickname.get(key);
-      const totalPercentSum = (existing?.totalPercentSum ?? 0) + participant.percentScore;
-      const batchesPlayed = (existing?.batchesPlayed ?? 0) + 1;
-
-      byNickname.set(key, {
-        nickname: participant.nickname,
-        batchesPlayed,
-        totalCorrect: (existing?.totalCorrect ?? 0) + participant.correctCount,
-        totalIncorrect: (existing?.totalIncorrect ?? 0) + participant.incorrectCount,
-        totalCards: (existing?.totalCards ?? 0) + participant.totalCards,
-        totalPercentSum,
-        bestPercent: Math.max(existing?.bestPercent ?? 0, participant.percentScore),
-        wins: (existing?.wins ?? 0) + (participant.nickname === batchWinner ? 1 : 0),
-        updatedAt: scores.updatedAt || new Date().toISOString(),
-      });
-    }
-
-    const nextStorage: RoomGlobalStatsStorage = {
+    return {
       roomCode: scores.roomCode,
       updatedAt: scores.updatedAt || new Date().toISOString(),
-      participants: Array.from(byNickname.values()),
+      participants,
     };
-
-    localStorage.setItem(`${this.roomGlobalScoresStoragePrefix}${scores.roomCode}`, JSON.stringify(nextStorage));
-    this._roomGlobalStats.set(this.normalizeGlobalStorage(nextStorage));
-
-    processedBatches.add(batchKey);
-    localStorage.setItem(
-      `${this.roomProcessedBatchesStoragePrefix}${scores.roomCode}`,
-      JSON.stringify(Array.from(processedBatches))
-    );
   }
 
-
-    private getStoredGlobalStorage(roomCode: string): RoomGlobalStatsStorage {
-    const raw = localStorage.getItem(`${this.roomGlobalScoresStoragePrefix}${roomCode}`);
-    if (!raw) {
-      return { roomCode, updatedAt: new Date().toISOString(), participants: [] };
-    }
-
-    try {
-      const parsed = JSON.parse(raw) as RoomGlobalStatsStorage;
-      if (!Array.isArray(parsed.participants)) {
-        return { roomCode, updatedAt: new Date().toISOString(), participants: [] };
-      }
-      return parsed;
-    } catch {
-      return { roomCode, updatedAt: new Date().toISOString(), participants: [] };
-    }
-  }
-
-  private normalizeGlobalStorage(storage: RoomGlobalStatsStorage): RoomGlobalStats {
-    const participants: RoomGlobalParticipantStats[] = storage.participants
-      .map((participant) => ({
-        nickname: participant.nickname,
-        batchesPlayed: participant.batchesPlayed,
-        totalCorrect: participant.totalCorrect,
-        totalIncorrect: participant.totalIncorrect,
-        totalCards: participant.totalCards,
-        averagePercent: participant.batchesPlayed > 0
-          ? Math.round(participant.totalPercentSum / participant.batchesPlayed)
-          : 0,
-        bestPercent: participant.bestPercent,
-        wins: participant.wins,
-        updatedAt: participant.updatedAt,
+  private normalizeGeneralScores(scores: RoomBatchScores): RoomGlobalStats {
+    const participants: RoomGlobalParticipantStats[] = Object.entries(scores.room_general_score || {})
+      .map(([nickname, entry]) => ({
+        nickname,
+        batchCount: entry.batchCount,
+        totalTimeMs: entry.totalTimeMs,
+        totalBatchTimeMs: entry.totalBatchTimeMs,
+        accumulatedScore: entry.accumulatedScore,
+        room_general_score: entry.room_general_score,
+        cumulativeTimeRatio: entry.cumulativeTimeRatio,
+        updatedAt: scores.updatedAt || new Date().toISOString(),
       }))
       .sort(this.compareGlobalParticipantStats);
 
     return {
-      roomCode: storage.roomCode,
-      updatedAt: storage.updatedAt,
+      roomCode: scores.roomCode,
+      updatedAt: scores.updatedAt || new Date().toISOString(),
       participants,
     };
   }
 
   private compareGlobalParticipantStats(
-    a: Pick<RoomGlobalParticipantStats, 'averagePercent' | 'wins' | 'totalCorrect' | 'nickname'>,
-    b: Pick<RoomGlobalParticipantStats, 'averagePercent' | 'wins' | 'totalCorrect' | 'nickname'>
+    a: Pick<RoomGlobalParticipantStats, 'room_general_score' | 'accumulatedScore' | 'nickname'>,
+    b: Pick<RoomGlobalParticipantStats, 'room_general_score' | 'accumulatedScore' | 'nickname'>
   ): number {
-    if (b.averagePercent !== a.averagePercent) {
-      return b.averagePercent - a.averagePercent;
+    if (b.room_general_score !== a.room_general_score) {
+      return b.room_general_score - a.room_general_score;
     }
-    if (b.wins !== a.wins) {
-      return b.wins - a.wins;
-    }
-    if (b.totalCorrect !== a.totalCorrect) {
-      return b.totalCorrect - a.totalCorrect;
+    if (b.accumulatedScore !== a.accumulatedScore) {
+      return b.accumulatedScore - a.accumulatedScore;
     }
     return a.nickname.localeCompare(b.nickname, 'es');
-  }
-
-  private getProcessedBatchKeys(roomCode: string): Set<string> {
-    const raw = localStorage.getItem(`${this.roomProcessedBatchesStoragePrefix}${roomCode}`);
-    if (!raw) {
-      return new Set<string>();
-    }
-
-    try {
-      const parsed = JSON.parse(raw) as string[];
-      return new Set(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      return new Set<string>();
-    }
-  }
-
-  private getBatchKey(scores: RoomBatchScores): string | null {
-    const anchor = scores.startedAt || scores.updatedAt;
-    if (!scores.roomCode || !anchor) {
-      return null;
-    }
-    return `${scores.roomCode}__${anchor}`;
-  }
-
-  private getBatchWinner(scores: RoomBatchScores): string | null {
-    if (scores.winner) {
-      return scores.winner;
-    }
-
-    const sorted = [...scores.participantResults].sort((a, b) => {
-      if (b.percentScore !== a.percentScore) {
-        return b.percentScore - a.percentScore;
-      }
-      if (b.correctCount !== a.correctCount) {
-        return b.correctCount - a.correctCount;
-      }
-
-      const aTime = this.parseTime(a.timestamp);
-      const bTime = this.parseTime(b.timestamp);
-
-      if (Number.isFinite(aTime) && Number.isFinite(bTime) && aTime !== bTime) {
-        return aTime - bTime;
-      }
-
-      return a.nickname.localeCompare(b.nickname, 'es');
-    });
-
-    return sorted.length > 0 ? sorted[0].nickname : null;
   }
 
 }

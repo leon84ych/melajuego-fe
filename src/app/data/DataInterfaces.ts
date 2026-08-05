@@ -39,11 +39,26 @@ export interface ParticipantBatchResult {
   timestamp: string;
 }
 
+export interface RoomGeneralScoreEntry {
+  batchCount: number;
+  totalTimeMs: number;
+  totalBatchTimeMs: number;
+  accumulatedScore: number;
+  room_general_score: number;
+  cumulativeTimeRatio: number;
+}
+
+export interface RoomGeneralScore {
+  [nickname: string]: RoomGeneralScoreEntry;
+}
+
 export interface RoomBatchScores {
   roomCode: string;
   participantResults: ParticipantBatchResult[];
   winner?: string;
   startedAt?: string;
+  durationMinutes?: number;
+  room_general_score?: RoomGeneralScore;
   gameFinished?: boolean;
   updatedAt: string;
 }
@@ -103,14 +118,12 @@ export interface ParticipantResultView extends ParticipantBatchResult {
 
 export interface RoomGlobalParticipantStats {
   nickname: string;
-  batchesPlayed: number;
-  totalCorrect: number;
-  totalIncorrect: number;
-  totalCards: number;
-  averagePercent: number;
-  bestPercent: number;
-  wins: number;
-  updatedAt: string;
+  batchCount: number;
+  totalTimeMs: number;
+  totalBatchTimeMs: number;
+  accumulatedScore: number;
+  room_general_score: number;
+  cumulativeTimeRatio: number;
 };
 
 export interface RoomGlobalStats {
@@ -122,11 +135,7 @@ export interface RoomGlobalStats {
 export interface RoomGlobalStatsStorage {
   roomCode: string;
   updatedAt: string;
-  participants: Array<
-    Omit<RoomGlobalParticipantStats, 'averagePercent'> & {
-      totalPercentSum: number;
-    }
-  >;
+  participants: RoomGlobalParticipantStats[];
 };
 
 export interface BaseGameComponent<T = any, R = any> {

@@ -216,11 +216,22 @@ export class WebsocketService {
                     this.batchStarted$.next(null);
                 }
 
+                const roomGeneralScore = Array.isArray(data.room_general_score)
+                    ? data.room_general_score.reduce((acc: Record<string, any>, entry: any) => {
+                          if (entry?.nickname) {
+                              acc[entry.nickname] = entry;
+                          }
+                          return acc;
+                      }, {})
+                    : data.room_general_score;
+
                 this.roomBatchScores$.next({
                     roomCode: data.roomCode,
                     participantResults: data.participantResults,
                     winner: data.winner,
                     startedAt: data.startedAt,
+                    durationMinutes: data.durationMinutes,
+                    room_general_score: roomGeneralScore,
                     gameFinished: data.gameFinished,
                     updatedAt: data.updatedAt || new Date().toISOString(),
                 });

@@ -6,7 +6,6 @@ import { CardSwipeRoomScoresService } from '../../../../services/games/card-swip
   selector: 'app-card-swipe-room-scores',
   standalone: true,
   imports: [CommonModule, SlicePipe, DatePipe],
-  providers: [CardSwipeRoomScoresService],
   templateUrl: './card-swipe-room-scores.html',
   styleUrls: ['./card-swipe-room-scores.css'],
 })

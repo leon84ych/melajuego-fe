@@ -4,18 +4,12 @@
         @if (scoresService.roomBatchScores()) {
             <section class="scoreboard">
                 <div class="scoreboard-header">
-                    <h3>Puntajes de sala</h3>
+                    <h3>Puntajes Última Partida:</h3>
                     <span class="scoreboard-updated">
                         Actualizado {{ scoresService.roomBatchScores()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
                     </span>
                 </div>
                 
-                @if (scoresService.leadingParticipant()) {
-                    <span class="winner-text">
-                        Ganador de la última partida: {{ scoresService.leadingParticipant()?.nickname }}
-                    </span>
-                }
-
                 <ul>
                     <!-- En la nueva sintaxis, limitamos la lista usando slice directamente en el TS o manteniendo el pipe -->
                     @for (participant of (scoresService.sortedParticipantResults() | slice:0:100); track participant.nickname; let i = $index) {
@@ -34,36 +28,29 @@
             </section>
         }
 
-        <!-- SECCIÓN: RESULTADOS GLOBALES -->
-        @if (scoresService.hasGlobalScores()) {
+        <!-- SECCIÓN: RESULTADOS GENERALES DE SALA -->
+        @if (scoresService.hasRoomGeneralScores()) {
             <section class="scoreboard global-scoreboard">
                 <div class="scoreboard-header">
-                    <h3>Resultados globales de sala</h3>
+                    <h3>Resultados Acumulados Sala:</h3>
                     <span class="scoreboard-updated">
-                        Actualizado {{ scoresService.roomGlobalStats()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+                        Actualizado {{ scoresService.roomBatchScores()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
                     </span>
                 </div>
-
-                @if (scoresService.leadingGlobalParticipant()) {
-                    <span class="winner-text">
-                        Ganador general: {{ scoresService.leadingGlobalParticipant()?.nickname }}
-                    </span>
-                }
-
                 <ul>
-                    @for (participant of (scoresService.roomGlobalStats()?.participants || []); track participant.nickname; let i = $index) {
+                    @for (participant of (scoresService.sortedRoomGeneralScores() | slice:0:100); track participant.nickname; let i = $index) {
                         <li [class.winner]="i === 0">
                             <div class="participant-meta participant-general-meta">
                                 <span class="participant-name">{{ participant.nickname }}</span>
-                                <span class="participant-score">Promedio: {{ participant.averagePercent }}%</span>
-                                <span>Batches: {{ participant.batchesPlayed }}</span>
-                                <span>Victorias: {{ participant.wins }}</span>
-                                <span>Mejor: {{ participant.bestPercent }}%</span>
+                                <span class="participant-score">Puntaje general: {{ participant.roomGeneralScore | number:'1.2-2' }}</span>
+                                <span>Tiempo total: {{ participant.totalTimeMs / 1000 | number:'1.0-0' }}s</span>
+                                <span>Ratio: {{ participant.cumulativeTimeRatio | number:'1.2-2' }}</span>
                             </div>
                         </li>
                     }
                 </ul>
             </section>
         }
+
     </div>
 </aside>
