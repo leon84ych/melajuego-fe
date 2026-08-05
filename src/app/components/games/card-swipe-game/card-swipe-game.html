@@ -1,10 +1,19 @@
-<app-card-set></app-card-set>
-<app-room-scores *ngIf="shouldShowRoomScores()"></app-room-scores>
+<app-card-set
+  (nextBatch)="nextBatch()"
+  (restart)="restart()"
+></app-card-set>
 
+<div class="batch-actions" *ngIf="batchComplete && !isPlayingInRoom()">
+    <button class="btn-action restart" type="button" (click)="nextBatch()">Jugar otra ronda</button>
+    <button class="btn-action restart" type="button" (click)="restart()">Reiniciar todo</button>
+</div>
 
-<div>
-    {{isHost }} - {{gameInProgress}}
-    <ng-container *ngIf="isHost && !gameInProgress">
+@if (!batchStarted()) {
+<app-card-swipe-room-scores></app-card-swipe-room-scores>
+}
+@if (isHost() && !batchStarted() && roomName().length > 0) {
+<div class="room-duration-panel">
+    <div class="result-summary">
         <div class="room-duration">
             <label for="duration-select" class="room-label">Duración de la partida</label>
             <select #durationSelect id="duration-select" class="duration-select" [value]="selectedDurationMinutes()"
@@ -16,9 +25,9 @@
         <button class="btn-action start" (click)="requestBatchStart(durationSelect.value)">
             Iniciar partida
         </button>
-    </ng-container>
+    </div>
 
     <p class="room-batch-message" *ngIf="batchMessage()">{{ batchMessage() }}</p>
     <p class="room-message" *ngIf="roomMessage()">{{ roomMessage() }}</p>
-
 </div>
+}

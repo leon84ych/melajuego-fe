@@ -204,7 +204,7 @@ export class WebsocketService {
                 }
             });
         });
-
+        // 4. Escuchar los resultados de la partida y actualizar el estado global
         this.socket.on('room_batch_scores', (data: any) => {
             console.log('[WebsocketService] room_batch_scores', data);
             this.zone.run(() => {
@@ -296,8 +296,6 @@ export class WebsocketService {
     }
 
 
-
-
     refreshRoomState(roomCode: string, nickname: string) {
         if (!roomCode.trim() || !nickname.trim()) {
             return;
@@ -318,19 +316,16 @@ export class WebsocketService {
         }
     }
 
+    // Funciones para iniciar partidas 
     startBatch(roomCode: string, itemIds: string[], durationMinutes: number) {
         console.log('[WebsocketService] startBatch requested', { roomCode, itemIds, durationMinutes });
         this.socket.emit('start_batch', { roomCode, itemIds, durationMinutes });
     }
 
+    // Enviar los resultados de la partida al servidor
     submitBatchResult(result: ParticipantBatchResult) {
         console.log('[WebsocketService] submitBatchResult requested', result);
         this.socket.emit('submit_batch_result', result);
-    }
-
-    requestRoomBatchScores(roomCode: string) {
-        console.log('[WebsocketService] requestRoomBatchScores requested', { roomCode });
-        this.socket.emit('get_room_batch_scores', { roomCode });
     }
 
     requestAvailableRooms() {

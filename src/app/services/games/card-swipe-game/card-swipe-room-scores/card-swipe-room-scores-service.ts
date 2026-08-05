@@ -1,4 +1,4 @@
-import { WebsocketService } from '../Websocket';
+import { WebsocketService } from '../../../Websocket';
 import { Injectable, OnDestroy, computed, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -8,10 +8,10 @@ import {
   RoomGlobalParticipantStats,
   RoomGlobalStats,
   RoomGlobalStatsStorage
-} from '../../data/DataInterfaces';
+} from '../../../../data/DataInterfaces';
 
 @Injectable()
-export class RoomScoresService implements OnDestroy {
+export class CardSwipeRoomScoresService implements OnDestroy {
 
 
   // Signals de estado expuestas como Readonly para proteger la inmutabilidad desde fuera
@@ -43,11 +43,6 @@ export class RoomScoresService implements OnDestroy {
 
     this.loadStoredRoomBatchScores();
     this.loadStoredRoomGlobalScores();
-
-    const roomCode = this.getSavedRoomCode();
-    if (roomCode) {
-      this.websocket.requestRoomBatchScores(roomCode);
-    }
   }
 
   ngOnDestroy() {
@@ -106,6 +101,36 @@ export class RoomScoresService implements OnDestroy {
 
   readonly leadingParticipant = computed(() => {
     const sorted = this.sortedParticipantResults();
+    return sorted.length > 0 ? sorted[0] : null;
+  });
+
+  readonly sortedParticipantResultsWithGeneral = computed(() => {
+    const sorted = this.sortedParticipantResults();
+    const globalParticipants = this._roomGlobalStats()?.participants ?? [];
+    const statsByNickname = new Map(
+      globalParticipants.map((participant) => [participant.nickname.trim().toLowerCase(), participant])
+    );
+
+    return sorted.map((participant) => {
+      const generalStats = statsByNickname.get(participant.nickname.trim().toLowerCase());
+      return {
+        ...participant,
+        generalAveragePercent: generalStats?.averagePercent ?? participant.percentScore,
+        generalBatchesPlayed: generalStats?.batchesPlayed ?? 0,
+        generalTotalCards: generalStats?.totalCards ?? participant.totalCards,
+        generalWins: generalStats?.wins ?? 0,
+        generalBestPercent: generalStats?.bestPercent ?? participant.percentScore,
+      };
+    });
+  });
+
+  readonly globalParticipantResults = computed(() => {
+    const stats = this._roomGlobalStats();
+    return stats?.participants ?? [];
+  });
+
+  readonly leadingGlobalParticipant = computed(() => {
+    const sorted = this.globalParticipantResults();
     return sorted.length > 0 ? sorted[0] : null;
   });
 
@@ -198,7 +223,7 @@ export class RoomScoresService implements OnDestroy {
     if (processedBatches.has(batchKey)) return;
 
     const storedGlobal = this.getStoredGlobalStorage(scores.roomCode);
-    const byNickname = new Map(
+    const byNickname = new Map<string, RoomGlobalStatsStorage['participants'][number]>(
       storedGlobal.participants.map((participant) => [
         participant.nickname.trim().toLowerCase(),
         { ...participant },
@@ -226,8 +251,20 @@ export class RoomScoresService implements OnDestroy {
       });
     }
 
-    // Aquí deberías guardar 'byNickname' de vuelta a localStorage y actualizar _roomGlobalStats.set(...)
-    // asumiendo la lógica restante de tus helpers privados estructurales.
+    const nextStorage: RoomGlobalStatsStorage = {
+      roomCode: scores.roomCode,
+      updatedAt: scores.updatedAt || new Date().toISOString(),
+      participants: Array.from(byNickname.values()),
+    };
+
+    localStorage.setItem(`${this.roomGlobalScoresStoragePrefix}${scores.roomCode}`, JSON.stringify(nextStorage));
+    this._roomGlobalStats.set(this.normalizeGlobalStorage(nextStorage));
+
+    processedBatches.add(batchKey);
+    localStorage.setItem(
+      `${this.roomProcessedBatchesStoragePrefix}${scores.roomCode}`,
+      JSON.stringify(Array.from(processedBatches))
+    );
   }
 
 
@@ -263,24 +300,29 @@ export class RoomScoresService implements OnDestroy {
         wins: participant.wins,
         updatedAt: participant.updatedAt,
       }))
-      .sort((a, b) => {
-        if (b.averagePercent !== a.averagePercent) {
-          return b.averagePercent - a.averagePercent;
-        }
-        if (b.wins !== a.wins) {
-          return b.wins - a.wins;
-        }
-        if (b.totalCorrect !== a.totalCorrect) {
-          return b.totalCorrect - a.totalCorrect;
-        }
-        return a.nickname.localeCompare(b.nickname, 'es');
-      });
+      .sort(this.compareGlobalParticipantStats);
 
     return {
       roomCode: storage.roomCode,
       updatedAt: storage.updatedAt,
       participants,
     };
+  }
+
+  private compareGlobalParticipantStats(
+    a: Pick<RoomGlobalParticipantStats, 'averagePercent' | 'wins' | 'totalCorrect' | 'nickname'>,
+    b: Pick<RoomGlobalParticipantStats, 'averagePercent' | 'wins' | 'totalCorrect' | 'nickname'>
+  ): number {
+    if (b.averagePercent !== a.averagePercent) {
+      return b.averagePercent - a.averagePercent;
+    }
+    if (b.wins !== a.wins) {
+      return b.wins - a.wins;
+    }
+    if (b.totalCorrect !== a.totalCorrect) {
+      return b.totalCorrect - a.totalCorrect;
+    }
+    return a.nickname.localeCompare(b.nickname, 'es');
   }
 
   private getProcessedBatchKeys(roomCode: string): Set<string> {

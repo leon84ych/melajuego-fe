@@ -1,7 +1,7 @@
 .game-room-layout {
     display: flex;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     position: relative;
     font-family: system-ui, -apple-system, sans-serif;
@@ -18,6 +18,7 @@
 /* --- Aside Sidebar Panel --- */
 .room-sidebar {
     width: 320px;
+    min-width: 320px;
     height: 100%;
     background-color: #a74997;
     color: #f8fafc;
@@ -26,6 +27,8 @@
     /* Stacks header above list */
     border-left: 1px solid #334155;
     box-sizing: border-box;
+    transition: width 0.3s ease, min-width 0.3s ease, transform 0.3s ease;
+    overflow: hidden;
 }
 
 .sidebar-header {
@@ -68,9 +71,41 @@
 }
 
 /* --- Hide Toggle Mechanisms on Desktop Screens --- */
-.sidebar-checkbox,
+.sidebar-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
 .toggle-arrow-btn {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    right: 320px;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 50px;
+    background-color: #a74997;
+    color: #f8fafc;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    z-index: 101;
+    box-shadow: -4px 0 10px rgba(167, 73, 151, 0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-checkbox:checked~.room-sidebar {
+    width: 0;
+    min-width: 0;
+    border-left: none;
+}
+
+.sidebar-checkbox:checked~.toggle-arrow-btn {
+    right: 0;
 }
 
 .arrow-icon {
@@ -129,9 +164,11 @@
     /* Slide sidebar into frame */
     .sidebar-checkbox:checked~.room-sidebar {
         transform: translateX(0);
+        width: 320px;
+        min-width: 320px;
+        border-left: 1px solid #334155;
     }
 
-    /* Move the arrow pull-tab over and rotate it to point out */
     .sidebar-checkbox:checked~.toggle-arrow-btn {
         right: 320px;
     }

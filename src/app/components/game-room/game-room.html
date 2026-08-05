@@ -2,15 +2,10 @@
     <!-- Cabecera de la sala (Siempre visible: PIN, Usuarios, etc.) 
   <app-game-header [roomCode]="roomCode"></app-game-header>
   -->
-
     <!-- CONTENEDOR DINÁMICO DEL JUEGO -->
     <section class="game-viewport" *ngIf="currentGameComponent">
-        <!--<ng-container *ngComponentOutlet="currentGameComponent; 
-                          inputs: { payload: currentGamePayload };
-                          outputs: { onGameComplete: handleGameFinished.bind(this) }">
-        </ng-container>
-    -->
-        <ng-container *ngComponentOutlet="currentGameComponent; inputs: { payload: currentGamePayload }"
+        <ng-container
+            *ngComponentOutlet="currentGameComponent; inputs: { payload: currentGamePayload , state: playerListState() }"
             (activate)="onComponentActivated($event)">
         </ng-container>
     </section>

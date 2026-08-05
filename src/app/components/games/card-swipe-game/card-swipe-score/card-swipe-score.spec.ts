@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RoomScores } from './room-scores';
+import { CardSwipeScore } from './card-swipe-score';
 
-describe('Scores', () => {
-  let component: RoomScores;
-  let fixture: ComponentFixture<RoomScores>;
+describe('CardSwipeScore', () => {
+  let component: CardSwipeScore;
+  let fixture: ComponentFixture<CardSwipeScore>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RoomScores]
+      imports: [CardSwipeScore]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RoomScores);
+    fixture = TestBed.createComponent(CardSwipeScore);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

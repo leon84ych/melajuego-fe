@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit, signal, Type } from '@angular/core';
-import { CardSwipeGame } from '../games/card-swipe-game/card-swipe-game';
 import { WebsocketService } from '../../services/Websocket';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { BaseGameComponent, BaseGamePayload, PlayersListState, RoomState } from '../../data/DataInterfaces';
 import { PlayersList } from '../playersList/playersList';
+import { CardSwipeGame } from '../games/card-swipe-game/card-swipe-game';
 
 @Component({
   selector: 'app-game-room',
-  imports: [CardSwipeGame, CommonModule, PlayersList],
+  imports: [CommonModule, PlayersList],
   templateUrl: './game-room.html',
   styleUrls: ['./game-room.css'],
 })

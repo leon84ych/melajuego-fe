@@ -1,167 +1,63 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { BaseGameComponent, BatchStartedPayload, GameCardSwipePayload, GameCardSwipeResult, RoomBatchScores } from '../../../data/DataInterfaces';
+import { Component, EventEmitter, Input, Output, inject, input } from '@angular/core';
+import { BaseGameComponent, GameCardSwipePayload, GameCardSwipeResult, PlayersListState } from '../../../data/DataInterfaces';
 import { CardSet } from './card-set/card-set';
-import { RoomScores } from '../../scores/room-scores';
+import { CardSwipeRoomScores } from './card-swipe-room-scores/card-swipe-room-scores';
 import { CommonModule } from '@angular/common';
-import profiles from '../../../data/Profiles.json';
-import { WebsocketService } from '../../../services/Websocket';
-import { Subscription } from 'rxjs';
-import { Configuration } from '../../../data/Configuration';
-
+import { CardSwipeService } from '../../../services/games/card-swipe-game/card-swipe/card-swipe-service';
+import { CardSetService } from '../../../services/games/card-swipe-game/card-set/card-set-service';
 
 @Component({
   selector: 'app-card-swipe-game',
-  imports: [CardSet, RoomScores, CommonModule],
+  imports: [CardSet, CardSwipeRoomScores, CommonModule],
   templateUrl: './card-swipe-game.html',
   styleUrls: ['./card-swipe-game.css'],
 })
 export class CardSwipeGame implements BaseGameComponent<GameCardSwipePayload, GameCardSwipeResult> {
-
-  private readonly messageDurationMs = Configuration.messageTimeout;
-
+  
+  state = input.required<PlayersListState>();
   @Input() payload!: GameCardSwipePayload;
   @Output() onGameComplete = new EventEmitter<GameCardSwipeResult>();
 
-  readonly durationOptions = [1, 5, 10];
+  private readonly cardSwipeService = inject(CardSwipeService);
+  private readonly cardSetService = inject(CardSetService);
 
-  selectedDurationMinutes = signal(5);
-  gameInProgress = false;
-  isHost = false;
+  readonly durationOptions = this.cardSwipeService.durationOptions;
+  readonly selectedDurationMinutes = this.cardSwipeService.selectedDurationMinutes;
+  readonly roomName = this.cardSwipeService.roomName;
+  readonly roomMessage = this.cardSwipeService.roomMessage;
+  readonly batchMessage = this.cardSwipeService.batchMessage;
+  readonly batchStarted = this.cardSwipeService.gameInProgress;
 
-  roomName = signal('');
-  roomMessage = signal('');
-  batchMessage = signal('');
-
-  private roomMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
-  private batchMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
-  private subscription = new Subscription();
-
-
-  constructor(private websocket: WebsocketService) {
-
-
-    this.subscription.add(
-      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload | null) => {
-        if (!payload) {
-          return;
-        }
-        this.setTimedBatchMessage(`Partida iniciada por ${payload.host}. Mazo recibido (${payload.itemIds.length} cartas).`);
-        this.gameInProgress = true;
-      })
-    );
-
-    this.subscription.add(
-      this.websocket.roomBatchScores$.subscribe((scores: RoomBatchScores) => {
-        if (!scores?.roomCode) {
-          return;
-        }
-
-        const currentRoom = String(this.roomName()).trim().toUpperCase();
-        const scoresRoom = String(scores.roomCode).trim().toUpperCase();
-        if (!currentRoom || currentRoom !== scoresRoom) {
-          return;
-        }
-
-        if (scores.gameFinished) {
-          this.gameInProgress = false;
-          this.setTimedBatchMessage('Partida finalizada. Puedes iniciar otro juego.');
-        }
-      })
-    );
+  get batchComplete(): boolean {
+    return this.cardSetService.batchComplete;
   }
 
-
-
-
-
-  shouldShowRoomScores(): boolean {
-    return false;
-    //return this.isPlayingInRoom() && !this.isSoloGame() && (this.batchComplete || this.sharedGameFinished());
+  isPlayingInRoom(): boolean {
+    return this.cardSetService.isPlayingInRoom();
   }
 
   onDurationChange(event: Event): void {
     const value = Number((event.target as HTMLSelectElement)?.value);
-    if (this.durationOptions.includes(value)) {
-      this.selectedDurationMinutes.set(value);
-    }
+    this.cardSwipeService.setSelectedDuration(value);
   }
 
   requestBatchStart(selectedDuration?: string | number) {
-    if (!this.roomName()) {
-      return;
-    }
-    const parsedSelectedDuration = Number(selectedDuration ?? this.selectedDurationMinutes());
-    const duration = this.durationOptions.includes(parsedSelectedDuration)
-      ? parsedSelectedDuration
-      : this.selectedDurationMinutes();
-
-    this.selectedDurationMinutes.set(duration);
-    this.setTimedBatchMessage(`Iniciando partida (${duration} min)... solicitando mazo compartido.`);
-    this.gameInProgress = true;
-    const itemIds = this.pickRandomItemIds();
-    this.websocket.startBatch(this.roomName(), itemIds, duration);
+    this.cardSwipeService.requestBatchStart(selectedDuration, this.roomName());
   }
 
-  private pickRandomItemIds(): string[] {
-    const allIds = (profiles as { id: string | number }[])
-      .map((item) => String(item.id))
-      .filter((id) => id.length > 0);
-
-    const shuffled = [...allIds].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 10);
+  isHost(): boolean {
+    return this.cardSwipeService.isHost(this.state().roomHost);
   }
 
-
-  private setTimedRoomMessage(message: string) {
-    this.roomMessage.set(message);
-    this.scheduleRoomMessageClear(message);
+  nextBatch(): void {
+    if (!this.cardSetService.isPlayingInRoom()) {
+      this.cardSetService.nextBatch();
+    }
   }
 
-  private setTimedBatchMessage(message: string) {
-    this.batchMessage.set(message);
-    this.scheduleBatchMessageClear(message);
+  restart(): void {
+    if (!this.cardSetService.isPlayingInRoom()) {
+      this.cardSetService.restart();
+    }
   }
-
-    private scheduleRoomMessageClear(message: string) {
-    if (this.roomMessageTimeoutId) {
-      clearTimeout(this.roomMessageTimeoutId);
-      this.roomMessageTimeoutId = null;
-    }
-
-    if (!message) {
-      return;
-    }
-
-    this.roomMessageTimeoutId = setTimeout(() => {
-      this.roomMessage.set('');
-      this.roomMessageTimeoutId = null;
-    }, this.messageDurationMs);
-  }
-
-  private scheduleBatchMessageClear(message: string) {
-    if (this.batchMessageTimeoutId) {
-      clearTimeout(this.batchMessageTimeoutId);
-      this.batchMessageTimeoutId = null;
-    }
-
-    if (!message) {
-      return;
-    }
-
-    this.batchMessageTimeoutId = setTimeout(() => {
-      this.batchMessage.set('');
-      this.batchMessageTimeoutId = null;
-    }, this.messageDurationMs);
-  }
-
-    ngOnDestroy() {
-    if (this.roomMessageTimeoutId) {
-      clearTimeout(this.roomMessageTimeoutId);
-    }
-    if (this.batchMessageTimeoutId) {
-      clearTimeout(this.batchMessageTimeoutId);
-    }
-    this.subscription.unsubscribe();
-  }
-
 }
