@@ -1,16 +1,10 @@
-<app-card-set
-  (nextBatch)="nextBatch()"
-  (restart)="restart()"
-></app-card-set>
+<app-card-set (nextBatch)="nextBatch()" (restart)="restart()"></app-card-set>
 
 <div class="batch-actions" *ngIf="batchComplete && !isPlayingInRoom()">
     <button class="btn-action restart" type="button" (click)="nextBatch()">Jugar otra ronda</button>
     <button class="btn-action restart" type="button" (click)="restart()">Reiniciar todo</button>
 </div>
 
-@if (!batchStarted()) {
-<app-game-room-scores></app-game-room-scores>
-}
 @if (isHost() && !batchStarted() && roomName().length > 0) {
 <div class="room-duration-panel">
     <div class="result-summary">

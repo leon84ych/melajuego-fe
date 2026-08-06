@@ -43,7 +43,7 @@
 
     <!-- RESTO DE PARTICIPANTES -->
     <ul>
-      @for (participant of (batchResults | slice:3:100); track participant.nickname; let i = $index) {
+      @for (participant of (batchResults | slice:3:10); track participant.nickname; let i = $index) {
         <li>
           <div class="participant-column">
             <div class="participant-meta">

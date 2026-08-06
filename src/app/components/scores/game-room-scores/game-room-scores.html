@@ -39,7 +39,7 @@
     </div>
 
     <ul>
-      @for (participant of (globalResults | slice:3:100); track participant.nickname; let i = $index) {
+      @for (participant of (globalResults | slice:3:10); track participant.nickname; let i = $index) {
         <li>
           <div class="participant-meta participant-general-meta">
             <span class="participant-rank">#{{ i + 4 }}</span>

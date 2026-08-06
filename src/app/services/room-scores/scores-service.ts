@@ -1,4 +1,4 @@
-import { WebsocketService } from '../../../Websocket';
+import { WebsocketService } from '../Websocket';
 import { Injectable, OnDestroy, computed, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -8,12 +8,12 @@ import {
   RoomGeneralScoreEntry,
   RoomGlobalParticipantStats,
   RoomGlobalStats
-} from '../../../../data/DataInterfaces';
+} from '../../data/DataInterfaces';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CardSwipeRoomScoresService implements OnDestroy {
+export class ScoresService implements OnDestroy {
 
 
   // Signals de estado expuestas como Readonly para proteger la inmutabilidad desde fuera
@@ -26,35 +26,32 @@ export class CardSwipeRoomScoresService implements OnDestroy {
   private readonly _roomGlobalStats = signal<RoomGlobalStats | null>(null);
   readonly roomGlobalStats = this._roomGlobalStats.asReadonly();
 
+  private readonly _isScoresOverlayOpen = signal<boolean>(false);
+  readonly isScoresOverlayOpen = this._isScoresOverlayOpen.asReadonly();
+
   private subscription = new Subscription();
 
   constructor(private websocket: WebsocketService) {
     this.initService();
   }
 
-  private initService() {
-    this.subscription.add(
-      this.websocket.roomBatchScores$.subscribe((scores) => {
-        //console.log('CardSwipeRoomScoresService: Received room batch scores update', scores);
-        if (!scores) {
-          return;
-        }
-
-        this._roomBatchScores.set(scores);
-        console.log('CardSwipeRoomScoresService: roomGeneralScores:', JSON.stringify(scores.roomGeneralScores));
-
-        if (scores.roomGeneralScores && scores.roomGeneralScores.length > 0) {
-          this._roomGeneralScore.set(scores.roomGeneralScores);
-          this._roomGlobalStats.set(this.normalizeGeneralScores(scores));
-        } else {
-          this._roomGeneralScore.set(null);
-          this._roomGlobalStats.set(this.normalizeParticipantResults(scores));
-        }
-      })
-    );
-
-    // no local storage loading for room scores; use only live server data
-  }
+private initService() {
+  this.subscription.add(
+    this.websocket.roomBatchScores$.subscribe((scores) => {
+      if (!scores) return;
+      this._roomBatchScores.set(scores);
+      if (scores.roomGeneralScores && scores.roomGeneralScores.length > 0) {
+        this._roomGeneralScore.set(scores.roomGeneralScores);
+        this._roomGlobalStats.set(this.normalizeGeneralScores(scores));
+      } else {
+        this._roomGeneralScore.set(null);
+        this._roomGlobalStats.set(this.normalizeParticipantResults(scores));
+      }
+      //AUTOMATIC TRIGGER: Open full-screen modal overlays automatically when score data changes
+      this._isScoresOverlayOpen.set(true);
+    })
+  );
+}
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -222,5 +219,14 @@ export class CardSwipeRoomScoresService implements OnDestroy {
     }
     return a.nickname.localeCompare(b.nickname, 'es');
   }
+
+  public openScoresOverlay(): void {
+    this._isScoresOverlayOpen.set(true);
+  }
+
+  public closeScoresOverlay(): void {
+    this._isScoresOverlayOpen.set(false);
+  }
+
 
 }

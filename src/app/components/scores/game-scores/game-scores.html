@@ -1,0 +1,21 @@
+<!-- Read state reactively from the shared service instance directly -->
+@if (scoresService.isScoresOverlayOpen()) {
+  <div class="scores-overlay-backdrop">
+    <div class="scores-overlay-modal">
+      
+      <!-- HEADER WITH CLOSE ACTION -->
+      <header class="scores-overlay-header">
+        <h2>📊 Resultados de la Partida</h2>
+        <!-- Triggers the close function in your service -->
+        <button class="close-scores-btn" (click)="scoresService.closeScoresOverlay()" aria-label="Cerrar resultados">✕</button>
+      </header>
+
+      <!-- FLEX/GRID CONTAINING BOTH MODULAR SUBCOMPONENTS -->
+      <div class="scores-overlay-content">
+        <app-game-room-scores></app-game-room-scores>
+        <app-game-batch-scores></app-game-batch-scores>
+      </div>
+
+    </div>
+  </div>
+}

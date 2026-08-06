@@ -114,6 +114,53 @@
     /* Evita que el clic se quede atrapado en el texto en Firefox */
 }
 
+/* Bottom controls wrapper panel layout anchor */
+.game-room-controls-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Placed right underneath full overlays but over normal items */
+  z-index: 999; 
+  display: flex;
+  justify-content: center;
+  /* Allows pointer clicks to pass through except for the inner buttons */
+  pointer-events: none; 
+}
+
+.action-btn-scores {
+  /* Restores button click actions */
+  pointer-events: auto; 
+  /* Elegant brand purple gradient matching #a74997 */
+  background: linear-gradient(135deg, #c25cb1 0%, #a74997 100%); 
+  color: #ffffff;
+  border: none;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  /* Glowing purple shadow accent matching the brand */
+  box-shadow: 0 10px 25px -5px rgba(167, 73, 151, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.action-btn-scores:hover {
+  transform: translateY(-2px);
+  /* Deeper shadow on hover */
+  box-shadow: 0 15px 30px -5px rgba(167, 73, 151, 0.6);
+  /* Slightly deeper purple gradient shift on hover */
+  background: linear-gradient(135deg, #a74997 0%, #8c387d 100%);
+}
+
+.action-btn-scores:active {
+  transform: translateY(1px);
+}
+
 /* ==========================================================================
    📱 MOBILE RESPONSIvE MEDIA QUERY (Screens smaller than 768px)
    ========================================================================== */

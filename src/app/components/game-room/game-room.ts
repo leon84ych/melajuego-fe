@@ -1,19 +1,23 @@
-import { Component, OnDestroy, OnInit, signal, Type } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, Type } from '@angular/core';
 import { WebsocketService } from '../../services/Websocket';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { BaseGameComponent, BaseGamePayload, PlayersListState, RoomState } from '../../data/DataInterfaces';
 import { PlayersList } from '../playersList/playersList';
 import { CardSwipeGame } from '../games/card-swipe-game/card-swipe-game';
+import { GameScores } from '../scores/game-scores/game-scores';
+import { ScoresService } from '../../services/room-scores/scores-service';
 
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [CommonModule, PlayersList],
+  imports: [CommonModule, PlayersList, GameScores],
   templateUrl: './game-room.html',
   styleUrls: ['./game-room.css'],
 })
 export class GameRoom implements OnInit, OnDestroy {
+
+  protected scoresService = inject(ScoresService);
 
   private gameRegistry: Record<string, Type<BaseGameComponent<any, any>>> = {
     'SWIPE': CardSwipeGame
@@ -92,13 +96,13 @@ export class GameRoom implements OnInit, OnDestroy {
     }
   }
 
-checkPlayers() {
-  const roomCode = this.websocket.roomName().trim();
-  if (!roomCode) return;
+  checkPlayers() {
+    const roomCode = this.websocket.roomName().trim();
+    if (!roomCode) return;
 
-  console.log('Checking players in room:', roomCode);
-  this.websocket.requestRoomUsers(roomCode);
-}
+    console.log('Checking players in room:', roomCode);
+    this.websocket.requestRoomUsers(roomCode);
+  }
 
   ngOnDestroy() {
     this.websocketSubscription.unsubscribe();
@@ -114,4 +118,5 @@ checkPlayers() {
       totalUsers: 0
     });
   }
+
 }

@@ -1,7 +1,4 @@
 <div class="game-room-layout">
-    <!-- Cabecera de la sala (Siempre visible: PIN, Usuarios, etc.) 
-  <app-game-header [roomCode]="roomCode"></app-game-header>
-  -->
     <!-- CONTENEDOR DINÁMICO DEL JUEGO -->
     <section class="game-viewport" *ngIf="currentGameComponent">
         <ng-container
@@ -9,16 +6,29 @@
             (activate)="onComponentActivated($event)">
         </ng-container>
     </section>
+
     @if (websocket.isInRoom()) {
-    <!-- Mobile Toggle Trigger Button -->
-    <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />
-    <label for="sidebar-toggle" class="toggle-arrow-btn" aria-label="Toggle scores">
-        <span class="arrow-icon">◀</span>
-    </label>
-    <!-- Side Panel Container -->
-    <div class="sidebar-backdrop"></div>
-    <aside class="room-sidebar">
-        <players-list [state]="playerListState()"></players-list>
-    </aside>
+        <!-- Mobile Toggle Trigger Button -->
+        <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />
+        <label for="sidebar-toggle" class="toggle-arrow-btn" aria-label="Toggle scores">
+            <span class="arrow-icon">◀</span>
+        </label>
+        
+        <!-- Side Panel Container -->
+        <div class="sidebar-backdrop"></div>
+        <aside class="room-sidebar">
+            <app-players-list [state]="playerListState()"></app-players-list>
+        </aside>
+
+         <!-- FLOATING BOTTOM TRIGGER BUTTON BAR -->
+        <div class="game-room-controls-bar">
+            <!-- Directly triggers the state modification change in the service -->
+            <button class="action-btn-scores" (click)="scoresService.openScoresOverlay()">
+                🏆 Ver Tabla de Puntajes
+            </button>
+        </div>
+
+        <!-- FULL-SCREEN OVERLAY MODAL COMPONENT -->
+        <app-game-scores></app-game-scores>
     }
 </div>

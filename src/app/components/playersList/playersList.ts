@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlayersListState } from '../../data/DataInterfaces';
-import { CardSwipeRoomScoresService } from '../../services/games/card-swipe-game/card-swipe-room-scores/card-swipe-room-scores-service';
+import { ScoresService } from '../../services/room-scores/scores-service';
 
 interface DisplayUser {
   nickname: string;
@@ -12,7 +12,7 @@ interface DisplayUser {
 }
 
 @Component({
-  selector: 'players-list',
+  selector: 'app-players-list',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './playersList.html',
@@ -20,7 +20,7 @@ interface DisplayUser {
 })
 export class PlayersList {
 
-  constructor(protected scoresService: CardSwipeRoomScoresService) {}
+  constructor(protected scoresService: ScoresService) {}
 
   state = input.required<PlayersListState>();
 
