@@ -9,11 +9,16 @@
   <div class="room-users">
     <p class="room-label">Conectados ({{ state().totalUsers }})</p>
     <ul>
-      @for (nick of sortedUsers(); track nick) {
-        <li [class.current-user]="isCurrentUser(nick)" [class.host-user]="isHost(nick)">
-          {{ nick }}
-          @if (isHost(nick)) {
+      @for (user of displayUsers(); track user.nickname) {
+        <li [class.current-user]="isCurrentUser(user.nickname)" [class.host-user]="user.isHost">
+          <span class="participant-name">{{ user.nickname }}</span>
+          @if (user.isHost) {
             <span class="host-badge">HOST</span>
+          }
+          @if (user.rank) {
+            <span class="participant-rank">#{{ user.rank }}</span>
+            <span class="participant-score">{{ user.score }}%</span>
+            <span class="participant-time">{{ user.timeLabel }}</span>
           }
         </li>
       } @empty {

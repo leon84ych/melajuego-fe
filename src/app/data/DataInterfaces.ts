@@ -40,17 +40,15 @@ export interface ParticipantBatchResult {
 }
 
 export interface RoomGeneralScoreEntry {
+  nickname: string;
   batchCount: number;
   totalTimeMs: number;
   totalBatchTimeMs: number;
   accumulatedScore: number;
-  room_general_score: number;
+  roomGeneralScore: number;
   cumulativeTimeRatio: number;
 }
 
-export interface RoomGeneralScore {
-  [nickname: string]: RoomGeneralScoreEntry;
-}
 
 export interface RoomBatchScores {
   roomCode: string;
@@ -58,7 +56,7 @@ export interface RoomBatchScores {
   winner?: string;
   startedAt?: string;
   durationMinutes?: number;
-  room_general_score?: RoomGeneralScore;
+  roomGeneralScores?: RoomGeneralScoreEntry[];
   gameFinished?: boolean;
   updatedAt: string;
 }

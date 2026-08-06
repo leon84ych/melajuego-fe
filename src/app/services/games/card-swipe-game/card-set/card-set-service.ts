@@ -1,6 +1,6 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
-import profiles from '../../../../data/Profiles.json';
+import { ProfileService } from '../../../ProfileService';
 import {
   BatchSession,
   BatchStartedPayload,
@@ -32,6 +32,7 @@ export class CardSetService {
   readonly batchDurationMinutes = signal(0);
   readonly batchRenderVersion = signal(0);
   readonly batchResults = signal<Array<'success' | 'error' | 'pending'>>([]);
+  readonly loadingBatch = signal(false);
 
   private readonly currentBatchCorrect = signal<SwipeRecord[]>([]);
   private readonly currentBatchIncorrect = signal<SwipeRecord[]>([]);
@@ -39,7 +40,9 @@ export class CardSetService {
   private readonly successSound = typeof Audio !== 'undefined' ? new Audio('sounds/success.mp3') : null;
   private readonly errorSound = typeof Audio !== 'undefined' ? new Audio('sounds/error_1.mp3') : null;
   private readonly websocketSubscription = new Subscription();
-  private readonly itemsStack = signal<CardData[]>(this.shuffle(profiles as CardData[]));
+  private readonly itemsStack = signal<CardData[]>([]);
+  private readonly profileService = inject(ProfileService);
+  private loadedProfiles: CardData[] = [];
   private countdownIntervalId: ReturnType<typeof setInterval> | null = null;
 
   private readonly websocket = inject(WebsocketService);
@@ -48,23 +51,34 @@ export class CardSetService {
   constructor() {
     this.batchResults.set(Array(this.batchSize).fill('pending'));
     this.loadHistoryFromStorage();
+    void this.loadInitialProfiles();
 
     this.destroyRef.onDestroy(() => this.ngOnDestroy());
 
     this.websocketSubscription.add(
-      this.websocket.batchStarted$.subscribe((payload: BatchStartedPayload | null) => {
+      this.websocket.batchStarted$.subscribe(async (payload: BatchStartedPayload | null) => {
         if (!payload) {
           this.stopCountdown();
+          this.loadingBatch.set(false);
           return;
         }
 
         if (!payload.itemIds || !Array.isArray(payload.itemIds)) {
+          this.loadingBatch.set(false);
           return;
         }
 
         this.sharedBatchReceived.set(true);
         this.sharedGameFinished.set(false);
-        this.loadBatchFromItemIds(payload.itemIds, payload.durationMinutes);
+        this.loadingBatch.set(true);
+        try {
+          await this.loadBatchFromItemIds(payload.itemIds, payload.durationMinutes);
+        } finally {
+          this.loadingBatch.set(false);
+          if (this.currentBatch.length === 0) {
+            this.sharedBatchReceived.set(false);
+          }
+        }
       })
     );
 
@@ -187,6 +201,10 @@ export class CardSetService {
   }
 
   shouldShowCards(): boolean {
+    if (this.loadingBatch()) {
+      return false;
+    }
+
     if (!this.isSharedSession()) {
       return !this.batchComplete;
     }
@@ -204,7 +222,9 @@ export class CardSetService {
 
   restart(): void {
     this.stopCountdown(true);
-    this.itemsStack.set(this.shuffle(profiles as CardData[]));
+    if (this.loadedProfiles.length > 0) {
+      this.itemsStack.set(this.shuffle(this.loadedProfiles));
+    }
     this.batchStart.set(0);
     this.resetBatch();
   }
@@ -216,7 +236,9 @@ export class CardSetService {
     if (this.hasNextBatch) {
       this.batchStart.set(this.batchStart() + this.batchSize);
     } else {
-      this.itemsStack.set(this.shuffle(profiles as CardData[]));
+      if (this.loadedProfiles.length > 0) {
+        this.itemsStack.set(this.shuffle(this.loadedProfiles));
+      }
       this.batchStart.set(0);
     }
 
@@ -306,26 +328,32 @@ export class CardSetService {
     return copy;
   }
 
-  private loadBatchFromItemIds(itemIds: string[], durationMinutes?: number): void {
-    const itemsById = new Map<string, CardData>(
-      (profiles as CardData[]).map((profile) => [String(profile.id), profile])
-    );
+  private async loadBatchFromItemIds(itemIds: string[], durationMinutes?: number): Promise<void> {
+    let allProfiles = await this.profileService.getCombinedProfiles();
+    let itemsById = new Map<string, CardData>(allProfiles.map((profile) => [String(profile.id), profile]));
 
-    const selected: CardData[] = itemIds
+    let selected: CardData[] = itemIds
       .map((id) => itemsById.get(id))
       .filter((card): card is CardData => Boolean(card));
 
-    const missingIds = itemIds.filter((id) => !itemsById.has(id));
+    let missingIds = itemIds.filter((id) => !itemsById.has(id));
 
-    if (selected.length !== itemIds.length) {
-      console.warn('[Batch] Algunos IDs del mazo no fueron encontrados en el catálogo local.');
-      if (missingIds.length > 0) {
-        console.warn('[Batch] IDs faltantes en el catálogo local:', missingIds);
+    if (missingIds.length > 0) {
+      console.warn('[Batch] Algunos IDs del mazo no fueron encontrados en el catálogo local. Fuerza recarga desde servidor.');
+      const refreshedProfiles = await this.profileService.getCombinedProfiles({ forceRefresh: true });
+      itemsById = new Map<string, CardData>(refreshedProfiles.map((profile) => [String(profile.id), profile]));
+      selected = itemIds
+        .map((id) => itemsById.get(id))
+        .filter((card): card is CardData => Boolean(card));
+      missingIds = itemIds.filter((id) => !itemsById.has(id));
+
+      if (selected.length !== itemIds.length) {
+        console.warn('[Batch] Algunos IDs siguen sin corresponder después de recarga remota:', missingIds);
       }
     }
 
     if (selected.length === 0) {
-      console.error('[Batch] Batch ignored because no incoming IDs matched local catalog.', {
+      console.error('[Batch] Batch ignored because no incoming IDs matched the server-loaded catalog.', {
         requestedIds: itemIds,
       });
       return;
@@ -446,10 +474,6 @@ export class CardSetService {
     const batchResult = this.buildBatchResultPayload();
     if (batchResult) {
       this.websocket.submitBatchResult(batchResult);
-      localStorage.setItem(
-        `room_batch_result_${batchResult.roomCode}_${batchResult.id}`,
-        JSON.stringify(batchResult)
-      );
     }
   }
 
@@ -485,6 +509,14 @@ export class CardSetService {
     } catch {
       console.warn('[Batch] Error parsing saved session for batch result.');
       return null;
+    }
+  }
+
+  private async loadInitialProfiles(): Promise<void> {
+    const allProfiles = await this.profileService.getCombinedProfiles();
+    this.loadedProfiles = allProfiles;
+    if (allProfiles.length > 0) {
+      this.itemsStack.set(this.shuffle(allProfiles));
     }
   }
 

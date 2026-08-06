@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CardSwipeRoomScores } from './card-swipe-room-scores';
+import { GameBatchScores } from './game-batch-scores';
 
 describe('CardSwipeRoomScores', () => {
-  let component: CardSwipeRoomScores;
-  let fixture: ComponentFixture<CardSwipeRoomScores>;
+  let component: GameBatchScores;
+  let fixture: ComponentFixture<GameBatchScores>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardSwipeRoomScores]
+      imports: [GameBatchScores]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CardSwipeRoomScores);
+    fixture = TestBed.createComponent(GameBatchScores);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

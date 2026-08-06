@@ -12,7 +12,6 @@ import { CardData, SwipeRecord } from '../../../../data/DataInterfaces';
 export class CardSwipeScore {
   private readonly cardSetService = inject(CardSetService);
   readonly selectedProfileIndex = signal(0);
-
   @Input() percentScoreOverride?: number;
   @Input() batchScoreOverride?: number;
   @Input() totalCardsOverride?: number;

@@ -3,12 +3,12 @@ import { CommonModule, DatePipe, SlicePipe } from '@angular/common';
 import { CardSwipeRoomScoresService } from '../../../../services/games/card-swipe-game/card-swipe-room-scores/card-swipe-room-scores-service';
 
 @Component({
-  selector: 'app-card-swipe-room-scores',
+  selector: 'app-game-room-scores',
   standalone: true,
   imports: [CommonModule, SlicePipe, DatePipe],
-  templateUrl: './card-swipe-room-scores.html',
-  styleUrls: ['./card-swipe-room-scores.css'],
+  templateUrl: './game-room-scores.html',
+  styleUrls: ['./game-room-scores.css'],
 })
-export class CardSwipeRoomScores {
+export class GameRoomScores {
   constructor(protected scoresService: CardSwipeRoomScoresService) {}
 }

@@ -1,0 +1,61 @@
+@if (scoresService.roomBatchScores()) {
+  @let batchResults = scoresService.sortedParticipantResults();
+  <section class="scoreboard">
+    <div class="scoreboard-header">
+      <h3>Puntajes Última Partida:</h3>
+      <span class="scoreboard-updated">
+        Actualizado {{ scoresService.roomBatchScores()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+      </span>
+    </div>
+    
+    <!-- PODIUM VISUAL (TOP 3) -->
+    <div class="podium-container">
+      @if (batchResults[1]) {
+        <div class="podium-step second">
+          <span class="podium-rank-badge">#2</span>
+          <div class="podium-avatar">🥈</div>
+          <span class="podium-name">{{ batchResults[1].nickname }}</span>
+          <span class="podium-score">{{ batchResults[1].percentScore }}%</span>
+          <span class="podium-subtext">{{ batchResults[1].correctCount }}/{{ batchResults[1].totalCards }}</span>
+        </div>
+      }
+
+      @if (batchResults[0]) {
+        <div class="podium-step first">
+          <span class="podium-rank-badge">#1</span>
+          <div class="podium-avatar">👑</div>
+          <span class="podium-name">{{ batchResults[0].nickname }}</span>
+          <span class="podium-score">{{ batchResults[0].percentScore }}%</span>
+          <span class="podium-subtext">{{ batchResults[0].correctCount }}/{{ batchResults[0].totalCards }}</span>
+        </div>
+      }
+
+      @if (batchResults[2]) {
+        <div class="podium-step third">
+          <span class="podium-rank-badge">#3</span>
+          <div class="podium-avatar">🥉</div>
+          <span class="podium-name">{{ batchResults[2].nickname }}</span>
+          <span class="podium-score">{{ batchResults[2].percentScore }}%</span>
+          <span class="podium-subtext">{{ batchResults[2].correctCount }}/{{ batchResults[2].totalCards }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- RESTO DE PARTICIPANTES -->
+    <ul>
+      @for (participant of (batchResults | slice:3:100); track participant.nickname; let i = $index) {
+        <li>
+          <div class="participant-column">
+            <div class="participant-meta">
+              <span class="participant-rank">#{{ i + 4 }}</span>
+              <span class="participant-name">{{ participant.nickname }}</span>
+              <span class="score-block">{{ participant.percentScore }}%</span>
+              <span>{{ participant.correctCount }} / {{ participant.totalCards }}</span>
+              <span>{{ participant.responseSeconds !== null ? participant.responseSeconds + 's' : '—' }}</span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}

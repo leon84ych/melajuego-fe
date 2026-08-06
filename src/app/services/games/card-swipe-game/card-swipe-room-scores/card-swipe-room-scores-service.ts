@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import {
   ParticipantResultView,
   RoomBatchScores,
-  RoomGeneralScore,
+  RoomGeneralScoreEntry,
   RoomGlobalParticipantStats,
   RoomGlobalStats
 } from '../../../../data/DataInterfaces';
@@ -20,7 +20,7 @@ export class CardSwipeRoomScoresService implements OnDestroy {
   private readonly _roomBatchScores = signal<RoomBatchScores | null>(null);
   readonly roomBatchScores = this._roomBatchScores.asReadonly();
 
-  private readonly _roomGeneralScore = signal<RoomGeneralScore | null>(null);
+  private readonly _roomGeneralScore = signal<RoomGeneralScoreEntry[] | null>(null);
   readonly roomGeneralScore = this._roomGeneralScore.asReadonly();
 
   private readonly _roomGlobalStats = signal<RoomGlobalStats | null>(null);
@@ -35,12 +35,19 @@ export class CardSwipeRoomScoresService implements OnDestroy {
   private initService() {
     this.subscription.add(
       this.websocket.roomBatchScores$.subscribe((scores) => {
-        if (!scores) return;
+        //console.log('CardSwipeRoomScoresService: Received room batch scores update', scores);
+        if (!scores) {
+          return;
+        }
+
         this._roomBatchScores.set(scores);
-        if (scores.room_general_score) {
-          this._roomGeneralScore.set(scores.room_general_score);
+        console.log('CardSwipeRoomScoresService: roomGeneralScores:', JSON.stringify(scores.roomGeneralScores));
+
+        if (scores.roomGeneralScores && scores.roomGeneralScores.length > 0) {
+          this._roomGeneralScore.set(scores.roomGeneralScores);
           this._roomGlobalStats.set(this.normalizeGeneralScores(scores));
         } else {
+          this._roomGeneralScore.set(null);
           this._roomGlobalStats.set(this.normalizeParticipantResults(scores));
         }
       })
@@ -62,35 +69,21 @@ export class CardSwipeRoomScoresService implements OnDestroy {
 
   readonly hasRoomGeneralScores = computed(() => {
     const scores = this._roomGeneralScore();
-    return !!scores && Object.keys(scores).length > 0;
+    return !!scores && scores.length > 0;
   });
 
   readonly sortedRoomGeneralScores = computed(() => {
     const scores = this._roomGeneralScore();
-    if (!scores) return [];
+    if (!scores || scores.length === 0) return [];
 
-    return Object.entries(scores)
-      .map(([nickname, entry]) => ({
-        nickname,
-        batchCount: entry.batchCount,
-        totalTimeMs: entry.totalTimeMs,
-        totalBatchTimeMs: entry.totalBatchTimeMs,
-        accumulatedScore: entry.accumulatedScore,
-        roomGeneralScore: entry.room_general_score,
-        cumulativeTimeRatio: entry.cumulativeTimeRatio,
-      }))
-      .sort((a, b) => {
-        if (b.roomGeneralScore !== a.roomGeneralScore) {
-          return b.roomGeneralScore - a.roomGeneralScore;
-        }
-        return a.nickname.localeCompare(b.nickname, 'es');
-      });
+    return [...scores].sort((a, b) => {
+      if (b.accumulatedScore !== a.accumulatedScore) {
+        return b.accumulatedScore - a.accumulatedScore;
+      }
+      return a.nickname.localeCompare(b.nickname, 'es');
+    });
   });
 
-  readonly leadingRoomGeneralParticipant = computed(() => {
-    const sorted = this.sortedRoomGeneralScores();
-    return sorted.length > 0 ? sorted[0] : null;
-  });
 
   readonly sortedParticipantResults = computed(() => {
     const scores = this._roomBatchScores();
@@ -133,11 +126,6 @@ export class CardSwipeRoomScoresService implements OnDestroy {
 
       return a.nickname.localeCompare(b.nickname, 'es');
     });
-  });
-
-  readonly leadingParticipant = computed(() => {
-    const sorted = this.sortedParticipantResults();
-    return sorted.length > 0 ? sorted[0] : null;
   });
 
   readonly sortedParticipantResultsWithGeneral = computed(() => {
@@ -202,14 +190,14 @@ export class CardSwipeRoomScoresService implements OnDestroy {
   }
 
   private normalizeGeneralScores(scores: RoomBatchScores): RoomGlobalStats {
-    const participants: RoomGlobalParticipantStats[] = Object.entries(scores.room_general_score || {})
-      .map(([nickname, entry]) => ({
-        nickname,
+    const participants: RoomGlobalParticipantStats[] = (scores.roomGeneralScores ?? [])
+      .map((entry) => ({
+        nickname: entry.nickname,
         batchCount: entry.batchCount,
         totalTimeMs: entry.totalTimeMs,
         totalBatchTimeMs: entry.totalBatchTimeMs,
         accumulatedScore: entry.accumulatedScore,
-        room_general_score: entry.room_general_score,
+        room_general_score: entry.roomGeneralScore,
         cumulativeTimeRatio: entry.cumulativeTimeRatio,
         updatedAt: scores.updatedAt || new Date().toISOString(),
       }))

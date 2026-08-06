@@ -24,26 +24,13 @@
                                 'error' ? 'Incorrecto' : 'Pendiente' }}
                             </span>
                         </div>
+                        <div class="profile-result-row">
+                            {{ expectedLabel(selectedProfile.id) }}
+                        </div>
                     </div>
                 </div>
-                <div class="profile-card-right">
-                    <div class="profile-answer-header">Detalles de la respuesta</div>
-                    <div class="profile-answer-row">
-                        <span class="profile-answer-label">Respuesta correcta:</span>
-                        <span class="profile-answer">{{ expectedLabel(selectedProfile.id) }}</span>
-                    </div>
-                    <div class="profile-answer-row"
-                        *ngIf="selectedProfile.result === 'error' && getUserAction(selectedProfile.id) as userAction">
-                        <span class="profile-answer-label">Tu respuesta:</span>
-                        <span class="profile-answer">{{ actionLabel(userAction) }}</span>
-                    </div>
-                    <div class="profile-note" *ngIf="selectedProfile.result === 'success'">
-                        La respuesta fue correcta.
-                    </div>
-                </div>
-
-                    <p class="result-text">Aciertos: {{ batchScore }} / {{ totalCards }}</p>
-                    <p class="result-text">Errores: {{ batchErrors }}</p>
+                <p class="result-text">Aciertos: {{ batchScore }} / {{ totalCards }}</p>
+                <p class="result-text">Errores: {{ batchErrors }}</p>
                 <div class="review-toolbar">
 
                     <button class="review-arrow" type="button" (click)="selectPreviousProfile()"

@@ -9,7 +9,7 @@
 </div>
 
 @if (!batchStarted()) {
-<app-card-swipe-room-scores></app-card-swipe-room-scores>
+<app-game-room-scores></app-game-room-scores>
 }
 @if (isHost() && !batchStarted() && roomName().length > 0) {
 <div class="room-duration-panel">

@@ -8,6 +8,7 @@ import { CardSwipeGame } from '../games/card-swipe-game/card-swipe-game';
 
 @Component({
   selector: 'app-game-room',
+  standalone: true,
   imports: [CommonModule, PlayersList],
   templateUrl: './game-room.html',
   styleUrls: ['./game-room.css'],

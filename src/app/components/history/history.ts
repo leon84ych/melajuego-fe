@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import profiles from '../../data/Profiles.json';
+import { ProfileService } from '../../services/ProfileService';
 import { BatchSession, CardData, SwipeRecord } from '../../data/DataInterfaces';
 import { CardSwipeScore } from '../games/card-swipe-game/card-swipe-score/card-swipe-score';
 
@@ -15,9 +15,12 @@ export class History {
   public batchHistory: BatchSession[] = [];
   readonly pageSize = 10;
   currentPage = 1;
+  private profiles: CardData[] = [];
+  private readonly profileService = inject(ProfileService);
 
   constructor() {
     this.loadHistoryFromStorage();
+    void this.loadProfiles();
   }
 
   private loadHistoryFromStorage() {
@@ -90,7 +93,7 @@ export class History {
 
   getSessionReviewItems(session: BatchSession): Array<CardData & { result: 'success' | 'error' | 'pending' }> {
     const profilesById = new Map<string | number, CardData>(
-      (profiles as CardData[]).map((profile) => [profile.id, profile])
+      this.profiles.map((profile) => [profile.id, profile])
     );
 
     return [
@@ -105,6 +108,10 @@ export class History {
         result: 'error' as const,
       })),
     ];
+  }
+
+  private async loadProfiles(): Promise<void> {
+    this.profiles = await this.profileService.getCombinedProfiles();
   }
 
   getPercentScore(session: BatchSession): number {

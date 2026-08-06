@@ -1,6 +1,6 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
-import profiles from '../../../../data/Profiles.json';
+import { ProfileService } from '../../../ProfileService';
 import { BatchStartedPayload, RoomBatchScores } from '../../../../data/DataInterfaces';
 import { Configuration } from '../../../../data/Configuration';
 import { WebsocketService } from '../../../Websocket';
@@ -21,10 +21,13 @@ export class CardSwipeService {
   private roomMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private batchMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private subscription = new Subscription();
+  private profileIds: string[] = [];
+  private readonly profileService = inject(ProfileService);
   private readonly websocket = inject(WebsocketService);
 
   constructor() {
     this.roomName.set(this.websocket.roomName());
+    void this.loadProfileIds();
 
     effect(() => {
       this.roomName.set(this.websocket.roomName());
@@ -75,7 +78,7 @@ export class CardSwipeService {
       : fallback;
   }
 
-  requestBatchStart(selectedDuration?: string | number, roomName?: string) {
+  async requestBatchStart(selectedDuration?: string | number, roomName?: string) {
     const currentRoomName = String(roomName ?? this.roomName()).trim();
     if (!currentRoomName) {
       return;
@@ -85,16 +88,22 @@ export class CardSwipeService {
     this.selectedDurationMinutes.set(duration);
     this.setTimedBatchMessage(`Iniciando partida (${duration} min)... solicitando mazo compartido.`);
     this.gameInProgress.set(true);
-    const itemIds = this.pickRandomItemIds();
+    const itemIds = await this.pickRandomItemIds();
+    if (!itemIds.length) {
+      this.setTimedBatchMessage('No hay perfiles cargados para iniciar el mazo.');
+      this.gameInProgress.set(false);
+      return;
+    }
+
     this.websocket.startBatch(currentRoomName, itemIds, duration);
   }
 
-  pickRandomItemIds(limit = 10): string[] {
-    const allIds = (profiles as { id: string | number }[])
-      .map((item) => String(item.id))
-      .filter((id) => id.length > 0);
+  async pickRandomItemIds(limit = 10): Promise<string[]> {
+    if (this.profileIds.length === 0) {
+      await this.loadProfileIds();
+    }
 
-    const shuffled = [...allIds].sort(() => Math.random() - 0.5);
+    const shuffled = [...this.profileIds].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, limit);
   }
 
@@ -102,10 +111,17 @@ export class CardSwipeService {
     const currentUser = String(this.websocket.nickname()).trim().toLowerCase();
     const host = String(roomHost ?? '').trim().toLowerCase();
     //TODO: Considerar que si no hay host, el primer usuario en iniciar el juego es el host. Esto se puede hacer verificando si el host está vacío y si el currentUser es el primero en la lista de connectedUsers.
-    if(host.length === 0) {
+    if (host.length === 0) {
       return true;
     }
     return currentUser.length > 0 && currentUser === host;
+  }
+
+  private async loadProfileIds(): Promise<void> {
+    const profiles = await this.profileService.getCombinedProfiles();
+    this.profileIds = profiles
+      .map((item) => String(item.id))
+      .filter((id) => id.length > 0);
   }
 
   private setTimedRoomMessage(message: string) {
