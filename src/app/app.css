@@ -1,10 +1,24 @@
 .top-menu {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 16px 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px; /* Reduced vertical padding to fit your design */
   background: linear-gradient(90deg, #a74997, #7d2c6d);
   border-bottom: 1px solid rgba(167, 73, 151, 0.35);
+  box-sizing: border-box;
+}
+
+/* Keeps buttons centered regardless of user nickname text width */
+.header-left-spacer {
+  flex: 1;
+  display: none; /* Change to 'block' if you want buttons perfectly dead-centered */
+}
+
+/* Keeps menu items closely packed together */
+.menu-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
 .menu-button {
@@ -28,8 +42,59 @@
   border-color: rgba(167, 73, 151, 0.45);
 }
 
+/* Status Indicator Layout on Right Side */
+.user-status-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 999px;
+  user-select: none;
+  transition: background-color 0.2s;
+  margin-left: auto; /* Pushes the widget to the absolute right side */
+}
+
+.user-status-container:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.username {
+  font-weight: 500;
+  font-size: 14px;
+  color: #fff;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+.status-dot.green {
+  background-color: #2ec4b6; 
+}
+
+.status-dot.yellow {
+  background-color: #ffb703; 
+  animation: pulse 1.5s infinite; 
+}
+
+.status-dot.red {
+  background-color: #e63946; 
+}
+
 .app-view {
-  padding: 01px;
+  padding: 1px;
   max-width: 100%;
   margin: 0 auto;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }

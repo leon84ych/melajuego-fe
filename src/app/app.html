@@ -1,36 +1,50 @@
 <header class="top-menu">
-  <button
-    type="button"
-    class="menu-button"
-    [class.active]="view === 'play'"
-    (click)="setView('play')"
-  >
-    Jugar
-  </button>
+  
+  <!-- Left placeholder so the buttons stay perfectly centered -->
+  <div class="header-left-spacer"></div>
+
+  <!-- Center Group: Navigation Buttons kept close together -->
+  <div class="menu-group">
     <button
-    type="button"
-    class="menu-button"
-    [class.active]="view === 'connection'"
-    (click)="setView('connection')"
-  >
-    Salas
-  </button>
-  <button
-    type="button"
-    class="menu-button"
-    [class.active]="view === 'history'"
-    (click)="setView('history')"
-  >
-    Historial
-  </button>
-  <button
-    type="button"
-    class="menu-button"
-    [class.active]="view === 'about'"
-    (click)="setView('about')"
-  >
-    Acerca de
-  </button>
+      type="button"
+      class="menu-button"
+      [class.active]="view === 'play'"
+      (click)="setView('play')"
+    >
+      Jugar
+    </button>
+    <button
+      type="button"
+      class="menu-button"
+      [class.active]="view === 'connection'"
+      (click)="setView('connection')"
+    >
+      Salas
+    </button>
+    <button
+      type="button"
+      class="menu-button"
+      [class.active]="view === 'history'"
+      (click)="setView('history')"
+    >
+      Historial
+    </button>
+    <button
+      type="button"
+      class="menu-button"
+      [class.active]="view === 'about'"
+      (click)="setView('about')"
+    >
+      Acerca de
+    </button>
+  </div>
+
+  <!-- Right Side: User Status Indicator -->
+  <div class="user-status-container" (click)="checkConfiguration()">
+    <span class="username">{{ username || 'Invitado' }}</span>
+    <span class="status-dot" [ngClass]="configStatus"></span>
+  </div>
+
 </header>
 
 <main class="app-view">

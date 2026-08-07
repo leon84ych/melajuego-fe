@@ -26,8 +26,7 @@ export class WebsocketService {
         roomCode: '',
         host: '',
         connectedUsers: [],
-        totalUsers: 0,
-        gameActive: false
+        totalUsers: 0
     });
 
 
@@ -144,7 +143,7 @@ export class WebsocketService {
             this.zone.run(() => {
                 this.roomState$.next({
                     roomCode: data.roomCode ?? '',
-                    connectedUsers: data.connectedUsers ?? data.users ?? data.nicknames ?? data.participants ?? [],
+                    connectedUsers: data.connectedUsers ?? [],
                     host: data.host ?? '',
                 });
             });
@@ -157,8 +156,7 @@ export class WebsocketService {
                     roomCode: data.roomCode ?? '',
                     connectedUsers: data.connectedUsers ?? [],
                     host: data.host ?? '',
-                    totalUsers: data.totalUsers ?? 0,
-                    message: data.message ?? ''
+                    totalUsers: data.totalUsers ?? 0
                 });
             });
         });
@@ -319,9 +317,9 @@ export class WebsocketService {
     }
 
     // Funciones para iniciar partidas 
-    startBatch(roomCode: string, itemIds: string[], durationMinutes: number) {
-        console.log('[WebsocketService] startBatch requested', { roomCode, itemIds, durationMinutes });
-        this.socket.emit('start_batch', { roomCode, itemIds, durationMinutes });
+    startBatch(roomCode: string, game: string, itemIds: string[], durationMinutes: number) {
+        console.log('[WebsocketService] startBatch requested', { roomCode, game, itemIds, durationMinutes });
+        this.socket.emit('start_batch', { roomCode, game, itemIds, durationMinutes });
     }
 
     // Enviar los resultados de la partida al servidor
@@ -352,15 +350,12 @@ export class WebsocketService {
         }
     }
 
-    requestRoomUsers(roomCode: string): void {
-        if (!this.socket.connected) return;
-        console.log('[WebsocketService] Solicitando actualización de usuarios para:', roomCode);
-        this.socket.emit('get_room_users', { roomCode });
-    }
+    // requestRoomUsers(roomCode: string): void {
+    //     if (!this.socket.connected) return;
+    //     console.log('[WebsocketService] Solicitando actualización de usuarios para:', roomCode);
+    //     this.socket.emit('get_room_users', { roomCode });
+    // }
 
-    emitSwipe(roomCode: string, cardId: string | number, action: 'like' | 'dislike') {
-        this.socket.emit('send_swipe', { roomCode, cardId, action });
-    }
 
     disconnect() {
         console.log('[WebsocketService] disconnecting socket');

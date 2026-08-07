@@ -67,8 +67,6 @@ export interface RoomState {
   connectedUsers: string[];
   host: string;
   totalUsers?: number;
-  gameActive?: boolean;
-  message?: string;
 }
 
 export interface ConnectionStatus {
@@ -169,11 +167,20 @@ export interface GameCardSwipeResult {
 //   totalUsers: number;
 // }
 
-export interface PlayersListState {  // 👈 Asegúrate de que tenga la "s"
+export interface PlayersListState {
   roomName: string;
   nickname: string;
   currentNickname: string;
   connectedUsers: string[];
   roomHost: string;
   totalUsers: number;
+}
+
+export interface GameItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: string;
+  component: string;
 }

@@ -5,7 +5,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #a74997; /* Slate-900 with high opacity */
+  background-color: rgba(15, 23, 42, 0.85); /* Slate-900 with high opacity */
   backdrop-filter: blur(8px);
   z-index: 9999; /* Ensures it sits above absolutely everything */
   display: flex;

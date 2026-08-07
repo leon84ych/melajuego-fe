@@ -14,8 +14,6 @@ export class CardSwipeService {
 
   readonly selectedDurationMinutes = signal(5);
   readonly roomName = signal('');
-  readonly roomMessage = signal('');
-  readonly batchMessage = signal('');
   readonly gameInProgress = signal(false);
 
   private roomMessageTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -39,7 +37,6 @@ export class CardSwipeService {
           return;
         }
 
-        this.setTimedBatchMessage(`Partida iniciada por ${payload.host}. Mazo recibido (${payload.itemIds.length} cartas).`);
         this.gameInProgress.set(true);
       })
     );
@@ -58,7 +55,6 @@ export class CardSwipeService {
 
         if (scores.gameFinished) {
           this.gameInProgress.set(false);
-          this.setTimedBatchMessage('Partida finalizada. Puedes iniciar otro juego.');
         }
       })
     );
@@ -86,16 +82,14 @@ export class CardSwipeService {
 
     const duration = this.getSelectedDuration(selectedDuration, this.selectedDurationMinutes());
     this.selectedDurationMinutes.set(duration);
-    this.setTimedBatchMessage(`Iniciando partida (${duration} min)... solicitando mazo compartido.`);
     this.gameInProgress.set(true);
     const itemIds = await this.pickRandomItemIds();
     if (!itemIds.length) {
-      this.setTimedBatchMessage('No hay perfiles cargados para iniciar el mazo.');
       this.gameInProgress.set(false);
       return;
     }
-
-    this.websocket.startBatch(currentRoomName, itemIds, duration);
+    //como estoy en el juego card-swipe el componente es fijo
+    this.websocket.startBatch(currentRoomName, 'SWIPE', itemIds, duration);
   }
 
   async pickRandomItemIds(limit = 10): Promise<string[]> {
@@ -122,48 +116,6 @@ export class CardSwipeService {
     this.profileIds = profiles
       .map((item) => String(item.id))
       .filter((id) => id.length > 0);
-  }
-
-  private setTimedRoomMessage(message: string) {
-    this.roomMessage.set(message);
-    this.scheduleRoomMessageClear(message);
-  }
-
-  private setTimedBatchMessage(message: string) {
-    this.batchMessage.set(message);
-    this.scheduleBatchMessageClear(message);
-  }
-
-  private scheduleRoomMessageClear(message: string) {
-    if (this.roomMessageTimeoutId) {
-      clearTimeout(this.roomMessageTimeoutId);
-      this.roomMessageTimeoutId = null;
-    }
-
-    if (!message) {
-      return;
-    }
-
-    this.roomMessageTimeoutId = setTimeout(() => {
-      this.roomMessage.set('');
-      this.roomMessageTimeoutId = null;
-    }, this.messageDurationMs);
-  }
-
-  private scheduleBatchMessageClear(message: string) {
-    if (this.batchMessageTimeoutId) {
-      clearTimeout(this.batchMessageTimeoutId);
-      this.batchMessageTimeoutId = null;
-    }
-
-    if (!message) {
-      return;
-    }
-
-    this.batchMessageTimeoutId = setTimeout(() => {
-      this.batchMessage.set('');
-      this.batchMessageTimeoutId = null;
-    }, this.messageDurationMs);
   }
 
   ngOnDestroy() {

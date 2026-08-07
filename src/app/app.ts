@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { History } from './components/history/history';
 import { About } from './components/about/about';
@@ -14,10 +14,47 @@ import { GameRoom } from './components/game-room/game-room';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.css'],
 })
-export class App {
+export class App implements OnInit {
+
   view = 'play' as 'play' | 'history' | 'connection' | 'about';
 
-  constructor(private websocket: WebsocketService) {}
+  configStatus: 'red' | 'yellow' | 'green' = 'red';
+
+  username: string = '';
+
+  constructor(private websocket: WebsocketService) { }
+
+
+  ngOnInit(): void {
+    this.loadUserData();
+    this.checkConfiguration();
+  }
+
+  loadUserData(): void {
+    const sessionRaw = localStorage.getItem('game_session') || sessionStorage.getItem('game_session');
+    if (sessionRaw) {
+      try {
+        const session = JSON.parse(sessionRaw);
+        this.username = session.nickname || '';
+      } catch (e) {
+        console.error('Error parsing game_session', e);
+      }
+    }
+  }
+
+  checkConfiguration(): void {
+    // 1. Immediately change status to loading/checking (Yellow)
+    this.configStatus = 'yellow';
+    const profilesOne = localStorage.getItem('ProfilesOne');
+    const profilesTwo = localStorage.getItem('ProfilesTwo');
+    if (profilesOne && profilesTwo) {
+      this.configStatus = 'green';
+    }else{
+      this.configStatus = 'red';
+      
+    }
+
+  }
 
   setView(value: 'play' | 'history' | 'connection' | 'about') {
     this.view = value;
