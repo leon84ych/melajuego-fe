@@ -76,6 +76,7 @@ export interface ConnectionStatus {
 
 export interface BatchStartedPayload {
   host: string;
+  component: string;
   itemIds: string[];
   startedAt?: string;
   durationMinutes?: number;
@@ -134,8 +135,7 @@ export interface RoomGlobalStatsStorage {
   participants: RoomGlobalParticipantStats[];
 };
 
-export interface BaseGameComponent<T = any, R = any> {
-  payload: T;                         // Datos específicos ya limpios
+export interface BaseGameComponent< R = any> {
   onGameComplete: EventEmitter<R>;    // Evento tipado con el resultado del juego
 }
 
@@ -180,7 +180,8 @@ export interface GameItem {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  image: string;
   category: string;
   component: string;
+  enabled: boolean;
 }

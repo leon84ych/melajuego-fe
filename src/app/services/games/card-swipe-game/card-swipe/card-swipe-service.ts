@@ -9,9 +9,8 @@ import { WebsocketService } from '../../../Websocket';
   providedIn: 'root',
 })
 export class CardSwipeService {
-  private readonly messageDurationMs = Configuration.messageTimeout;
-  readonly durationOptions = [1, 5, 10];
 
+  readonly durationOptions = [1, 5, 10];
   readonly selectedDurationMinutes = signal(5);
   readonly roomName = signal('');
   readonly gameInProgress = signal(false);
@@ -99,16 +98,6 @@ export class CardSwipeService {
 
     const shuffled = [...this.profileIds].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, limit);
-  }
-
-  isHost(roomHost: string | null | undefined): boolean {
-    const currentUser = String(this.websocket.nickname()).trim().toLowerCase();
-    const host = String(roomHost ?? '').trim().toLowerCase();
-    //TODO: Considerar que si no hay host, el primer usuario en iniciar el juego es el host. Esto se puede hacer verificando si el host está vacío y si el currentUser es el primero en la lista de connectedUsers.
-    if (host.length === 0) {
-      return true;
-    }
-    return currentUser.length > 0 && currentUser === host;
   }
 
   private async loadProfileIds(): Promise<void> {

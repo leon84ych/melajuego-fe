@@ -195,6 +195,7 @@ export class WebsocketService {
                 if (data && data.itemIds && Array.isArray(data.itemIds)) {
                     this.batchStarted$.next({
                         host: data.host,
+                        component: data.component,
                         itemIds: data.itemIds,
                         startedAt: data.startedAt,
                         durationMinutes: data.durationMinutes,
@@ -317,9 +318,9 @@ export class WebsocketService {
     }
 
     // Funciones para iniciar partidas 
-    startBatch(roomCode: string, game: string, itemIds: string[], durationMinutes: number) {
-        console.log('[WebsocketService] startBatch requested', { roomCode, game, itemIds, durationMinutes });
-        this.socket.emit('start_batch', { roomCode, game, itemIds, durationMinutes });
+    startBatch(roomCode: string, component: string, itemIds: string[], durationMinutes: number) {
+        console.log('[WebsocketService] startBatch requested', { roomCode, component, itemIds, durationMinutes });
+        this.socket.emit('start_batch', { roomCode, component, itemIds, durationMinutes });
     }
 
     // Enviar los resultados de la partida al servidor

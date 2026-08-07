@@ -368,6 +368,24 @@
 }
 
 
+.game-image-placeholder {
+  width: 100%;
+  height: 260px; /* Adjust based on your preferred design height */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6; /* Soft fallback background color while image loads */
+}
+
+.game-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image fills the area without losing aspect ratio */
+  display: block;
+}
+
+
 /* ==========================================================================
    📱 MOBILE RESPONSIvE MEDIA QUERY (Screens smaller than 768px)
    ========================================================================== */

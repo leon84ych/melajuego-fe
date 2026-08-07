@@ -4,6 +4,7 @@ import { CardSet } from './card-set/card-set';
 import { CommonModule } from '@angular/common';
 import { CardSwipeService } from '../../../services/games/card-swipe-game/card-swipe/card-swipe-service';
 import { CardSetService } from '../../../services/games/card-swipe-game/card-set/card-set-service';
+import { PlayerListService } from '../../../services/player-list/player-list-service';
 
 @Component({
   selector: 'app-card-swipe-game',
@@ -11,14 +12,15 @@ import { CardSetService } from '../../../services/games/card-swipe-game/card-set
   templateUrl: './card-swipe-game.html',
   styleUrls: ['./card-swipe-game.css'],
 })
-export class CardSwipeGame implements BaseGameComponent<GameCardSwipePayload, GameCardSwipeResult> {
-  
+export class CardSwipeGame implements BaseGameComponent<GameCardSwipeResult> {
+
   state = input.required<PlayersListState>();
-  @Input() payload!: GameCardSwipePayload;
+
   @Output() onGameComplete = new EventEmitter<GameCardSwipeResult>();
 
   private readonly cardSwipeService = inject(CardSwipeService);
   private readonly cardSetService = inject(CardSetService);
+  private readonly playerListService = inject(PlayerListService);
 
   readonly durationOptions = this.cardSwipeService.durationOptions;
   readonly selectedDurationMinutes = this.cardSwipeService.selectedDurationMinutes;
@@ -43,7 +45,7 @@ export class CardSwipeGame implements BaseGameComponent<GameCardSwipePayload, Ga
   }
 
   isHost(): boolean {
-    return this.cardSwipeService.isHost(this.state().roomHost);
+    return this.playerListService.isHost();
   }
 
   nextBatch(): void {
