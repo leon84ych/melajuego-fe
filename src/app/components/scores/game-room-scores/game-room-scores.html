@@ -1,0 +1,56 @@
+@if (scoresService.hasRoomGeneralScores()) {
+  @let globalResults = scoresService.sortedRoomGeneralScores();
+  <section class="scoreboard global-scoreboard">
+    <div class="scoreboard-header">
+      <h3>Resultados Acumulados Sala:</h3>
+      <span class="scoreboard-updated">
+        Actualizado {{ scoresService.roomBatchScores()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+      </span>
+    </div>
+
+    <!-- PODIUM ACUMULADO (TOP 3) -->
+    <div class="podium-container">
+      @if (globalResults[1]) {
+        <div class="podium-step second">
+          <span class="podium-rank-badge">#2</span>
+          <div class="podium-avatar">🥈</div>
+          <span class="podium-name">{{ globalResults[1].nickname }}</span>
+          <span class="podium-score">{{ globalResults[1].accumulatedScore }} pts</span>
+        </div>
+      }
+
+      @if (globalResults[0]) {
+        <div class="podium-step first">
+          <span class="podium-rank-badge">#1</span>
+          <div class="podium-avatar">👑</div>
+          <span class="podium-name">{{ globalResults[0].nickname }}</span>
+          <span class="podium-score">{{ globalResults[0].accumulatedScore }} pts</span>
+        </div>
+      }
+
+      @if (globalResults[2]) {
+        <div class="podium-step third">
+          <span class="podium-rank-badge">#3</span>
+          <div class="podium-avatar">🥉</div>
+          <span class="podium-name">{{ globalResults[2].nickname }}</span>
+          <span class="podium-score">{{ globalResults[2].accumulatedScore }} pts</span>
+        </div>
+      }
+    </div>
+
+    <ul>
+      @for (participant of (globalResults | slice:3:10); track participant.nickname; let i = $index) {
+        <li>
+          <div class="participant-meta participant-general-meta">
+            <span class="participant-rank">#{{ i + 4 }}</span>
+            <span class="participant-name">{{ participant.nickname }}</span>
+            <div class="score-time-row">
+              <span class="participant-score">Puntaje: {{ participant.accumulatedScore }} / {{ participant.batchCount * 10 }}</span>
+              <span class="participant-time">Tiempo: {{ participant.totalTimeMs | number:'1.0' }}/{{ participant.totalBatchTimeMs | number:'1.0' }}</span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}

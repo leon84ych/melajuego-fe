@@ -15,22 +15,17 @@
       <span>🟢 {{ session.correctCount }} | 🔴 {{ session.incorrectCount }}</span>
     </div>
 
-    <div class="batch-details" *ngIf="session.incorrectSwipes.length === 0">
-      <h4>¡Juego perfecto!</h4>
-      <p>Tienes perfectamente claro quienes apoyaron a Iván Cepeda en las elecciones presidenciales.</p>
-    </div>
-
-    <div class="batch-details" *ngIf="session.incorrectSwipes.length > 0">
-      <h4>Te equivocaste en:</h4>
-      <ul>
-        <li *ngFor="let item of session.incorrectSwipes">
-          <strong>{{ item.title }}</strong><br> Tu respuesta: 
-          <strong>{{ actionLabel(item.actionTaken) }}</strong>
-            pero la respuesta correcta era:
-          <strong>{{ expectedLabel(item.cardId) }}</strong>
-        </li>
-      </ul>
-    </div>
+    <app-card-swipe-score
+      [percentScoreOverride]="getPercentScore(session)"
+      [batchScoreOverride]="session.correctCount"
+      [totalCardsOverride]="session.correctCount + session.incorrectCount"
+      [batchErrorsOverride]="session.incorrectCount"
+      [scoreColorOverride]="getScoreColor(session)"
+      [profileReviewItemsOverride]="getSessionReviewItems(session)"
+      [actionLabelOverride]="actionLabel"
+      [expectedLabelOverride]="expectedLabel"
+      [showActions]="false"
+    ></app-card-swipe-score>
   </div>
 
   <div class="history-pagination" *ngIf="batchHistory.length > pageSize">

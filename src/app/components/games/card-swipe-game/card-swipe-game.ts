@@ -1,0 +1,62 @@
+import { Component, EventEmitter, Input, Output, inject, input } from '@angular/core';
+import { BaseGameComponent, GameCardSwipePayload, GameCardSwipeResult, PlayersListState } from '../../../data/DataInterfaces';
+import { CardSet } from './card-set/card-set';
+import { CommonModule } from '@angular/common';
+import { CardSwipeService } from '../../../services/games/card-swipe-game/card-swipe/card-swipe-service';
+import { CardSetService } from '../../../services/games/card-swipe-game/card-set/card-set-service';
+import { PlayerListService } from '../../../services/player-list/player-list-service';
+
+@Component({
+  selector: 'app-card-swipe-game',
+  imports: [CardSet, CommonModule],
+  templateUrl: './card-swipe-game.html',
+  styleUrls: ['./card-swipe-game.css'],
+})
+export class CardSwipeGame implements BaseGameComponent<GameCardSwipeResult> {
+
+  state = input.required<PlayersListState>();
+
+  @Output() onGameComplete = new EventEmitter<GameCardSwipeResult>();
+
+  private readonly cardSwipeService = inject(CardSwipeService);
+  private readonly cardSetService = inject(CardSetService);
+  private readonly playerListService = inject(PlayerListService);
+
+  readonly durationOptions = this.cardSwipeService.durationOptions;
+  readonly selectedDurationMinutes = this.cardSwipeService.selectedDurationMinutes;
+  readonly roomName = this.cardSwipeService.roomName;
+  readonly batchStarted = this.cardSwipeService.gameInProgress;
+
+  get batchComplete(): boolean {
+    return this.cardSetService.batchComplete;
+  }
+
+  isPlayingInRoom(): boolean {
+    return this.cardSetService.isPlayingInRoom();
+  }
+
+  onDurationChange(event: Event): void {
+    const value = Number((event.target as HTMLSelectElement)?.value);
+    this.cardSwipeService.setSelectedDuration(value);
+  }
+
+  requestBatchStart(selectedDuration?: string | number) {
+    this.cardSwipeService.requestBatchStart(selectedDuration, this.roomName());
+  }
+
+  isHost(): boolean {
+    return this.playerListService.isHost();
+  }
+
+  nextBatch(): void {
+    if (!this.cardSetService.isPlayingInRoom()) {
+      this.cardSetService.nextBatch();
+    }
+  }
+
+  restart(): void {
+    if (!this.cardSetService.isPlayingInRoom()) {
+      this.cardSetService.restart();
+    }
+  }
+}

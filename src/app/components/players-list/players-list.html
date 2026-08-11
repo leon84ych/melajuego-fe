@@ -1,0 +1,24 @@
+<section class="room-card">
+  <div class="room-header">
+    <div>
+      <p class="room-label">Sala</p>
+      <h3>{{ state().roomName || 'No conectado' }}</h3>
+    </div>
+  </div>
+
+  <div class="room-users">
+    <p class="room-label">Conectados ({{ state().totalUsers }})</p>
+    <ul>
+      @for (nick of sortedUsers(); track nick) {
+        <li [class.current-user]="isCurrentUser(nick)" [class.host-user]="isHost(nick)">
+          {{ nick }}
+          @if (isHost(nick)) {
+            <span class="host-badge">HOST</span>
+          }
+        </li>
+      } @empty {
+        <li>Nadie conectado aún</li>
+      }
+    </ul>
+  </div>
+</section>

@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BatchSession } from '../../data/DataInterfaces';
+import { ProfileService } from '../../services/ProfileService';
+import { BatchSession, CardData, SwipeRecord } from '../../data/DataInterfaces';
+import { CardSwipeScore } from '../games/card-swipe-game/card-swipe-score/card-swipe-score';
 
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CardSwipeScore],
   templateUrl: './history.html',
   styleUrls: ['./history.css'],
 })
@@ -13,9 +15,12 @@ export class History {
   public batchHistory: BatchSession[] = [];
   readonly pageSize = 10;
   currentPage = 1;
+  private profiles: CardData[] = [];
+  private readonly profileService = inject(ProfileService);
 
   constructor() {
     this.loadHistoryFromStorage();
+    void this.loadProfiles();
   }
 
   private loadHistoryFromStorage() {
@@ -68,5 +73,53 @@ export class History {
 
   expectedLabel(cardId: string | number): string {
     return String(cardId).toLowerCase().startsWith('one') ? 'Sí Apoyó' : 'No Apoyó';
+  }
+
+  getScoreColor(session: BatchSession): 'red' | 'yellow' | 'green' {
+    const totalCards = session.correctCount + session.incorrectCount;
+    if (totalCards === 0) {
+      return 'yellow';
+    }
+
+    const percentScore = Math.round((session.correctCount / totalCards) * 100);
+    if (percentScore < 30) {
+      return 'red';
+    }
+    if (percentScore > 81) {
+      return 'green';
+    }
+    return 'yellow';
+  }
+
+  getSessionReviewItems(session: BatchSession): Array<CardData & { result: 'success' | 'error' | 'pending' }> {
+    const profilesById = new Map<string | number, CardData>(
+      this.profiles.map((profile) => [profile.id, profile])
+    );
+
+    return [
+      ...session.correctSwipes.map((item) => ({
+        ...(profilesById.get(item.cardId) ?? { id: item.cardId, title: item.title, subtitle: item.subtitle, imageUrl: '' }),
+        ...item,
+        result: 'success' as const,
+      })),
+      ...session.incorrectSwipes.map((item) => ({
+        ...(profilesById.get(item.cardId) ?? { id: item.cardId, title: item.title, subtitle: item.subtitle, imageUrl: '' }),
+        ...item,
+        result: 'error' as const,
+      })),
+    ];
+  }
+
+  private async loadProfiles(): Promise<void> {
+    this.profiles = await this.profileService.getCombinedProfiles();
+  }
+
+  getPercentScore(session: BatchSession): number {
+    const totalCards = session.correctCount + session.incorrectCount;
+    if (totalCards === 0) {
+      return 0;
+    }
+
+    return Math.round((session.correctCount / totalCards) * 100);
   }
 }

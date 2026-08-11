@@ -1,0 +1,92 @@
+<div class="game-room-layout">
+
+  <!-- 1. MAIN GAME WORKSPACE (Fills left/center area completely) -->
+  <main class="game-viewport">
+
+    <!-- STEP 1: CATALOG VIEW OR WAITING SCREEN (Show only if NO game component is active) -->
+    <div class="game-room-container" *ngIf="!currentGameComponent()">
+      <header class="catalog-header">
+
+        <!-- HOST LOBBY HEADLINE -->
+        @if (!websocket.isInRoom() || isHost()) {
+        <h2>Juegos por la vida</h2>
+        <p>Selecciona una de las opciones disponibles para comenzar la partida en la sala.</p>
+        }
+
+        <!-- GUEST LOBBY HEADLINE -->
+        @else {
+        <h2>Esperando Juego</h2>
+        <div class="host-waiting-banner">
+          ⏳ Esperando a que el ANFITRIÓN seleccione un juego para comenzar la sala...
+        </div>
+        }
+      </header>
+
+      <!-- Only render the catalog selection cards to the Host (or if offline playing solo) -->
+      <div class="game-ecommerce-grid" *ngIf="!websocket.isInRoom() || isHost()">
+        @for (game of availableGames; track game.id) {
+        @if(game.enabled){
+        <div class="game-card" (click)="selectGame(game)">
+          <!-- Render the real asset image file securely -->
+          <div class="game-image-placeholder">
+            <img [src]="game.image" [alt]="game.title" class="game-card-img" />
+          </div>
+          <div class="game-card-info">
+            <h3>{{ game.title }}</h3>
+            <p>{{ game.description }}</p>
+            <span class="game-badge">{{ game.category }}</span>
+          </div>
+        </div>
+        }
+        }
+      </div>
+    </div>
+
+    <!-- STEP 2: ACTIVE GAME COMPONENT (Fills space immediately when signal is populated) -->
+    <div class="active-game-screen-wrapper" *ngIf="currentGameComponent()">
+      <ng-container *ngComponentOutlet="currentGameComponent(); inputs: gameComponentInputs()"
+        (activate)="onComponentActivated($event)">
+      </ng-container>
+    </div>
+
+    <!-- Floating Back Navigation Bar (Only show to the Host if they are inside an active game session) -->
+    <div class="game-session-toolbar" *ngIf="currentGameComponent() && (!websocket.isInRoom() || isHost())">
+      <button class="btn-back-to-catalog" (click)="exitCurrentGame()">
+        &larr; Catálogo
+      </button>
+      <span class="playing-indicator" *ngIf="activeGameTitle">
+        Jugando a: <strong>{{ activeGameTitle }}</strong>
+      </span>
+    </div>
+
+    <!-- Centered Scores Trigger Floating Bar -->
+    <div class="game-room-controls-bar" *ngIf="currentGameComponent() && websocket.isInRoom()">
+      <button class="action-btn-scores" (click)="scoresService.openScoresOverlay()">
+        🏆 <span class="btn-text">Puntajes</span>
+      </button>
+    </div>
+
+  </main>
+
+  @if (websocket.isInRoom()) {
+  <!-- Checkbox input controller must sit directly before the sidebar layout blocks -->
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />
+
+  <!-- Pinned Hide/Show Button handles layout toggles via checkbox state -->
+  <label for="sidebar-toggle" class="toggle-arrow-btn" aria-label="Toggle scores">
+    <span class="arrow-icon">◀</span>
+  </label>
+
+  <!-- Side Panel Layout Overlay Layer (Pushed to the far right margin) -->
+  <aside class="room-sidebar">
+    <app-players-list [state]="playerListState()"></app-players-list>
+  </aside>
+
+  <!-- Separate visual background blur layer for compact mobile screens -->
+  <div class="sidebar-backdrop"></div>
+
+  <!-- Full-screen modal overlay sits on top of everything when openScoresOverlay() runs -->
+  <app-game-scores></app-game-scores>
+  }
+
+</div>

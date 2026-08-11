@@ -1,3 +1,4 @@
+import { EventEmitter } from "@angular/core";
 
 
 export interface CardData {
@@ -38,11 +39,24 @@ export interface ParticipantBatchResult {
   timestamp: string;
 }
 
+export interface RoomGeneralScoreEntry {
+  nickname: string;
+  batchCount: number;
+  totalTimeMs: number;
+  totalBatchTimeMs: number;
+  accumulatedScore: number;
+  roomGeneralScore: number;
+  cumulativeTimeRatio: number;
+}
+
+
 export interface RoomBatchScores {
   roomCode: string;
   participantResults: ParticipantBatchResult[];
   winner?: string;
   startedAt?: string;
+  durationMinutes?: number;
+  roomGeneralScores?: RoomGeneralScoreEntry[];
   gameFinished?: boolean;
   updatedAt: string;
 }
@@ -52,9 +66,7 @@ export interface RoomState {
   roomCode: string;
   connectedUsers: string[];
   host: string;
-  message?: string;
   totalUsers?: number;
-  newUser?: string;
 }
 
 export interface ConnectionStatus {
@@ -64,6 +76,7 @@ export interface ConnectionStatus {
 
 export interface BatchStartedPayload {
   host: string;
+  component: string;
   itemIds: string[];
   startedAt?: string;
   durationMinutes?: number;
@@ -93,4 +106,82 @@ export interface CreditEntry {
 export interface GameSession {
   nickname: string;
   room: string;
+}
+
+export interface ParticipantResultView extends ParticipantBatchResult {
+  responseSeconds: number | null;
+  responseDeltaSeconds: number | null;
+}
+
+export interface RoomGlobalParticipantStats {
+  nickname: string;
+  batchCount: number;
+  totalTimeMs: number;
+  totalBatchTimeMs: number;
+  accumulatedScore: number;
+  room_general_score: number;
+  cumulativeTimeRatio: number;
+};
+
+export interface RoomGlobalStats {
+  roomCode: string;
+  updatedAt: string;
+  participants: RoomGlobalParticipantStats[];
+};
+
+export interface RoomGlobalStatsStorage {
+  roomCode: string;
+  updatedAt: string;
+  participants: RoomGlobalParticipantStats[];
+};
+
+export interface BaseGameComponent< R = any> {
+  onGameComplete: EventEmitter<R>;    // Evento tipado con el resultado del juego
+}
+
+export interface BaseGamePayload<T = any> {
+  gameType: string;      // Ej: 'card-swipe', 'quiz'
+  roomCode: string;
+  gameHost: string;
+  startedAt: string;
+  durationMinutes?: number;
+  payload: T;            // Datos específicos del juego que vienen del socket
+}
+
+export interface GameCardSwipePayload {
+  question: string;
+  options: string[];
+}
+
+export interface GameCardSwipeResult {
+  score: number;
+  timeSpent: number;
+}
+
+// export interface PlayerListState_ {
+//   roomName: string;
+//   nickname: string;
+//   currentNickname: string;
+//   connectedUsers: string[];
+//   roomHost: string;
+//   totalUsers: number;
+// }
+
+export interface PlayersListState {
+  roomName: string;
+  nickname: string;
+  currentNickname: string;
+  connectedUsers: string[];
+  roomHost: string;
+  totalUsers: number;
+}
+
+export interface GameItem {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  component: string;
+  enabled: boolean;
 }

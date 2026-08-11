@@ -1,0 +1,73 @@
+<div class="main-layout">
+    <div class="game-layout">
+        <div class="game-content">
+            <div class="swipe-instructions" *ngIf="shouldShowCards()">
+                <p class="instruction-main">
+                    ¿Sábes quiénes se la jugaron por la vida? <br>
+                </p>
+                <div class="batch-timer" *ngIf="showCountdown() && sharedBatchReceived()">
+                    <span class="timer-label">Tiempo restante</span>
+                    <strong class="timer-value">{{ formattedTimeRemaining }}</strong>
+                </div>
+            </div>
+
+            <!-- Contenedor de Tarjetas del batch -->
+            <div class="swipe-container" *ngIf="shouldShowCards()">
+                <div class="card-wrapper" *ngFor="let card of currentBatch; let idx = index; trackBy: trackCard"
+                    [class.active]="idx === batchPosition()" [class.hidden]="idx < batchPosition()">
+                    <app-card [data]="card" (onSwipe)="handleDecision($event)">
+                    </app-card>
+                </div>
+            </div>
+
+            <div class="no-more-cards" *ngIf="shouldWaitForSharedBatch()">
+                <div class="result-summary">
+                    <h1>Esperando cartas</h1>
+                    <p class="result-text">El juego compartido iniciara cuando la sala reciba el mazo.</p>
+                </div>
+            </div>
+
+            <div class="no-more-cards" *ngIf="isWaitingForOtherPlayers()">
+                <div class="result-summary">
+                    <h1>Esperando otros usuarios</h1>
+                    <p class="result-text">Tiempo restante: {{ formattedTimeRemaining }}</p>
+                </div>
+            </div>
+
+            <!-- Barra de estado del batch -->
+            <div class="batch-status" *ngIf="shouldShowCards()">
+                <div class="status-block" *ngFor="let result of batchResults" [class.success]="result === 'success'"
+                    [class.error]="result === 'error'"></div>
+            </div>
+
+            <!-- Pantalla de fin de batch -->
+
+            <div class="no-more-cards results-panel" *ngIf="batchComplete && isSoloGame()">
+                <app-card-swipe-score
+                    (nextBatch)="nextBatch.emit()"
+                    (restart)="restart.emit()"
+                    [showActions]="!isPlayingInRoom()"
+                ></app-card-swipe-score>
+            </div>
+
+            <div class="no-more-cards results-panel" *ngIf="shouldShowRoomScores()">
+                <app-card-swipe-score
+                    (nextBatch)="nextBatch.emit()"
+                    (restart)="restart.emit()"
+                    [showActions]="!isPlayingInRoom()"
+                ></app-card-swipe-score>
+            </div>
+
+
+            <div class="action-buttons" *ngIf="shouldShowCards()">
+                <button class="btn-action dislike" (click)="handleDecision({ id: currentCard.id, action: 'dislike' })">
+                    ❌
+                </button>
+                <button class="btn-action like" (click)="handleDecision({ id: currentCard.id, action: 'like' })">
+                    🫰
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

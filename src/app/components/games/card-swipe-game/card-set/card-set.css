@@ -1,0 +1,327 @@
+.main-layout {
+  display: flex;
+  justify-content: center;
+  min-height: auto;
+  background-color: #f9fafb;
+  font-family: sans-serif;
+}
+
+.game-layout {
+  display: flex;
+  width: min(100%, 1280px);
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.game-content {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.swipe-instructions {
+  width: min(100%, 520px);
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.instruction-main {
+  margin: 0;
+  color: #1f2937;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.instruction-main .arrow-icon {
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+}
+
+.instruction-main .arrow-icon.left {
+  margin-right: 8px;
+}
+
+.instruction-main .arrow-icon.right {
+  margin-left: 8px;
+}
+
+.room-sidebar {
+  width: min(320px, 100%);
+  flex: 0 0 320px;
+}
+
+@media (max-width: 900px) {
+  .game-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-content {
+    width: 100%;
+  }
+
+  .room-sidebar {
+    order: 2;
+    width: 100%;
+    flex: none;
+    margin-top: 24px;
+  }
+}
+
+/* Contenedor principal del swipe */
+.swipe-container {
+  width: min(100%, 420px);
+  min-height: 520px;
+  margin-bottom: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.card-wrapper.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-wrapper.active {
+  z-index: 2;
+}
+
+/* Fila de botones flotantes debajo de la tarjeta */
+.action-buttons {
+  display: flex;
+  gap: 30px;
+  margin-top: 12px;
+  z-index: 20;
+}
+
+.batch-timer {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(30, 64, 175, 0.2);
+  background: #eff6ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timer-label {
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.timer-value {
+  color: #1e3a8a;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+}
+
+/* Estilo base circular */
+.btn-action {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-action:active {
+  transform: scale(0.9);
+}
+
+/* Efectos de color al pasar el cursor */
+.btn-action.dislike:hover {
+  background-color: #fee2e2;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.btn-action.like:hover {
+  background-color: #dcfce7;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+/* Animación opcional para suavizar el retorno del CDK drag */
+.cdk-drag-animating {
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.no-more-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 30px 20px;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+
+.no-more-cards.results-panel {
+  width: 100%;
+  padding: 34px 28px;
+}
+
+.no-more-cards.results-panel .result-summary {
+  width: 100%;
+}
+
+.no-more-cards.results-panel .batch-details {
+  width: 100%;
+  margin-top: 16px;
+  text-align: left;
+}
+
+.no-more-cards.results-panel .batch-details ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.no-more-cards.results-panel .batch-details li {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .no-more-cards.results-panel {
+    width: 100%;
+    padding: 24px 16px;
+  }
+}
+
+app-scores {
+  display: block;
+  width: min(100%, 480px);
+}
+
+@media (max-width: 900px) {
+  app-scores {
+    width: 100%;
+  }
+}
+
+.batch-status {
+  width: min(100%, 420px);
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+
+.status-block {
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  transition: background-color 0.2s ease;
+}
+
+.status-block.success {
+  background: #16a34a;
+}
+
+.status-block.error {
+  background: #dc2626;
+}
+
+.batch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.batch-notification {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #4338ca;
+  font-weight: 600;
+  text-align: center;
+}
+
+.result-summary h1 {
+  margin: 0 0 16px;
+  font-size: 1.8rem;
+  letter-spacing: 0.02em;
+}
+
+.percentage {
+  font-size: 5rem;
+  font-weight: 800;
+  margin: 0 0 18px;
+  line-height: 1;
+}
+
+.percentage.red {
+  color: #dc2626;
+}
+
+.percentage.yellow {
+  color: #ca8a04;
+}
+
+.percentage.green {
+  color: #16a34a;
+}
+
+.result-text {
+  margin: 4px 0;
+  color: #475569;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .swipe-container {
+    min-height: 440px;
+    margin-bottom: 8px;
+  }
+
+  .batch-status {
+    gap: 6px;
+    margin: 4px 0 8px;
+  }
+
+  .action-buttons {
+    margin-top: 8px;
+  }
+}
+.btn-action.restart {
+  margin-top: 22px;
+  width: auto;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  font-size: 1rem;
+  min-width: 180px;
+}

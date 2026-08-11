@@ -1,0 +1,60 @@
+<div class="no-more-cards results-panel">
+    <div class="result-summary">
+        <h1>Ronda completada</h1>
+        <div class="percentage" [class.red]="scoreColor === 'red'" [class.yellow]="scoreColor === 'yellow'"
+            [class.green]="scoreColor === 'green'">
+            {{ percentScore }}%
+        </div>
+
+        <div class="review-container" *ngIf="profileReviewItems.length > 0">
+
+
+            <div class="profile-card" *ngIf="selectedProfile">
+                <div class="profile-card-left">
+                    <div class="profile-image"
+                        [style.background-image]="selectedProfile.imageUrl ? 'url(' + selectedProfile.imageUrl + ')' : 'none'">
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-title">{{ selectedProfile.title }}</div>
+                        <div class="profile-subtitle">{{ selectedProfile.subtitle }}</div>
+                        <div class="profile-result-row">
+                            <span class="profile-result-tag" [class.correct]="selectedProfile.result === 'success'"
+                                [class.incorrect]="selectedProfile.result === 'error'">
+                                {{ selectedProfile.result === 'success' ? 'Correcto' : selectedProfile.result ===
+                                'error' ? 'Incorrecto' : 'Pendiente' }}
+                            </span>
+                        </div>
+                        <div class="profile-result-row">
+                            {{ expectedLabel(selectedProfile.id) }}
+                        </div>
+                    </div>
+                </div>
+                <p class="result-text">Aciertos: {{ batchScore }} / {{ totalCards }}</p>
+                <p class="result-text">Errores: {{ batchErrors }}</p>
+                <div class="review-toolbar">
+
+                    <button class="review-arrow" type="button" (click)="selectPreviousProfile()"
+                        [disabled]="selectedProfileIndex() <= 0" aria-label="Perfil anterior">
+                        ‹
+                    </button>
+
+                    <div class="review-statusbar">
+                        <button *ngFor="let item of profileReviewItems; let i = index" class="status-dot"
+                            [class.success]="item.result === 'success'" [class.error]="item.result === 'error'"
+                            [class.pending]="item.result === 'pending'" [class.active]="selectedProfileIndex() === i"
+                            type="button" (click)="setSelectedProfile(i)"
+                            [attr.aria-label]="'Ver perfil ' + item.title">
+                        </button>
+                    </div>
+
+                    <button class="review-arrow" type="button" (click)="selectNextProfile()"
+                        [disabled]="selectedProfileIndex() >= profileReviewItems.length - 1"
+                        aria-label="Perfil siguiente">
+                        ›
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
