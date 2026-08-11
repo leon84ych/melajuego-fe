@@ -24,7 +24,6 @@
               {
                 "glob": "**/*",
                 "input": "public"
-                
               }
             ],
             "styles": [
@@ -43,6 +42,15 @@
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
                   "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "render": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.render.ts"
                 }
               ],
               "outputHashing": "all"
