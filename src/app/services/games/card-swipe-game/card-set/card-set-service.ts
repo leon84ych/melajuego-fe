@@ -16,7 +16,7 @@ import { WebsocketService } from '../../../Websocket';
   providedIn: 'root',
 })
 export class CardSetService {
-  readonly title = signal('Fuchile');
+  readonly title = signal('Melajuego');
   readonly isSoloGame = signal(true);
   readonly showRoomPanel = signal(false);
   readonly showCountdown = signal(false);

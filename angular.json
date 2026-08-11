@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "Fuchile": {
+    "Melajuego": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -19,7 +19,7 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "outputPath": "dist/fuchile",
+            "outputPath": "dist/melajuego",
             "assets": [
               {
                 "glob": "**/*",
@@ -65,10 +65,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Fuchile:build:production"
+              "buildTarget": "Melajuego:build:production"
             },
             "development": {
-              "buildTarget": "Fuchile:build:development"
+              "buildTarget": "Melajuego:build:development"
             }
           },
           "defaultConfiguration": "development"
