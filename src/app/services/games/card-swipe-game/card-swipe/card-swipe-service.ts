@@ -2,7 +2,6 @@ import { Injectable, effect, inject, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProfileService } from '../../../ProfileService';
 import { BatchStartedPayload, RoomBatchScores } from '../../../../data/DataInterfaces';
-import { Configuration } from '../../../../data/Configuration';
 import { WebsocketService } from '../../../Websocket';
 
 @Injectable({

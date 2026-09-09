@@ -39,10 +39,8 @@
     </button>
   </div>
 
-  <!-- Right Side: User Status Indicator -->
-  <div class="user-status-container" (click)="checkConfiguration()">
+  <div class="user-status-container">
     <span class="username">{{ username || 'Invitado' }}</span>
-    <span class="status-dot" [ngClass]="configStatus"></span>
   </div>
 
 </header>

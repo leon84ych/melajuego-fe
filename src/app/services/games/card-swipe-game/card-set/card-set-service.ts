@@ -185,6 +185,27 @@ export class CardSetService {
     return `${this.batchRenderVersion()}-${String(card.id)}`;
   };
 
+
+  configStatus: 'red' | 'yellow' | 'green' = 'red';
+
+  checkConfiguration(): 'red' | 'yellow' | 'green' {
+    this.configStatus = 'yellow';
+    const profilesOne = localStorage.getItem('ProfilesOne');
+    const profilesTwo = localStorage.getItem('ProfilesTwo');
+    if (profilesOne && profilesTwo) {
+      this.configStatus = 'green';
+    } else {
+      this.configStatus = 'red';
+      this.profileService.getCombinedProfiles({ forceRefresh: true }).then(() => {
+        this.configStatus = 'green';
+      }).catch((error) => {
+        console.error('Error fetching profiles:', error);
+        this.configStatus = 'red';
+      });
+    }
+    return this.configStatus;
+  }
+
   isPlayingInRoom(): boolean {
     return this.showRoomPanel();
   }

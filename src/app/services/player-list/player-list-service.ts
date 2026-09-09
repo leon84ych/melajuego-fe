@@ -1,5 +1,5 @@
 import { WebsocketService } from '../Websocket';
-import { Injectable, OnDestroy, computed, signal, inject } from '@angular/core';
+import { Injectable, OnDestroy, signal, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PlayersListState, RoomState } from '../../data/DataInterfaces';
 
@@ -22,7 +22,7 @@ export class PlayerListService implements OnDestroy {
     readonly playerListState = this._playerListState.asReadonly();
 
     constructor() {
-        this.evaluateSession(); // 🔥 Core Fix: Run this immediately during initialization
+        this.evaluateSession();
         this.initService();
     }
 
@@ -39,7 +39,7 @@ export class PlayerListService implements OnDestroy {
         return {
             roomName: roomState.roomCode,
             nickname: this.nickname,
-            currentNickname: this.nickname, // 🔥 Core Fix: Populate this so sortedUsers() can read it
+            currentNickname: this.nickname,
             connectedUsers: roomState.connectedUsers || [],
             roomHost: roomState.host,
             totalUsers: roomState.totalUsers || 0

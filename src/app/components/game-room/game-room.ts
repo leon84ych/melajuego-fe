@@ -36,7 +36,7 @@ export class GameRoom implements OnInit, OnDestroy {
       id: 'cardSwipeIvan',
       title: 'Quienes jugaron por la vida?',
       description: 'Reconoce quienes apoyaron a Iván en la campaña presidencial. Un juego rápido de memoria y reconocimiento.',
-      image: 'images/IvanCorazon.jpg',
+      image: 'images/card-swipe/melajuego.png',
       category: 'Deslizar Cartas',
       component: 'SWIPE',
       enabled: true

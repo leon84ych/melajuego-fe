@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, inject, input } from '@angular/core';
-import { BaseGameComponent, GameCardSwipePayload, GameCardSwipeResult, PlayersListState } from '../../../data/DataInterfaces';
+import { BaseGameComponent, GameCardSwipeResult, PlayersListState } from '../../../data/DataInterfaces';
 import { CardSet } from './card-set/card-set';
 import { CommonModule } from '@angular/common';
 import { CardSwipeService } from '../../../services/games/card-swipe-game/card-swipe/card-swipe-service';
@@ -29,6 +29,28 @@ export class CardSwipeGame implements BaseGameComponent<GameCardSwipeResult> {
 
   get batchComplete(): boolean {
     return this.cardSetService.batchComplete;
+  }
+
+  configStatus: 'red' | 'yellow' | 'green' = 'red';
+
+  checkConfiguration() {
+    this.configStatus = 'yellow';
+    const profilesOne = localStorage.getItem('ProfilesOne');
+    const profilesTwo = localStorage.getItem('ProfilesTwo');
+    if (profilesOne && profilesTwo) {
+      this.configStatus = 'green';
+    } else {
+      this.configStatus= this.cardSetService.checkConfiguration();
+    }
+  }
+
+  showConfigurationButton(): boolean {
+    const profilesOne = localStorage.getItem('ProfilesOne');
+    const profilesTwo = localStorage.getItem('ProfilesTwo');
+    if (profilesOne && profilesTwo) {
+      return false;
+    }
+    return true;
   }
 
   isPlayingInRoom(): boolean {

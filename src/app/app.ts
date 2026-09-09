@@ -5,6 +5,7 @@ import { About } from './components/about/about';
 import { Connection } from './components/connection/connection';
 import { WebsocketService } from './services/Websocket';
 import { GameRoom } from './components/game-room/game-room';
+import { ProfileService } from './services/ProfileService';
 
 @Component({
   selector: 'app-root',
@@ -18,16 +19,14 @@ export class App implements OnInit {
 
   view = 'play' as 'play' | 'history' | 'connection' | 'about';
 
-  configStatus: 'red' | 'yellow' | 'green' = 'red';
+
 
   username: string = '';
 
-  constructor(private websocket: WebsocketService) { }
-
+  constructor(private websocket: WebsocketService, private profileService: ProfileService) { }
 
   ngOnInit(): void {
     this.loadUserData();
-    this.checkConfiguration();
   }
 
   loadUserData(): void {
@@ -40,20 +39,6 @@ export class App implements OnInit {
         console.error('Error parsing game_session', e);
       }
     }
-  }
-
-  checkConfiguration(): void {
-    // 1. Immediately change status to loading/checking (Yellow)
-    this.configStatus = 'yellow';
-    const profilesOne = localStorage.getItem('ProfilesOne');
-    const profilesTwo = localStorage.getItem('ProfilesTwo');
-    if (profilesOne && profilesTwo) {
-      this.configStatus = 'green';
-    }else{
-      this.configStatus = 'red';
-      
-    }
-
   }
 
   setView(value: 'play' | 'history' | 'connection' | 'about') {
@@ -74,7 +59,6 @@ export class App implements OnInit {
       const roomCode = (session.room || '').trim();
       this.websocket.refreshRoomState(roomCode, nickname);
     } catch {
-      // Ignore malformed saved session
     }
   }
 }

@@ -9,11 +9,13 @@ type ProfileSheet = 'one' | 'two';
   providedIn: 'root',
 })
 export class ProfileService {
+
   private readonly apiUrl =
     'https://script.google.com/macros/s/AKfycbzLEKRILH3gzEX3N9U7rvN-I94HGv6IXUNC8UWrKo4uMy3B-66hPbr1ZzOwklK36WFj/exec';
+
   private readonly cache = new Map<ProfileSheet, CardData[]>();
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   async getProfiles(sheet: ProfileSheet = 'one', options?: { forceRefresh?: boolean }): Promise<CardData[]> {
     const forceRefresh = options?.forceRefresh === true;
@@ -82,10 +84,10 @@ export class ProfileService {
     try {
       const response = await firstValueFrom(this.http.get<unknown>(url));
       const rawProfiles = Array.isArray(response)
-      ? (response as unknown[])
-      : response && typeof response === 'object' && 'data' in response && Array.isArray((response as any).data)
-      ? ((response as any).data as unknown[])
-      : [];
+        ? (response as unknown[])
+        : response && typeof response === 'object' && 'data' in response && Array.isArray((response as any).data)
+          ? ((response as any).data as unknown[])
+          : [];
 
       return rawProfiles.map((item: unknown) => this.normalizeProfile(item));
     } catch (error) {
@@ -98,8 +100,8 @@ export class ProfileService {
     const tags = Array.isArray(raw.tags)
       ? (raw.tags as unknown[]).map((tag: unknown) => String(tag).trim()).filter(Boolean)
       : typeof raw.tags === 'string'
-      ? raw.tags.split(',').map((tag: string) => String(tag).trim()).filter(Boolean)
-      : [];
+        ? raw.tags.split(',').map((tag: string) => String(tag).trim()).filter(Boolean)
+        : [];
 
     const imageUrl = typeof raw.imageUrl === 'string' ? raw.imageUrl : typeof raw.image === 'string' ? raw.image : '';
 
