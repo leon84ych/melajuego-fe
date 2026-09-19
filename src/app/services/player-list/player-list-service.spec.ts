@@ -29,6 +29,6 @@ describe('PlayerListService', () => {
       totalUsers: 2,
     });
 
-    expect(service.isHost()).toBeTrue();
+    expect(service.isHost());
   });
 });
