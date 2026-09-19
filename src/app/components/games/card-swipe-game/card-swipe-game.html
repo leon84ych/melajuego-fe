@@ -1,9 +1,9 @@
 <app-card-set (nextBatch)="nextBatch()" (restart)="restart()"></app-card-set>
 
 <div class="batch-actions" *ngIf="batchComplete && !isPlayingInRoom()">
-    <button class="btn-action restart " *ngIf="showConfigurationButton()" type="button" (click)="checkConfiguration()">Clic para cargar perfiles</button>
-    <button class="btn-action restart"  *ngIf="configStatus == 'green'" type="button" (click)="nextBatch()">Jugar otra ronda</button>
-    <button class="btn-action restart" *ngIf="configStatus == 'green'" type="button" (click)="restart()">Reiniciar todo</button>
+    <button class="btn-action restart" type="button" (click)="checkConfiguration()">Recargar Perfiles</button>
+    <button class="btn-action restart" type="button" (click)="nextBatch()">Jugar otra ronda</button>
+    <button class="btn-action restart" type="button" (click)="restart()">Reiniciar todo</button>
 </div>
 @if (isHost() && !batchStarted() && roomName().length > 0) {
 <div class="room-duration-panel">

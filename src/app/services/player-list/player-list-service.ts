@@ -36,18 +36,24 @@ export class PlayerListService implements OnDestroy {
     }
 
     private normalizePlayersListState(roomState: RoomState): PlayersListState {
+        const currentNickname = this.getCurrentNickname();
+
         return {
             roomName: roomState.roomCode,
-            nickname: this.nickname,
-            currentNickname: this.nickname,
+            nickname: currentNickname,
+            currentNickname: currentNickname,
             connectedUsers: roomState.connectedUsers || [],
             roomHost: roomState.host,
             totalUsers: roomState.totalUsers || 0
         };
     }
 
+    private getCurrentNickname(): string {
+        return (this.websocket.nickname() || this.nickname || '').trim();
+    }
+
     public isHost(): boolean {
-        return this.nickname.trim().toLowerCase() === this._playerListState().roomHost.trim().toLowerCase();
+        return this.getCurrentNickname().toLowerCase() === this._playerListState().roomHost.trim().toLowerCase();
     }
 
     private evaluateSession() {

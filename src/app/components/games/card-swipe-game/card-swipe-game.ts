@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject, input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject, input } from '@angular/core';
 import { BaseGameComponent, GameCardSwipeResult, PlayersListState } from '../../../data/DataInterfaces';
 import { CardSet } from './card-set/card-set';
 import { CommonModule } from '@angular/common';
@@ -31,16 +31,13 @@ export class CardSwipeGame implements BaseGameComponent<GameCardSwipeResult> {
     return this.cardSetService.batchComplete;
   }
 
-  configStatus: 'red' | 'yellow' | 'green' = 'red';
 
   checkConfiguration() {
-    this.configStatus = 'yellow';
     const profilesOne = localStorage.getItem('ProfilesOne');
     const profilesTwo = localStorage.getItem('ProfilesTwo');
     if (profilesOne && profilesTwo) {
-      this.configStatus = 'green';
     } else {
-      this.configStatus= this.cardSetService.checkConfiguration();
+      this.cardSetService.checkConfiguration();
     }
   }
 

@@ -17,6 +17,33 @@ export class ProfileService {
 
   constructor(private readonly http: HttpClient) { }
 
+
+
+    async getVersion(sheet: ProfileSheet, options?: { forceRefresh?: boolean }): Promise<CardData[]> {
+    const forceRefresh = options?.forceRefresh === true;
+
+    if (!forceRefresh) {
+      if (this.cache.has(sheet)) {
+        return this.cache.get(sheet)!;
+      }
+
+      const storageKey = this.getStorageKey(sheet);
+      const localValue = this.loadFromLocalStorage(storageKey);
+      if (localValue) {
+        this.cache.set(sheet, localValue);
+        return localValue;
+      }
+    }
+
+    const profiles = await this.fetchProfiles(sheet);
+    if (profiles.length > 0) {
+      const storageKey = this.getStorageKey(sheet);
+      this.saveToLocalStorage(storageKey, profiles);
+      this.cache.set(sheet, profiles);
+    }
+    return profiles;
+  }
+
   async getProfiles(sheet: ProfileSheet = 'one', options?: { forceRefresh?: boolean }): Promise<CardData[]> {
     const forceRefresh = options?.forceRefresh === true;
 
