@@ -8,8 +8,6 @@
       <header class="catalog-header">
 
         <!-- HOST LOBBY HEADLINE -->
-        In Room:  {{websocket.isInRoom()}} <br/>
-        host: {{isHost()}} <br/>
         @if (!websocket.isInRoom() || isHost()) {
         <h2>Juegos por la vida</h2>
         <p>Selecciona una de las opciones disponibles para comenzar la partida en la sala.</p>
